@@ -14,11 +14,11 @@ const Footer = () => {
     navigate('/');
   };
 
-  // const handleLanguageChange = (e) => setLanguage(e.target.value);
-  // const handleCurrencyChange = (e) => setCurrency(e.target.value);
+  const handleLanguageChange = (e) => setLanguage(e.target.value);
+  const handleCurrencyChange = (e) => setCurrency(e.target.value);
 
   const mainFooter = (
-    <footer className="py-3 bg-light border-top">
+    <footer className="py-3 bg-white border-top">
       <div className="container-fluid">
         <div className="row justify-content-between align-items-center">
           <div className="col-12 col-md-6 text-center text-md-start mb-3 mb-md-0">
@@ -38,9 +38,9 @@ const Footer = () => {
                 <i className="bi bi-globe"></i> {language}
               </button>
               <ul className="dropdown-menu" aria-labelledby="languageDropdown">
-                {/* <li><button className="dropdown-item" onClick={() => setLanguage('English (US)')}>English (US)</button></li>
+                <li><button className="dropdown-item" onClick={() => setLanguage('English (US)')}>English (US)</button></li>
                 <li><button className="dropdown-item" onClick={() => setLanguage('Français')}>Français</button></li>
-                <li><button className="dropdown-item" onClick={() => setLanguage('Español')}>Español</button></li> */}
+                <li><button className="dropdown-item" onClick={() => setLanguage('Español')}>Español</button></li>
               </ul>
             </div>
             <div className="dropdown me-3">
@@ -48,9 +48,9 @@ const Footer = () => {
                 {currency}
               </button>
               <ul className="dropdown-menu" aria-labelledby="currencyDropdown">
-                {/* <li><button className="dropdown-item" onClick={() => setCurrency('$ USD')}>$ USD</button></li>
+                <li><button className="dropdown-item" onClick={() => setCurrency('$ USD')}>$ USD</button></li>
                 <li><button className="dropdown-item" onClick={() => setCurrency('€ EUR')}>€ EUR</button></li>
-                <li><button className="dropdown-item" onClick={() => setCurrency('£ GBP')}>£ GBP</button></li> */}
+                <li><button className="dropdown-item" onClick={() => setCurrency('£ GBP')}>£ GBP</button></li>
               </ul>
             </div>
             <span onClick={toggleFooter} style={{cursor: 'pointer'}}>
