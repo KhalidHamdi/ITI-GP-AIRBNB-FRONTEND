@@ -5,15 +5,15 @@ import Footer from '../../components/home/Footer';
 import Categories from '../../components/home/Categories';
 import "./Home.css";
 import PropertyList from '../../components/property/propertyList';
+import AddProperty from '../../components/property/addProperty';
+
 
 
 const Home = () => {
   return (
     <div className="home">
-      <Header />
       <Categories />
-      <PropertyList></PropertyList>
-      <Footer />
+      <PropertyList/>
     </div>
   );
 };
