@@ -1,9 +1,15 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 
 const PropertyListItem = ({ property }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="card h-100 border-0 shadow-sm">
-      <div className="position-relative">
+      <div
+        className="position-relative"
+        onClick={() => navigate(`/properties/${property.id}`)} 
+      >
         <img
           src={property.image_url}
           alt={property.title}

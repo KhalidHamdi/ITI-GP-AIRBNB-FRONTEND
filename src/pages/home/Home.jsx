@@ -12,11 +12,8 @@ import AddProperty from '../../components/property/addProperty';
 const Home = () => {
   return (
     <div className="home">
-      <Header />
-      <AddProperty/>
       <Categories />
       <PropertyList/>
-      <Footer />
     </div>
   );
 };
