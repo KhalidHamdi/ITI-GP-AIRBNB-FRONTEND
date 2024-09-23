@@ -164,7 +164,8 @@ const PropertyDetail = () => {
             </button>
           </div>
         </div>
-        <div className="col-lg-5">
+        <ReservationSidebar property={property} userId={id} />
+        {/* <div className="col-lg-5">
           <div
             className="card shadow-sm sticky-top"
             style={{ top: "20px", borderRadius: "12px" }}
@@ -254,7 +255,7 @@ const PropertyDetail = () => {
               </form>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <hr className="my-5" />
@@ -320,3 +321,97 @@ const PropertyDetail = () => {
 };
 
 export default PropertyDetail;
+
+{
+  /* <div className="col-lg-5">
+          <div
+            className="card shadow-sm sticky-top"
+            style={{ top: "20px", borderRadius: "12px" }}
+          >
+            <div className="card-body">
+              <h4 className="card-title mb-4">
+                <span className="fw-bold" style={{ fontSize: "22px" }}>
+                  ${property.price_per_night}
+                </span>
+                <small className="text-muted fw-normal"> night</small>
+              </h4>
+              <form>
+                <div className="border rounded mb-3">
+                  <div className="row g-0">
+                    <div className="col-6 p-2 border-end">
+                      <label
+                        htmlFor="checkIn"
+                        className="form-label small fw-bold"
+                      >
+                        CHECK-IN
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control border-0 p-0"
+                        id="checkIn"
+                      />
+                    </div>
+                    <div className="col-6 p-2">
+                      <label
+                        htmlFor="checkOut"
+                        className="form-label small fw-bold"
+                      >
+                        CHECKOUT
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control border-0 p-0"
+                        id="checkOut"
+                      />
+                    </div>
+                  </div>
+                  <div className="border-top p-2">
+                    <label
+                      htmlFor="guests"
+                      className="form-label small fw-bold"
+                    >
+                      GUESTS
+                    </label>
+                    <select className="form-select border-0 p-0" id="guests">
+                      {[...Array(property.guests)].map((_, i) => (
+                        <option key={i} value={i + 1}>
+                          {i + 1} guest{i !== 0 ? "s" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  className="btn btn-primary w-100 mb-3"
+                  style={{ backgroundColor: "#FF385C", borderColor: "#FF385C" }}
+                >
+                  Reserve
+                </button>
+                <p className="text-center mb-4">You won't be charged yet</p>
+                <div className="d-flex justify-content-between mb-2">
+                  <span className="text-decoration-underline">
+                    ${property.price_per_night} x 5 nights
+                  </span>
+                  <span>${property.price_per_night * 5}</span>
+                </div>
+                <div className="d-flex justify-content-between mb-2">
+                  <span className="text-decoration-underline">
+                    Cleaning fee
+                  </span>
+                  <span>$60</span>
+                </div>
+                <div className="d-flex justify-content-between mb-2">
+                  <span className="text-decoration-underline">Service fee</span>
+                  <span>$40</span>
+                </div>
+                <hr />
+                <div className="d-flex justify-content-between fw-bold">
+                  <span>Total before taxes</span>
+                  <span>${property.price_per_night * 5 + 100}</span>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div> */
+}

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Range } from "react-date-range";
+import axiosInstance from "../../axios";
 import { differenceInDays, eachDayOfInterval, format } from "date-fns";
-import DatePicker from "./Calendar";
+import Calendar from "./Calendar";
 import axios from "axios";
 
 const initialDateRange = {
@@ -37,13 +38,14 @@ const ReservationSidebar = ({ property, userId }) => {
         formData.append("total_price", totalPrice.toString());
 
         try {
-          const response = await axios.post(
-            `/api/properties/${property.id}/book/`,
+          const response = await axiosInstance.post(
+            `/api/property/${property.id}/book/`,
             formData
           );
           if (response.data.success) {
             console.log("Booking successful");
           } else {
+            console.log(response);
             console.log("Something went wrong...");
           }
         } catch (error) {
@@ -51,7 +53,7 @@ const ReservationSidebar = ({ property, userId }) => {
         }
       }
     } else {
-      // Handle login modal or notification here
+      //TODO ya Basmala Handle login modal or notification here
       console.log("User needs to log in");
     }
   };
@@ -73,8 +75,8 @@ const ReservationSidebar = ({ property, userId }) => {
 
   const getReservations = async () => {
     try {
-      const response = await axios.get(
-        `/api/properties/${property.id}/reservations/`
+      const response = await axiosInstance.get(
+        `/api/property/${property.id}/reservations/`
       );
       let dates = [];
       response.data.forEach((reservation) => {
@@ -111,57 +113,78 @@ const ReservationSidebar = ({ property, userId }) => {
   }, [dateRange]);
 
   return (
-    <aside className="mt-6 p-6 col-span-2 rounded-xl border border-gray-300 shadow-xl">
-      <h2 className="mb-5 text-2xl">${property.price_per_night} per night</h2>
-
-      <DatePicker
-        value={dateRange}
-        bookedDates={bookedDates}
-        onChange={(value) => _setDateRange(value.selection)}
-      />
-
-      <div className="mb-6 p-3 border border-gray-400 rounded-xl">
-        <label className="mb-2 block font-bold text-xs">Guests</label>
-
-        <select
-          value={guests}
-          onChange={(e) => setGuests(e.target.value)}
-          className="w-full -ml-1 text-xm"
-        >
-          {guestsRange.map((number) => (
-            <option key={number} value={number}>
-              {number}
-            </option>
-          ))}
-        </select>
-      </div>
-
+    <div className="col-lg-5">
       <div
-        onClick={performBooking}
-        className="w-full mb-6 py-6 text-center text-white bg-airbnb hover:bg-airbnb-dark rounded-xl"
+        className="card shadow-sm sticky-top"
+        style={{ top: "20px", borderRadius: "12px" }}
       >
-        Book
-      </div>
+        <div className="card-body">
+          <h4 className="card-title mb-4">
+            <span className="fw-bold" style={{ fontSize: "22px" }}>
+              ${property.price_per_night}
+            </span>
+            <small className="text-muted fw-normal"> per night</small>
+          </h4>
 
-      <div className="mb-4 flex justify-between align-center">
-        <p>
-          ${property.price_per_night} * {nights} nights
-        </p>
-        <p>${property.price_per_night * nights}</p>
-      </div>
+          <form>
+            <div className="border rounded mb-3">
+              <Calendar
+                value={dateRange}
+                bookedDates={bookedDates}
+                onChange={(value) => _setDateRange(value.selection)}
+              />
 
-      <div className="mb-4 flex justify-between align-center">
-        <p>Djangobnb fee</p>
-        <p>${fee}</p>
-      </div>
+              <div className="border-top p-2">
+                <label htmlFor="guests" className="form-label small fw-bold">
+                  GUESTS
+                </label>
+                <select
+                  value={guests}
+                  onChange={(e) => setGuests(e.target.value)}
+                  className="form-select border-0 p-0"
+                  id="guests"
+                >
+                  {guestsRange.map((number) => (
+                    <option key={number} value={number}>
+                      {number} guest{number > 1 ? "s" : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-      <hr />
+            <button
+              type="button"
+              onClick={performBooking}
+              className="btn btn-primary w-100 mb-3"
+              style={{ backgroundColor: "#FF385C", borderColor: "#FF385C" }}
+            >
+              Book
+            </button>
+            <p className="text-center mb-4">You won't be charged yet</p>
 
-      <div className="mt-4 flex justify-between align-center font-bold">
-        <p>Total</p>
-        <p>${totalPrice}</p>
+            <div className="d-flex justify-content-between mb-2">
+              <span className="text-decoration-underline">
+                ${property.price_per_night} x {nights} nights
+              </span>
+              <span>${property.price_per_night * nights}</span>
+            </div>
+
+            <div className="d-flex justify-content-between mb-2">
+              <span className="text-decoration-underline">Fee</span>
+              <span>${fee}</span>
+            </div>
+
+            <hr />
+
+            <div className="d-flex justify-content-between fw-bold">
+              <span>Total</span>
+              <span>${totalPrice}</span>
+            </div>
+          </form>
+        </div>
       </div>
-    </aside>
+    </div>
   );
 };
 
