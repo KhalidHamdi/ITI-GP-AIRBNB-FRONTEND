@@ -3,7 +3,7 @@ import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
-const DatePicker = ({ value, onChange, bookedDates }) => {
+const Calendar = ({ value, onChange, bookedDates }) => {
   return (
     <DateRange
       className="w-full border border-gray-400 rounded-xl mb-4"
@@ -19,4 +19,4 @@ const DatePicker = ({ value, onChange, bookedDates }) => {
   );
 };
 
-export default DatePicker;
+export default Calendar;

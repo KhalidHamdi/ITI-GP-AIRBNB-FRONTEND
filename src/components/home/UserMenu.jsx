@@ -2,7 +2,7 @@ import React from 'react';
 import { Menu } from 'lucide-react';
 import AvatarComponent from './Avatar';
 
-const UserMenu = () => {
+const UserMenu = ({ airbnbYourHome }) => {
   return (
     <div className="dropdown">
       <button
@@ -16,21 +16,18 @@ const UserMenu = () => {
         <AvatarComponent />
       </button>
       <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuDropdown">
-      <li>
-          <a className="dropdown-item" href="#">login up</a>
+        <li>
+          <a className="dropdown-item" href="#">Login up</a>
         </li>
         <li>
           <a className="dropdown-item" href="#">Sign up</a>
         </li>
         <li><hr className="dropdown-divider" /></li>
         <li>
-          <a className="dropdown-item" href="#">Gift cards</a>
+          <a className="dropdown-item" href="#" onClick={airbnbYourHome}>Airbnb your home</a>
         </li>
         <li>
-          <a className="dropdown-item" href="#">Airbnb your home</a>
-        </li>
-        <li>
-          <a className="dropdown-item" href="#">host an experience</a>
+          <a className="dropdown-item" href="#">Host an experience</a>
         </li>
         <li>
           <a className="dropdown-item" href="#">Help Center</a>
