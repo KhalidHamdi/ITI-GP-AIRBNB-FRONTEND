@@ -1,0 +1,19 @@
+.conversation {
+  margin-left: 2rem;
+}
+.text-airbnb-dark a {
+  color: #930c0c;
+  text-decoration: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  border-bottom: 2px solid #930c0c;
+  display: inline-block;
+}
+.text-airbnb-dark a:hover {
+  color: #760b0b;
+  text-decoration: none;
+}
