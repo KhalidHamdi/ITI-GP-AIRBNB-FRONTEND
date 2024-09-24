@@ -20,7 +20,10 @@ function App() {
         <Route path="/properties/:id" element={<PropertyDetail />} />
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/chat" element={<Chat />} />
-        <Route path="/conversationDetail" element={<ConversationDetail />} />
+        <Route
+          path="/conversationDetail/:id"
+          element={<ConversationDetail />}
+        />
       </Routes>
       <Footer />
     </div>
