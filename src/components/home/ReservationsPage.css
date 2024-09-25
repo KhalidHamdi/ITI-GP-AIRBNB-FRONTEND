@@ -1,0 +1,9 @@
+.custom-btn {
+  background-color: #ff385c; /* Replace with your desired color */
+  color: white; /* Text color */
+  border: none; /* Optional: Remove border */
+}
+
+.custom-btn:hover {
+  background-color: #f71e46; /* Darker shade for hover effect */
+}
