@@ -38,6 +38,16 @@ const UserMenu = ({ airbnbYourHome }) => {
           </a>
         </li>
         <li>
+          <a className="dropdown-item">
+            <Link
+              to="/MyReservations"
+              style={{ color: "black", textDecoration: "none" }}
+            >
+              My Reservation
+            </Link>
+          </a>
+        </li>
+        <li>
           <hr className="dropdown-divider" />
         </li>
         <li>

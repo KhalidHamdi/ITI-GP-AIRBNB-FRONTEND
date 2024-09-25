@@ -49,6 +49,7 @@ const ReservationSidebar = ({ property, userId }) => {
             console.log("Something went wrong...");
           }
         } catch (error) {
+          console.log("UserId: ", userId);
           console.error("Error during booking:", error);
         }
       }

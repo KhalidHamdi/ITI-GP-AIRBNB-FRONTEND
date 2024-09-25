@@ -8,6 +8,7 @@ import Footer from "./components/home/Footer";
 import AddProperty from "./components/property/addProperty";
 import Chat from "./pages/chat/chat";
 import ConversationDetail from "./components/chat/conversationDetails";
+import MyReservationsPage from "./components/home/ReservationsPage";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/conversationDetail" element={<ConversationDetail />} />
+        <Route path="/MyReservations" element={<MyReservationsPage />} />
       </Routes>
       <Footer />
     </div>
