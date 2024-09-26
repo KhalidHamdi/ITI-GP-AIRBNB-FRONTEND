@@ -3,13 +3,13 @@ import AppLogo from './AppLogo';
 import Search from './Search';
 import UserMenu from './UserMenu';
 import { useDispatch } from 'react-redux';
-import { openModal } from '../../redux/modalSlice';
+import { openAddPropertyModal } from '../../redux/modalSlice';
 
 const Header = () => {
     const dispatch = useDispatch();
 
     const airbnbYourHome = () => {
-        dispatch(openModal());
+        dispatch(openAddPropertyModal());
     };
 
     return (
@@ -37,7 +37,6 @@ const Header = () => {
                     </button>
                     <button className="btn btn-link text-dark me-1">
                         <i className="bi bi-globe" onClick={airbnbYourHome}></i>
-                        
                     </button>
                 </div>
                 <UserMenu airbnbYourHome={airbnbYourHome} />
