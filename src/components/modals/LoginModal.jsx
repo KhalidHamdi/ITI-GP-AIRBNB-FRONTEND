@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { closeLoginModal } from '../../redux/modalSlice';
 import CustomButton from '../forms/CustomButton';
 import { handleLogin } from '../../lib/actions';
-import apiService from '../../services/apiService';
+import axiosInstance from '../../axios'; // Adjust the path based on your project structure
 
 const LoginModal = () => {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ const LoginModal = () => {
       password,
     };
 
-    const response = await apiService.postWithoutToken('/api/auth/login/', formData);
+    const response = await axiosInstance.post('/api/auth/login/', formData);
 
     if (response.access) {
       handleLogin(response.user.pk, response.access, response.refresh);

@@ -46,10 +46,6 @@ ITI-GP-AIRBNB-FRONTEND/
 │   │   ├── Reservations/
 │   │   │   ├── Calendar.jsx
 │   │   │   ├── ReservationSidebar.jsx
-│   │
-│   ├── hooks/
-│   │   ├── useLoginModal.js
-│   │   ├── useSignupModal.js
 │
 │   ├── pages/
 │   │   ├── category/

@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { closeSignupModal } from '../../redux/modalSlice';
 import CustomButton from '../forms/CustomButton';
 import { handleLogin } from '../../lib/actions';
-import apiService from '../../services/apiService';
+import axiosInstance from '../../axios'; // Adjust the path based on your project structure
 
 
 const SignupModal = () => {
@@ -32,7 +32,7 @@ const SignupModal = () => {
       password2,
     };
 
-    const response = await apiService.postWithoutToken('/api/auth/register/', formData);
+    const response = await axiosInstance.post('/api/auth/register/', formData);
 
     if (response.access) {
       handleLogin(response.user.pk, response.access, response.refresh);
