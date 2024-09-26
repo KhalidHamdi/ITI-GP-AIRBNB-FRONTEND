@@ -17,7 +17,7 @@ ITI-GP-AIRBNB-FRONTEND/
 │   │   │   ├── conversation.jsx
 │   │   │   ├── conversationDetails.css
 │   │   │   ├── conversationDetails.jsx
-│   │   │
+│   │
 │   │   ├── home/
 │   │   │   ├── AppLogo.jsx
 │   │   │   ├── Avatar.jsx
@@ -32,6 +32,11 @@ ITI-GP-AIRBNB-FRONTEND/
 │   │   │   ├── Search.jsx
 │   │   │   ├── UserMenu.jsx
 │   │
+│   │   ├── modals/
+│   │   │   ├── LoginModal.jsx
+│   │   │   ├── Modal.jsx
+│   │   │   ├── SignupModal.jsx
+│   │
 │   │   ├── property/
 │   │   │   ├── addProperty.jsx
 │   │   │   ├── categories.jsx
@@ -41,6 +46,10 @@ ITI-GP-AIRBNB-FRONTEND/
 │   │   ├── Reservations/
 │   │   │   ├── Calendar.jsx
 │   │   │   ├── ReservationSidebar.jsx
+│   │
+│   ├── hooks/
+│   │   ├── useLoginModal.js
+│   │   ├── useSignupModal.js
 │
 │   ├── pages/
 │   │   ├── category/

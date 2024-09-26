@@ -1,31 +1,37 @@
-import React, { useState } from "react";
+// src/components/modals/LoginModal.jsx
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Modal from "./Modal";
-import useLoginModal from "../../hooks/useLoginModal";
-import CustomButton from "../forms/CustomButton";
-import { handleLogin } from "../../lib/actions";
-import apiService from "../../services/apiService";
+import Modal from './Modal';
+import { useSelector, useDispatch } from 'react-redux';
+import { closeLoginModal } from '../../redux/modalSlice';
+import CustomButton from '../forms/CustomButton';
+import { handleLogin } from '../../lib/actions';
+import apiService from '../../services/apiService';
 
 const LoginModal = () => {
   const navigate = useNavigate();
-  const loginModal = useLoginModal();
+  const dispatch = useDispatch();
+  const isOpen = useSelector((state) => state.modal.loginModalOpen);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState([]);
+
+  const close = () => {
+    dispatch(closeLoginModal());
+  };
 
   const submitLogin = async (e) => {
     e.preventDefault();
 
     const formData = {
-      email: email,
-      password: password
+      email,
+      password,
     };
 
     const response = await apiService.postWithoutToken('/api/auth/login/', formData);
 
     if (response.access) {
       handleLogin(response.user.pk, response.access, response.refresh);
-      loginModal.close();
+      close();
       navigate('/');
     } else {
       setErrors(response.non_field_errors || ['Login failed. Please try again.']);

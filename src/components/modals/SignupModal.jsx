@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "./Modal";
 import useSignupModal from "../../hooks/useSignupModal";
-import CustomButton from "../forms/CustomButton";
+import CustomButton from "../forms/CustomButton.jsx";
 import apiService from "../../services/apiService";
 import { handleLogin } from "../../lib/actions";
 
