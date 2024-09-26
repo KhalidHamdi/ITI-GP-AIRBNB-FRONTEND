@@ -25,44 +25,51 @@ const LoginModal = () => {
 
     if (response.access) {
       handleLogin(response.user.pk, response.access, response.refresh);
-
       loginModal.close();
-
       navigate('/');
     } else {
-      setErrors(response.non_field_errors);
+      setErrors(response.non_field_errors || ['Login failed. Please try again.']);
     }
   };
 
   const content = (
-    <>
-      <form onSubmit={submitLogin} className="space-y-4">
+    <form onSubmit={submitLogin}>
+      <div className="mb-3">
+        <label htmlFor="loginEmail" className="form-label">Email address</label>
         <input
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Your e-mail address"
           type="email"
-          className="w-full h-[54px] px-4 border border-gray-300 rounded-xl"
+          className="form-control"
+          id="loginEmail"
+          placeholder="Enter email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
         />
+      </div>
 
+      <div className="mb-3">
+        <label htmlFor="loginPassword" className="form-label">Password</label>
         <input
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Your password"
           type="password"
-          className="w-full h-[54px] px-4 border border-gray-300 rounded-xl"
+          className="form-control"
+          id="loginPassword"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
         />
+      </div>
 
-        {errors && errors.map((error, index) => (
-          <div
-            key={`error_${index}`}
-            className="p-5 bg-airbnb text-white rounded-xl opacity-80"
-          >
-            {error}
-          </div>
-        ))}
+      {errors.length > 0 && (
+        <div className="alert alert-danger" role="alert">
+          {errors.map((error, index) => (
+            <div key={`error_${index}`}>{error}</div>
+          ))}
+        </div>
+      )}
 
-        <CustomButton label="Submit" type="submit" />
-      </form>
-    </>
+      <CustomButton label="Submit" type="submit" />
+    </form>
   );
 
   return (
