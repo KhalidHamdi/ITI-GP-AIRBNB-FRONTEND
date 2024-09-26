@@ -1,0 +1,81 @@
+ITI-GP-AIRBNB-FRONTEND/
+│
+├── node_modules/
+├── public/
+│   ├── vite.svg
+│
+├── src/
+│   ├── assets/
+│   │   ├── Airbnb_Logo.png
+│   │   ├── AIRBNBLOGO.png
+│   │   ├── category.js
+│   │   ├── react.svg
+│   │
+│   ├── components/
+│   │   ├── chat/
+│   │   │   ├── chat.css
+│   │   │   ├── conversation.jsx
+│   │   │   ├── conversationDetails.css
+│   │   │   ├── conversationDetails.jsx
+│   │
+│   │   ├── home/
+│   │   │   ├── AppLogo.jsx
+│   │   │   ├── Avatar.jsx
+│   │   │   ├── Categories.css
+│   │   │   ├── Categories.jsx
+│   │   │   ├── Filters.css
+│   │   │   ├── Filters.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   ├── Header.jsx
+│   │   │   ├── ReservationsPage.css
+│   │   │   ├── ReservationsPage.jsx
+│   │   │   ├── Search.jsx
+│   │   │   ├── UserMenu.jsx
+│   │
+│   │   ├── modals/
+│   │   │   ├── LoginModal.jsx
+│   │   │   ├── Modal.jsx
+│   │   │   ├── SignupModal.jsx
+│   │
+│   │   ├── property/
+│   │   │   ├── addProperty.jsx
+│   │   │   ├── categories.jsx
+│   │   │   ├── propertyList.jsx
+│   │   │   ├── propertyListItem.jsx
+│   │
+│   │   ├── Reservations/
+│   │   │   ├── Calendar.jsx
+│   │   │   ├── ReservationSidebar.jsx
+│
+│   ├── pages/
+│   │   ├── category/
+│   │   │   ├── CategoryPage.jsx
+│   │
+│   │   ├── chat/
+│   │   │   ├── chat.jsx
+│   │
+│   │   ├── home/
+│   │   │   ├── Home.css
+│   │   │   ├── Home.jsx
+│   │
+│   │   ├── property/
+│   │   │   ├── PropertyDetail.jsx
+│
+│   ├── redux/
+│   │   ├── modalSlice.jsx
+│   │   ├── store.jsx
+│
+│   ├── App.css
+│   ├── App.jsx
+│   ├── axios.tsx
+│   ├── index.css
+│   ├── index.jsx
+│   ├── main.jsx
+│
+├── .gitignore
+├── eslint.config.js
+├── index.html
+├── package-lock.json
+├── package.json
+├── README.md
+└── vite.config.js

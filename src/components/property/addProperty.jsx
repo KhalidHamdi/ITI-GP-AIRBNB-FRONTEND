@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Categories from './categories';
 import axiosInstance from "../../axios";
-import { closeModal } from '../../redux/modalSlice'; 
+import { closeLoginModal } from '../../redux/modalSlice'; 
 import { useNavigate } from 'react-router-dom';
 import countries from 'world-countries';
 
@@ -91,7 +91,7 @@ const AddProperty = () => {
                     setTimeout(() => {
                         setSuccessMessage('');
                         navigate('/');
-                        dispatch(closeModal());  
+                        dispatch(closeLoginModal());  
                     }, 2000);
                 } else {
                     const tmpErrors = Array.isArray(response.data.message)
@@ -136,7 +136,7 @@ const AddProperty = () => {
                             <button
                                 type="button"
                                 className="btn-close"
-                                onClick={() => dispatch(closeModal())}
+                                onClick={() => dispatch(closeLoginModal())}
                             ></button>
                         </div>
                         <div className="modal-body">
