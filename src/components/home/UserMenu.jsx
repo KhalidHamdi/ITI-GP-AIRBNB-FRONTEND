@@ -1,13 +1,13 @@
-import React from "react";
-import { Menu } from "lucide-react";
-import AvatarComponent from "./Avatar";
-import { Link } from "react-router-dom";
-import useLoginModal from "../../hooks/useLoginModal";
-import useSignupModal from "../../hooks/useSignupModal";
+// src/components/home/UserMenu.jsx
+import React from 'react';
+import { Menu } from 'lucide-react';
+import AvatarComponent from './Avatar';
+import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { openLoginModal, openSignupModal } from '../../redux/modalSlice';
 
 const UserMenu = ({ airbnbYourHome }) => {
-  const loginModal = useLoginModal();
-  const signupModal = useSignupModal();
+  const dispatch = useDispatch();
 
   return (
     <div className="dropdown">
@@ -21,27 +21,14 @@ const UserMenu = ({ airbnbYourHome }) => {
         <Menu />
         <AvatarComponent />
       </button>
-      <ul
-        className="dropdown-menu dropdown-menu-end"
-        aria-labelledby="userMenuDropdown"
-      >
+      <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuDropdown">
         <li>
-          <button
-            className="dropdown-item"
-            onClick={() => {
-              loginModal.open();
-            }}
-          >
+          <button className="dropdown-item" onClick={() => dispatch(openLoginModal())}>
             Login
           </button>
         </li>
         <li>
-          <button
-            className="dropdown-item"
-            onClick={() => {
-              signupModal.open();
-            }}
-          >
+          <button className="dropdown-item" onClick={() => dispatch(openSignupModal())}>
             Sign up
           </button>
         </li>
