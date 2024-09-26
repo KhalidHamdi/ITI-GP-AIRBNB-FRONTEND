@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Categories from './categories';
 import axiosInstance from "../../axios";
-import { closeLoginModal } from '../../redux/modalSlice'; 
+import { closeAddPropertyModal } from '../../redux/modalSlice'; 
 import { useNavigate } from 'react-router-dom';
 import countries from 'world-countries';
 
@@ -53,7 +53,7 @@ const AddProperty = () => {
     const [dataImage, setDataImage] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
 
-    const isOpen = useSelector((state) => state.modal.isOpen); 
+    const isOpen = useSelector((state) => state.modal.addPropertyModalOpen);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -136,7 +136,7 @@ const AddProperty = () => {
                             <button
                                 type="button"
                                 className="btn-close"
-                                onClick={() => dispatch(closeLoginModal())}
+                                onClick={() => dispatch(closeAddPropertyModal())}
                             ></button>
                         </div>
                         <div className="modal-body">
