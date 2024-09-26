@@ -78,14 +78,8 @@ const LoginModal = () => {
     </form>
   );
 
-  return (
-    <Modal
-      isOpen={loginModal.isOpen}
-      close={loginModal.close}
-      label="Log in"
-      content={content}
-    />
-  );
+ return <Modal isOpen={isOpen} close={close} label="Log in" content={content} />;
+
 };
 
 export default LoginModal;
