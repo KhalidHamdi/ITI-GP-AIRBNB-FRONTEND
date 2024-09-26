@@ -27,9 +27,7 @@ const SignupModal = () => {
 
     if (response.access) {
       handleLogin(response.user.pk, response.access, response.refresh);
-
       signupModal.close();
-
       navigate('/');
     } else {
       const tmpErrors = Object.values(response).flat();
@@ -38,41 +36,56 @@ const SignupModal = () => {
   };
 
   const content = (
-    <>
-      <form onSubmit={submitSignup} className="space-y-4">
+    <form onSubmit={submitSignup}>
+      <div className="mb-3">
+        <label htmlFor="signupEmail" className="form-label">Email address</label>
         <input
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Your e-mail address"
           type="email"
-          className="w-full h-[54px] px-4 border border-gray-300 rounded-xl"
+          className="form-control"
+          id="signupEmail"
+          placeholder="Enter email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
         />
+      </div>
 
+      <div className="mb-3">
+        <label htmlFor="signupPassword1" className="form-label">Password</label>
         <input
+          type="password"
+          className="form-control"
+          id="signupPassword1"
+          placeholder="Password"
+          value={password1}
           onChange={(e) => setPassword1(e.target.value)}
-          placeholder="Your password"
-          type="password"
-          className="w-full h-[54px] px-4 border border-gray-300 rounded-xl"
+          required
         />
+      </div>
 
+      <div className="mb-3">
+        <label htmlFor="signupPassword2" className="form-label">Confirm Password</label>
         <input
-          onChange={(e) => setPassword2(e.target.value)}
-          placeholder="Repeat password"
           type="password"
-          className="w-full h-[54px] px-4 border border-gray-300 rounded-xl"
+          className="form-control"
+          id="signupPassword2"
+          placeholder="Confirm Password"
+          value={password2}
+          onChange={(e) => setPassword2(e.target.value)}
+          required
         />
+      </div>
 
-        {errors && errors.map((error, index) => (
-          <div
-            key={`error_${index}`}
-            className="p-5 bg-airbnb text-white rounded-xl opacity-80"
-          >
-            {error}
-          </div>
-        ))}
+      {errors.length > 0 && (
+        <div className="alert alert-danger" role="alert">
+          {errors.map((error, index) => (
+            <div key={`error_${index}`}>{error}</div>
+          ))}
+        </div>
+      )}
 
-        <CustomButton label="Submit" type="submit" />
-      </form>
-    </>
+      <CustomButton label="Submit" type="submit" />
+    </form>
   );
 
   return (
