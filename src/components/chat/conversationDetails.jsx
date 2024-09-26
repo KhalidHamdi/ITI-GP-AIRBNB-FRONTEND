@@ -1,40 +1,71 @@
+import React, { useEffect, useState } from "react";
+import useWebSocket from "react-use-websocket";
 import "./conversationDetails.css";
-import useWebSocket, { ReadyState } from "react-use-websocket";
-function ConversationDetail() {
-  return (
-    <>
-      <div className="chat-container">
-        <div className="message-container">
-          <div className="receiver">
-            <h4>David</h4>
-            <p>
-              I will receive this from you Lorem ipsum, dolor sit amet
-              consectetur adipisicing elit. Natus cupiditate sed molestiae neque
-              maxime inventore esse minus voluptas impedit, dolorum ullam nisi
-              voluptatibus sapiente eligendi ab debitis, est ipsam eaque.
-            </p>
-          </div>
-          <div className="sender">
-            <h4>Jon Doe</h4>
-            <p>
-              I will send you this Lorem ipsum dolor sit amet consectetur
-              adipisicing elit. Natus maxime ducimus voluptatibus culpa quod
-              perferendis tempora vero doloremque est tenetur molestiae voluptas
-              quia, excepturi commodi sapiente a ipsa cupiditate vitae.
-            </p>
-          </div>
-        </div>
 
-        <div className="chat-input-container">
-          <input
-            type="text"
-            placeholder="Type your message here..."
-            className="chat-input"
-          />
-          <button className="send-button">Send</button>
-        </div>
+function ConversationDetail({ conversationId, userName }) {
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [socketUrl, setSocketUrl] = useState(null);
+
+  // Set WebSocket URL when the component mounts
+  useEffect(() => {
+    if (conversationId) {
+      setSocketUrl(
+        `ws://localhost:8000/ws/${conversationId}/?token=your_jwt_token`
+      );
+    }
+  }, [conversationId]);
+
+  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+    onOpen: () => console.log("Connected to WebSocket"),
+    onClose: () => console.log("Disconnected from WebSocket"),
+    onMessage: (event) => {
+      const newMessage = JSON.parse(event.data);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    },
+  });
+
+  // Function to send a message
+  const handleSendMessage = () => {
+    const messageData = {
+      data: {
+        conversation_id: conversationId,
+        body: newMessage,
+        name: userName, // Your name or sender's name
+        sent_to_id: 2, // Dynamic user ID, can be passed as props
+      },
+    };
+    sendMessage(JSON.stringify(messageData));
+    setNewMessage("");
+  };
+
+  return (
+    <div className="chat-container">
+      <div className="message-container">
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            className={message.name === userName ? "sender" : "receiver"}
+          >
+            <h4>{message.name}</h4>
+            <p>{message.body}</p>
+          </div>
+        ))}
       </div>
-    </>
+
+      <div className="chat-input-container">
+        <input
+          type="text"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          placeholder="Type your message here..."
+          className="chat-input"
+        />
+        <button className="send-button" onClick={handleSendMessage}>
+          Send
+        </button>
+      </div>
+    </div>
   );
 }
 
