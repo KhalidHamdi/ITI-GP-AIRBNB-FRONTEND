@@ -2,8 +2,13 @@ import React from "react";
 import { Menu } from "lucide-react";
 import AvatarComponent from "./Avatar";
 import { Link } from "react-router-dom";
+import useLoginModal from "../../hooks/useLoginModal";
+import useSignupModal from "../../hooks/useSignupModal";
 
 const UserMenu = ({ airbnbYourHome }) => {
+  const loginModal = useLoginModal();
+  const signupModal = useSignupModal();
+
   return (
     <div className="dropdown">
       <button
@@ -21,49 +26,48 @@ const UserMenu = ({ airbnbYourHome }) => {
         aria-labelledby="userMenuDropdown"
       >
         <li>
-          <a className="dropdown-item" href="#">
+          <button
+            className="dropdown-item"
+            onClick={() => {
+              loginModal.open();
+            }}
+          >
             Login
-          </a>
+          </button>
         </li>
         <li>
-          <a className="dropdown-item" href="#">
+          <button
+            className="dropdown-item"
+            onClick={() => {
+              signupModal.open();
+            }}
+          >
             Sign up
-          </a>
+          </button>
         </li>
         <li>
-          <a className="dropdown-item">
-            <Link to="/chat" style={{ color: "black", textDecoration: "none" }}>
-              inbox
-            </Link>
-          </a>
+          <Link to="/chat" className="dropdown-item">
+            Inbox
+          </Link>
         </li>
         <li>
-          <a className="dropdown-item">
-            <Link
-              to="/MyReservations"
-              style={{ color: "black", textDecoration: "none" }}
-            >
-              My Reservation
-            </Link>
-          </a>
+          <Link to="/MyReservations" className="dropdown-item">
+            My Reservation
+          </Link>
         </li>
         <li>
           <hr className="dropdown-divider" />
         </li>
         <li>
-          <a className="dropdown-item" href="#" onClick={airbnbYourHome}>
+          <button className="dropdown-item" onClick={airbnbYourHome}>
             Airbnb your home
-          </a>
+          </button>
         </li>
         <li>
-          <a className="dropdown-item" href="#">
-            Host an experience
-          </a>
+          <button className="dropdown-item">Host an experience</button>
         </li>
         <li>
-          <a className="dropdown-item" href="#">
-            Help Center
-          </a>
+          <button className="dropdown-item">Help Center</button>
         </li>
       </ul>
     </div>
