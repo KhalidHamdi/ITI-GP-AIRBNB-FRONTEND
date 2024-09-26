@@ -1,4 +1,4 @@
-// src/redux/modalSlice.jsx
+// modalSlice.jsx
 import { createSlice } from '@reduxjs/toolkit';
 
 const modalSlice = createSlice({

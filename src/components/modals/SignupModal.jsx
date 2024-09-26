@@ -8,6 +8,7 @@ import CustomButton from '../forms/CustomButton';
 import { handleLogin } from '../../lib/actions';
 import apiService from '../../services/apiService';
 
+
 const SignupModal = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -15,6 +16,8 @@ const SignupModal = () => {
   const [email, setEmail] = useState('');
   const [password1, setPassword1] = useState('');
   const [password2, setPassword2] = useState('');
+  const [errors, setErrors] = useState([]); // Add this line
+
 
   const close = () => {
     dispatch(closeSignupModal());

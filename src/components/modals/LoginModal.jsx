@@ -14,6 +14,8 @@ const LoginModal = () => {
   const isOpen = useSelector((state) => state.modal.loginModalOpen);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState([]); // Add this line
+
 
   const close = () => {
     dispatch(closeLoginModal());
@@ -78,7 +80,7 @@ const LoginModal = () => {
     </form>
   );
 
- return <Modal isOpen={isOpen} close={close} label="Log in" content={content} />;
+return <Modal isOpen={isOpen} close={close} label="Log in" content={content} />;
 
 };
 
