@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import ReservationSidebar from "../../components/Reservations/ReservationSidebar";
 
@@ -31,6 +31,7 @@ const PropertyDetail = () => {
         <div className="spinner-border text-primary" role="status"></div>
       </div>
     );
+  console.log(property);
   if (!property)
     return <div className="text-center mt-5">Property not found</div>;
 
@@ -115,6 +116,24 @@ const PropertyDetail = () => {
                 </p>
               </div>
             </div>
+            {/* <div className="d-flex align-items-center mb-4">
+              <i className="bi bi-award fs-3 me-3"></i>
+              <div>
+                <Link
+                  to={`/landlord/${property.landloard.id}`}
+                  className="text-decoration-none"
+                >
+                  <h3 className="fs-5 fw-bold mb-1">
+                    {property.landlord.name} is a Superhost
+                  </h3>
+                </Link>
+                <p className="mb-0 text-muted">
+                  Superhosts are experienced, highly rated hosts who are
+                  committed to providing great stays for guests.
+                </p>
+              </div>
+            </div> */}
+
             <div className="d-flex align-items-center mb-4">
               <i className="bi bi-key fs-3 me-3"></i>
               <div>
