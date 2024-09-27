@@ -8,7 +8,7 @@ const API_BASE_URL = 'http://localhost:8000'; // Replace with your actual backen
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json', // Use 'multipart/form-data' if needed
+    'Content-Type': 'multipart/form-data', 
   },
 });
 
