@@ -1,29 +1,66 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../axios";
 import ReservationSidebar from "../../components/Reservations/ReservationSidebar";
+import ReviewForm from "../../components/reviews/ReviewForm";
+import ReviewList from "../../components/reviews/ReviewList";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 const PropertyDetail = () => {
   const { id } = useParams();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState([]);
+  const [position, setPosition] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8000/api/properties/${id}`
-        );
+        const response = await axiosInstance.get(`/api/properties/${id}`);
         setProperty(response.data);
         setLoading(false);
+
+        const address = `${response.data.address}, ${response.data.city}, ${response.data.country}`;
+
+        const openCageResponse = await axiosInstance.get(
+          `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
+            address
+          )}&key=3a389cf56bd542119af218f4ca50cd66`
+        );
+        const coordinates = openCageResponse.data.results[0].geometry;
+        setPosition([coordinates.lat, coordinates.lng]);
       } catch (error) {
         console.error("Error fetching property data:", error);
         setLoading(false);
       }
     };
 
+    const fetchReviews = async () => {
+      try {
+        const reviewsResponse = await axiosInstance.get(
+          `/api/properties/${id}/reviews/`
+        );
+        setReviews(reviewsResponse.data);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+
     fetchData();
+    fetchReviews();
   }, [id]);
+
+  const handleReviewAdded = (newReview) => {
+    setReviews([...reviews, newReview]);
+  };
+
+  const DefaultIcon = L.icon({
+    iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+  });
+  L.Marker.prototype.options.icon = DefaultIcon;
 
   if (loading)
     return (
@@ -46,15 +83,15 @@ const PropertyDetail = () => {
             <div>
               <span className="me-2">
                 <i className="bi bi-star-fill" style={{ color: "#FF385C" }}></i>{" "}
-                4.9
+                {property.average_rating || "No rating"}
               </span>
               <span className="me-2">·</span>
               <span className="text-decoration-underline me-2 fw-semibold">
-                290 reviews
+                {property.reviews_count || "No reviews"}
               </span>
               <span className="me-2">·</span>
               <span className="text-decoration-underline fw-semibold">
-                {property.country}
+                {property.city}, {property.country}
               </span>
             </div>
             <div>
@@ -95,208 +132,69 @@ const PropertyDetail = () => {
               <h2 style={{ fontSize: "22px" }} className="fw-bold mb-2">
                 Entire rental unit hosted by Host Name
               </h2>
+              <Link
+                to={`/landlord/${property.landlord.id}`}
+                className="text-decoration-none"
+              >
+                <h3 className="fs-5 fw-bold mb-1">
+                  {property.landlord.name} is a Superhost
+                </h3>
+              </Link>
               <p className="mb-0 text-muted">
                 {property.guests} guests · {property.bedrooms} bedroom
                 {property.bedrooms > 1 ? "s" : ""} · {property.bathrooms}{" "}
                 bathroom{property.bathrooms > 1 ? "s" : ""}
               </p>
             </div>
-            <div>
-              {/* <img src="" alt="Host" className="rounded-circle" width="56" height="56" /> " lesa hanzowdha*/}
-            </div>
           </div>
-          <div className="py-4 border-bottom">
-            {/* <div className="d-flex align-items-center mb-4">
-              <i className="bi bi-award fs-3 me-3"></i>
-              <div>
-                <h3 className="fs-5 fw-bold mb-1">Host Name is a Superhost</h3>
-                <p className="mb-0 text-muted">
-                  Superhosts are experienced, highly rated hosts who are
-                  committed to providing great stays for guests.
-                </p>
-              </div>
-            </div> */}
-            <div className="d-flex align-items-center mb-4">
-              <i className="bi bi-award fs-3 me-3"></i>
-              <div>
-                <Link
-                  to={`/landlord/${property.landlord.id}`}
-                  className="text-decoration-none"
-                >
-                  <h3 className="fs-5 fw-bold mb-1">
-                    {property.landlord.name} is a Superhost
-                  </h3>
-                </Link>
-                <p className="mb-0 text-muted">
-                  Superhosts are experienced, highly rated hosts who are
-                  committed to providing great stays for guests.
-                </p>
-              </div>
-            </div>
 
-            <div className="d-flex align-items-center mb-4">
-              <i className="bi bi-key fs-3 me-3"></i>
-              <div>
-                <h3 className="fs-5 fw-bold mb-1">Great check-in experience</h3>
-                <p className="mb-0 text-muted">
-                  100% of recent guests gave the check-in process a 5-star
-                  rating.
-                </p>
-              </div>
-            </div>
-            <div className="d-flex align-items-center">
-              <i className="bi bi-calendar-check fs-3 me-3"></i>
-              <div>
-                <h3 className="fs-5 fw-bold mb-1">
-                  Free cancellation for 48 hours
-                </h3>
-              </div>
-            </div>
-          </div>
           <div className="py-4 border-bottom">
             <h3 className="fs-4 fw-bold mb-4">Property Description</h3>
             <p style={{ whiteSpace: "pre-line" }}>{property.description}</p>
             <br />
           </div>
-          <div className="py-4 border-bottom">
-            <h3 className="fs-4 fw-bold mb-4">What this place offers</h3>
-            <div className="row">
-              <div className="col-6">
-                <p>
-                  <i className="bi bi-wifi me-3"></i>Wifi
-                </p>
-                <p>
-                  <i className="bi bi-tv me-3"></i>TV
-                </p>
-              </div>
-              <div className="col-6">
-                <p>
-                  <i className="bi bi-snow me-3"></i>Air conditioning
-                </p>
-                <p>
-                  <i className="bi bi-laptop me-3"></i>Workspace
-                </p>
-              </div>
-            </div>
-            <button className="btn btn-outline-dark mt-3">
-              Show all amenities
-            </button>
-          </div>
         </div>
         <ReservationSidebar property={property} userId={id} />
-        {/* <div className="col-lg-5">
-          <div
-            className="card shadow-sm sticky-top"
-            style={{ top: "20px", borderRadius: "12px" }}
-          >
-            <div className="card-body">
-              <h4 className="card-title mb-4">
-                <span className="fw-bold" style={{ fontSize: "22px" }}>
-                  ${property.price_per_night}
-                </span>
-                <small className="text-muted fw-normal"> night</small>
-              </h4>
-              <form>
-                <div className="border rounded mb-3">
-                  <div className="row g-0">
-                    <div className="col-6 p-2 border-end">
-                      <label
-                        htmlFor="checkIn"
-                        className="form-label small fw-bold"
-                      >
-                        CHECK-IN
-                      </label>
-                      <input
-                        type="date"
-                        className="form-control border-0 p-0"
-                        id="checkIn"
-                      />
-                    </div>
-                    <div className="col-6 p-2">
-                      <label
-                        htmlFor="checkOut"
-                        className="form-label small fw-bold"
-                      >
-                        CHECKOUT
-                      </label>
-                      <input
-                        type="date"
-                        className="form-control border-0 p-0"
-                        id="checkOut"
-                      />
-                    </div>
-                  </div>
-                  <div className="border-top p-2">
-                    <label
-                      htmlFor="guests"
-                      className="form-label small fw-bold"
-                    >
-                      GUESTS
-                    </label>
-                    <select className="form-select border-0 p-0" id="guests">
-                      {[...Array(property.guests)].map((_, i) => (
-                        <option key={i} value={i + 1}>
-                          {i + 1} guest{i !== 0 ? "s" : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <button
-                  type="submit"
-                  className="btn btn-primary w-100 mb-3"
-                  style={{ backgroundColor: "#FF385C", borderColor: "#FF385C" }}
-                >
-                  Reserve
-                </button>
-                <p className="text-center mb-4">You won't be charged yet</p>
-                <div className="d-flex justify-content-between mb-2">
-                  <span className="text-decoration-underline">
-                    ${property.price_per_night} x 5 nights
-                  </span>
-                  <span>${property.price_per_night * 5}</span>
-                </div>
-                <div className="d-flex justify-content-between mb-2">
-                  <span className="text-decoration-underline">
-                    Cleaning fee
-                  </span>
-                  <span>$60</span>
-                </div>
-                <div className="d-flex justify-content-between mb-2">
-                  <span className="text-decoration-underline">Service fee</span>
-                  <span>$40</span>
-                </div>
-                <hr />
-                <div className="d-flex justify-content-between fw-bold">
-                  <span>Total before taxes</span>
-                  <span>${property.price_per_night * 5 + 100}</span>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div> */}
       </div>
+
+      <hr className="my-5" />
+
+      <ReviewList reviews={reviews} />
 
       <hr className="my-5" />
 
       <div className="row mb-5">
         <div className="col-12">
           <h3 className="fs-4 fw-bold mb-4">Where you'll be</h3>
-          <p>{property.country}</p>
-          <div
-            style={{
-              height: "480px",
-              background: "#eee",
-              borderRadius: "12px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            Map placeholder
-          </div>
+          <p>
+            {property.address}, {property.city}, {property.country}
+          </p>
+          {position ? (
+            <MapContainer
+              center={position}
+              zoom={13}
+              scrollWheelZoom={false}
+              style={{ height: "480px", borderRadius: "12px" }}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              <Marker position={position}>
+                <Popup>
+                  {property.title} <br /> {property.city}, {property.country}
+                </Popup>
+              </Marker>
+            </MapContainer>
+          ) : (
+            <p>Loading map...</p>
+          )}
         </div>
       </div>
+
+      <hr className="my-5" />
+
+      <ReviewForm propertyId={id} onReviewAdded={handleReviewAdded} />
 
       <hr className="my-5" />
 
@@ -310,27 +208,22 @@ const PropertyDetail = () => {
                 <i className="bi bi-clock me-2"></i>Check-in after 3:00 PM
               </p>
               <p className="mb-2">
-                <i className="bi bi-clock-history me-2"></i>Checkout before
+                <i className="bi bi-clock-history me-2"></i>Check-out before
                 11:00 AM
-              </p>
-              <p className="mb-2">
-                <i className="bi bi-person me-2"></i>
-                {property.guests} guests maximum
               </p>
             </div>
             <div className="col-md-4 mb-4 mb-md-0">
-              <h5 className="fs-5 fw-bold">Safety & property</h5>
+              <h5 className="fs-5 fw-bold">Safety & Property</h5>
               <p className="mb-2">
-                <i className="bi bi-exclamation-triangle me-2"></i>Carbon
-                monoxide alarm
+                <i className="bi bi-alarm me-2"></i>Smoke alarm
               </p>
               <p className="mb-2">
-                <i className="bi bi-fire me-2"></i>Smoke alarm
+                <i className="bi bi-door-closed me-2"></i>Carbon monoxide alarm
               </p>
             </div>
-            <div className="col-md-4">
+            <div className="col-md-4 mb-4 mb-md-0">
               <h5 className="fs-5 fw-bold">Cancellation policy</h5>
-              <p className="mb-2">Free cancellation for 48 hours</p>
+              <p className="mb-2">Free cancellation for 48 hours.</p>
             </div>
           </div>
         </div>
@@ -340,97 +233,3 @@ const PropertyDetail = () => {
 };
 
 export default PropertyDetail;
-
-{
-  /* <div className="col-lg-5">
-          <div
-            className="card shadow-sm sticky-top"
-            style={{ top: "20px", borderRadius: "12px" }}
-          >
-            <div className="card-body">
-              <h4 className="card-title mb-4">
-                <span className="fw-bold" style={{ fontSize: "22px" }}>
-                  ${property.price_per_night}
-                </span>
-                <small className="text-muted fw-normal"> night</small>
-              </h4>
-              <form>
-                <div className="border rounded mb-3">
-                  <div className="row g-0">
-                    <div className="col-6 p-2 border-end">
-                      <label
-                        htmlFor="checkIn"
-                        className="form-label small fw-bold"
-                      >
-                        CHECK-IN
-                      </label>
-                      <input
-                        type="date"
-                        className="form-control border-0 p-0"
-                        id="checkIn"
-                      />
-                    </div>
-                    <div className="col-6 p-2">
-                      <label
-                        htmlFor="checkOut"
-                        className="form-label small fw-bold"
-                      >
-                        CHECKOUT
-                      </label>
-                      <input
-                        type="date"
-                        className="form-control border-0 p-0"
-                        id="checkOut"
-                      />
-                    </div>
-                  </div>
-                  <div className="border-top p-2">
-                    <label
-                      htmlFor="guests"
-                      className="form-label small fw-bold"
-                    >
-                      GUESTS
-                    </label>
-                    <select className="form-select border-0 p-0" id="guests">
-                      {[...Array(property.guests)].map((_, i) => (
-                        <option key={i} value={i + 1}>
-                          {i + 1} guest{i !== 0 ? "s" : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <button
-                  type="submit"
-                  className="btn btn-primary w-100 mb-3"
-                  style={{ backgroundColor: "#FF385C", borderColor: "#FF385C" }}
-                >
-                  Reserve
-                </button>
-                <p className="text-center mb-4">You won't be charged yet</p>
-                <div className="d-flex justify-content-between mb-2">
-                  <span className="text-decoration-underline">
-                    ${property.price_per_night} x 5 nights
-                  </span>
-                  <span>${property.price_per_night * 5}</span>
-                </div>
-                <div className="d-flex justify-content-between mb-2">
-                  <span className="text-decoration-underline">
-                    Cleaning fee
-                  </span>
-                  <span>$60</span>
-                </div>
-                <div className="d-flex justify-content-between mb-2">
-                  <span className="text-decoration-underline">Service fee</span>
-                  <span>$40</span>
-                </div>
-                <hr />
-                <div className="d-flex justify-content-between fw-bold">
-                  <span>Total before taxes</span>
-                  <span>${property.price_per_night * 5 + 100}</span>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div> */
-}

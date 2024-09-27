@@ -9,12 +9,15 @@ import AddProperty from "./components/property/addProperty";
 import Chat from "./pages/chat/chat";
 import ConversationDetail from "./components/chat/conversationDetails";
 import MyReservationsPage from "./components/home/ReservationsPage";
-import LandlordDetailPage from "./pages/landlord/LandlordDetailPage";
+import LoginModal from "./components/modals/LoginModal";
+import SignupModal from "./components/modals/SignupModal";
 
 function App() {
   return (
     <div className="app">
       <Header />
+      <LoginModal />
+      <SignupModal />
       <AddProperty />
       <Routes>
         <Route path="/home" element={<Home />} />
