@@ -8,14 +8,15 @@ const LandlordDetailPage = () => {
   const { id } = useParams();
   const [landlord, setLandlord] = useState(null);
   const [userId, setUserId] = useState(null);
+  console.log("Landlord data", landlord);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const landlordData = await axiosInstance.get(`/api/auth/${id}`);
-        setLandlord(landlordData);
-        const currentUserId = await axiosInstance.get("/api/auth/userid");
-        setUserId(currentUserId);
+        setLandlord(landlordData.data);
+        // const currentUserId = sessionStorage.getItem("userId");
+        // setUserId(currentUserId);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -49,11 +50,7 @@ const LandlordDetailPage = () => {
         </aside>
 
         {/* Main Section for Property Listings */}
-        <div className="col-md-9">
-          <div className="row row-cols-1 row-cols-md-3 g-4">
-            <PropertyList landlord_id={id} />
-          </div>
-        </div>
+        <PropertyList landlord_id={id} />
       </div>
     </div>
   );

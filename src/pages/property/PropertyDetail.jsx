@@ -31,7 +31,7 @@ const PropertyDetail = () => {
         <div className="spinner-border text-primary" role="status"></div>
       </div>
     );
-  console.log(property);
+  console.log("Property Details", property);
   if (!property)
     return <div className="text-center mt-5">Property not found</div>;
 
@@ -106,7 +106,7 @@ const PropertyDetail = () => {
             </div>
           </div>
           <div className="py-4 border-bottom">
-            <div className="d-flex align-items-center mb-4">
+            {/* <div className="d-flex align-items-center mb-4">
               <i className="bi bi-award fs-3 me-3"></i>
               <div>
                 <h3 className="fs-5 fw-bold mb-1">Host Name is a Superhost</h3>
@@ -115,12 +115,12 @@ const PropertyDetail = () => {
                   committed to providing great stays for guests.
                 </p>
               </div>
-            </div>
-            {/* <div className="d-flex align-items-center mb-4">
+            </div> */}
+            <div className="d-flex align-items-center mb-4">
               <i className="bi bi-award fs-3 me-3"></i>
               <div>
                 <Link
-                  to={`/landlord/${property.landloard.id}`}
+                  to={`/landlord/${property.landlord.id}`}
                   className="text-decoration-none"
                 >
                   <h3 className="fs-5 fw-bold mb-1">
@@ -132,7 +132,7 @@ const PropertyDetail = () => {
                   committed to providing great stays for guests.
                 </p>
               </div>
-            </div> */}
+            </div>
 
             <div className="d-flex align-items-center mb-4">
               <i className="bi bi-key fs-3 me-3"></i>
