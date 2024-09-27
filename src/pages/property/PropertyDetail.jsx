@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import axiosInstance from "../../axios"; 
+import { useParams, Link } from "react-router-dom";
+import axiosInstance from "../../axios";
 import ReservationSidebar from "../../components/Reservations/ReservationSidebar";
 import ReviewForm from "../../components/reviews/ReviewForm";
 import ReviewList from "../../components/reviews/ReviewList";
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -23,9 +23,11 @@ const PropertyDetail = () => {
         setLoading(false);
 
         const address = `${response.data.address}, ${response.data.city}, ${response.data.country}`;
-        
+
         const openCageResponse = await axiosInstance.get(
-          `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=3a389cf56bd542119af218f4ca50cd66`
+          `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
+            address
+          )}&key=3a389cf56bd542119af218f4ca50cd66`
         );
         const coordinates = openCageResponse.data.results[0].geometry;
         setPosition([coordinates.lat, coordinates.lng]);
@@ -37,7 +39,9 @@ const PropertyDetail = () => {
 
     const fetchReviews = async () => {
       try {
-        const reviewsResponse = await axiosInstance.get(`/api/properties/${id}/reviews/`);
+        const reviewsResponse = await axiosInstance.get(
+          `/api/properties/${id}/reviews/`
+        );
         setReviews(reviewsResponse.data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
@@ -64,6 +68,7 @@ const PropertyDetail = () => {
         <div className="spinner-border text-primary" role="status"></div>
       </div>
     );
+  console.log("Property Details", property);
   if (!property)
     return <div className="text-center mt-5">Property not found</div>;
 
@@ -124,9 +129,14 @@ const PropertyDetail = () => {
         <div className="col-lg-7">
           <div className="d-flex justify-content-between align-items-center pb-4 border-bottom">
             <div>
-              <h2 style={{ fontSize: "22px" }} className="fw-bold mb-2">
-                Entire rental unit hosted by Host Name
-              </h2>
+              <Link
+                to={`/landlord/${property.landlord.id}`}
+                className="text-decoration-none"
+              >
+                <h3 className="fs-5 fw-bold mb-1">
+                  {property.landlord.name} is a Superhost
+                </h3>
+              </Link>
               <p className="mb-0 text-muted">
                 {property.guests} guests · {property.bedrooms} bedroom
                 {property.bedrooms > 1 ? "s" : ""} · {property.bathrooms}{" "}
@@ -153,7 +163,9 @@ const PropertyDetail = () => {
       <div className="row mb-5">
         <div className="col-12">
           <h3 className="fs-4 fw-bold mb-4">Where you'll be</h3>
-          <p>{property.address}, {property.city}, {property.country}</p>
+          <p>
+            {property.address}, {property.city}, {property.country}
+          </p>
           {position ? (
             <MapContainer
               center={position}
