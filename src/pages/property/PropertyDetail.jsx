@@ -129,9 +129,6 @@ const PropertyDetail = () => {
         <div className="col-lg-7">
           <div className="d-flex justify-content-between align-items-center pb-4 border-bottom">
             <div>
-              <h2 style={{ fontSize: "22px" }} className="fw-bold mb-2">
-                Entire rental unit hosted by Host Name
-              </h2>
               <Link
                 to={`/landlord/${property.landlord.id}`}
                 className="text-decoration-none"

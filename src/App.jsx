@@ -11,6 +11,7 @@ import ConversationDetail from "./components/chat/conversationDetails";
 import MyReservationsPage from "./components/home/ReservationsPage";
 import LoginModal from "./components/modals/LoginModal";
 import SignupModal from "./components/modals/SignupModal";
+import LandlordDetailPage from "./pages/landlord/LandlordDetailPage";
 
 function App() {
   return (
