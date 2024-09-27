@@ -1,14 +1,23 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, { useState } from 'react';
+import Categories from '../../components/home/Categories'; 
+import PropertyList from '../../components/property/propertyList';
 
-const CategoryPage = () => {
-  const { slug } = useParams();
+const PropertyContainer = () => {
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  const updateSelectedCategory = (category) => {
+    setSelectedCategory(category);
+  };
 
   return (
     <div>
-      <h1>Category: {slug}</h1>
+      <Categories 
+        dataCategory={selectedCategory} 
+        updateSelectedCategory={updateSelectedCategory} 
+      />
+      <PropertyList selectedCategory={selectedCategory} />
     </div>
   );
 };
 
-export default CategoryPage;
+export default PropertyContainer;
