@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { Range } from "react-date-range";
-import axiosInstance from "../../axios";
+import axiosInstance from "../../axios"; 
 import { differenceInDays, eachDayOfInterval, format } from "date-fns";
 import Calendar from "./Calendar";
-import axios from "axios";
 
 const initialDateRange = {
   startDate: new Date(),
