@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from "react";
-import useWebSocket from "react-use-websocket";
+import { useParams } from "react-router-dom";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./conversationDetails.css";
 
-function ConversationDetail({ conversationId, userName }) {
+function ConversationDetail({ userName }) {
+  const { id: conversationId } = useParams(); // Get conversationId from URL parameters
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [socketUrl, setSocketUrl] = useState(null);
 
-  // Set WebSocket URL when the component mounts
+  // Set WebSocket URL without the token
   useEffect(() => {
+    console.log("conversationId:", conversationId);
     if (conversationId) {
-      setSocketUrl(
-        `ws://localhost:8000/ws/${conversationId}/?token=your_jwt_token`
-      );
+      const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
+      console.log("WebSocket URL:", wsUrl); // Check the URL in the console
+      setSocketUrl(wsUrl); // No token for testing
     }
   }, [conversationId]);
 
@@ -25,18 +28,23 @@ function ConversationDetail({ conversationId, userName }) {
     },
   });
 
-  // Function to send a message
+  // Check if WebSocket is open before sending a message
   const handleSendMessage = () => {
-    const messageData = {
-      data: {
-        conversation_id: conversationId,
-        body: newMessage,
-        name: userName, // Your name or sender's name
-        sent_to_id: 2, // Dynamic user ID, can be passed as props
-      },
-    };
-    sendMessage(JSON.stringify(messageData));
-    setNewMessage("");
+    if (readyState === ReadyState.OPEN) {
+      const messageData = {
+        data: {
+          conversation_id: conversationId,
+          body: newMessage,
+          name: userName || "Anonymous",
+          sent_to_id: 2, // Dynamic user ID, can be passed as props
+        },
+      };
+      console.log("Sending message data:", messageData);
+      sendMessage(JSON.stringify(messageData));
+      setNewMessage("");
+    } else {
+      console.log("WebSocket is not connected.");
+    }
   };
 
   return (
