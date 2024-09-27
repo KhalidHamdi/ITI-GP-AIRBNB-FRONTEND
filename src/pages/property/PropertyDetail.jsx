@@ -4,12 +4,16 @@ import axios from "axios";
 import ReservationSidebar from "../../components/Reservations/ReservationSidebar";
 import ReviewForm from "../../components/reviews/ReviewForm";
 import ReviewList from "../../components/reviews/ReviewList";
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 
 const PropertyDetail = () => {
   const { id } = useParams();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState([]);
+  const [position, setPosition] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -17,6 +21,14 @@ const PropertyDetail = () => {
         const response = await axios.get(`http://localhost:8000/api/properties/${id}`);
         setProperty(response.data);
         setLoading(false);
+
+        const address = `${response.data.address}, ${response.data.city}, ${response.data.country}`;
+        
+        const openCageResponse = await axios.get(
+          `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=3a389cf56bd542119af218f4ca50cd66`
+        );
+        const coordinates = openCageResponse.data.results[0].geometry;
+        setPosition([coordinates.lat, coordinates.lng]);
       } catch (error) {
         console.error("Error fetching property data:", error);
         setLoading(false);
@@ -40,6 +52,12 @@ const PropertyDetail = () => {
     setReviews([...reviews, newReview]);
   };
 
+  const DefaultIcon = L.icon({
+    iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+  });
+  L.Marker.prototype.options.icon = DefaultIcon;
+
   if (loading)
     return (
       <div className="text-center mt-5">
@@ -60,15 +78,15 @@ const PropertyDetail = () => {
             <div>
               <span className="me-2">
                 <i className="bi bi-star-fill" style={{ color: "#FF385C" }}></i>{" "}
-                4.9
+                {property.average_rating || "No rating"}
               </span>
               <span className="me-2">·</span>
               <span className="text-decoration-underline me-2 fw-semibold">
-                290 reviews
+                {property.reviews_count || "No reviews"}
               </span>
               <span className="me-2">·</span>
               <span className="text-decoration-underline fw-semibold">
-                {property.country}
+                {property.city}, {property.country}
               </span>
             </div>
             <div>
@@ -115,68 +133,12 @@ const PropertyDetail = () => {
                 bathroom{property.bathrooms > 1 ? "s" : ""}
               </p>
             </div>
-            <div>
-              {/* <img src="" alt="Host" className="rounded-circle" width="56" height="56" /> " lesa hanzowdha*/}
-            </div>
           </div>
-          <div className="py-4 border-bottom">
-            <div className="d-flex align-items-center mb-4">
-              <i className="bi bi-award fs-3 me-3"></i>
-              <div>
-                <h3 className="fs-5 fw-bold mb-1">Host Name is a Superhost</h3>
-                <p className="mb-0 text-muted">
-                  Superhosts are experienced, highly rated hosts who are
-                  committed to providing great stays for guests.
-                </p>
-              </div>
-            </div>
-            <div className="d-flex align-items-center mb-4">
-              <i className="bi bi-key fs-3 me-3"></i>
-              <div>
-                <h3 className="fs-5 fw-bold mb-1">Great check-in experience</h3>
-                <p className="mb-0 text-muted">
-                  100% of recent guests gave the check-in process a 5-star
-                  rating.
-                </p>
-              </div>
-            </div>
-            <div className="d-flex align-items-center">
-              <i className="bi bi-calendar-check fs-3 me-3"></i>
-              <div>
-                <h3 className="fs-5 fw-bold mb-1">
-                  Free cancellation for 48 hours
-                </h3>
-              </div>
-            </div>
-          </div>
+
           <div className="py-4 border-bottom">
             <h3 className="fs-4 fw-bold mb-4">Property Description</h3>
             <p style={{ whiteSpace: "pre-line" }}>{property.description}</p>
             <br />
-          </div>
-          <div className="py-4 border-bottom">
-            <h3 className="fs-4 fw-bold mb-4">What this place offers</h3>
-            <div className="row">
-              <div className="col-6">
-                <p>
-                  <i className="bi bi-wifi me-3"></i>Wifi
-                </p>
-                <p>
-                  <i className="bi bi-tv me-3"></i>TV
-                </p>
-              </div>
-              <div className="col-6">
-                <p>
-                  <i className="bi bi-snow me-3"></i>Air conditioning
-                </p>
-                <p>
-                  <i className="bi bi-laptop me-3"></i>Workspace
-                </p>
-              </div>
-            </div>
-            <button className="btn btn-outline-dark mt-3">
-              Show all amenities
-            </button>
           </div>
         </div>
         <ReservationSidebar property={property} userId={id} />
@@ -186,27 +148,32 @@ const PropertyDetail = () => {
 
       <ReviewList reviews={reviews} />
 
-
       <hr className="my-5" />
-
-
 
       <div className="row mb-5">
         <div className="col-12">
           <h3 className="fs-4 fw-bold mb-4">Where you'll be</h3>
-          <p>{property.country}</p>
-          <div
-            style={{
-              height: "480px",
-              background: "#eee",
-              borderRadius: "12px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            Map placeholder
-          </div>
+          <p>{property.address}, {property.city}, {property.country}</p>
+          {position ? (
+            <MapContainer
+              center={position}
+              zoom={13}
+              scrollWheelZoom={false}
+              style={{ height: "480px", borderRadius: "12px" }}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              <Marker position={position}>
+                <Popup>
+                  {property.title} <br /> {property.city}, {property.country}
+                </Popup>
+              </Marker>
+            </MapContainer>
+          ) : (
+            <p>Loading map...</p>
+          )}
         </div>
       </div>
 
@@ -226,27 +193,22 @@ const PropertyDetail = () => {
                 <i className="bi bi-clock me-2"></i>Check-in after 3:00 PM
               </p>
               <p className="mb-2">
-                <i className="bi bi-clock-history me-2"></i>Checkout before
+                <i className="bi bi-clock-history me-2"></i>Check-out before
                 11:00 AM
-              </p>
-              <p className="mb-2">
-                <i className="bi bi-person me-2"></i>
-                {property.guests} guests maximum
               </p>
             </div>
             <div className="col-md-4 mb-4 mb-md-0">
-              <h5 className="fs-5 fw-bold">Safety & property</h5>
+              <h5 className="fs-5 fw-bold">Safety & Property</h5>
               <p className="mb-2">
-                <i className="bi bi-exclamation-triangle me-2"></i>Carbon
-                monoxide alarm
+                <i className="bi bi-alarm me-2"></i>Smoke alarm
               </p>
               <p className="mb-2">
-                <i className="bi bi-fire me-2"></i>Smoke alarm
+                <i className="bi bi-door-closed me-2"></i>Carbon monoxide alarm
               </p>
             </div>
-            <div className="col-md-4">
+            <div className="col-md-4 mb-4 mb-md-0">
               <h5 className="fs-5 fw-bold">Cancellation policy</h5>
-              <p className="mb-2">Free cancellation for 48 hours</p>
+              <p className="mb-2">Free cancellation for 48 hours.</p>
             </div>
           </div>
         </div>
