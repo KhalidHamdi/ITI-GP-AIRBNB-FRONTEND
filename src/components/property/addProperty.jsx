@@ -50,7 +50,9 @@ const AddProperty = () => {
     const [dataBathrooms, setDataBathrooms] = useState('');
     const [dataGuests, setDataGuests] = useState('');
     const [dataCountry, setDataCountry] = useState(null);
-    const [dataImage, setDataImage] = useState(null);
+    const [dataCity, setDataCity] = useState(''); 
+    const [dataAddress, setDataAddress] = useState(''); 
+    const [dataImage, setDataImage] = useState(null); 
     const [successMessage, setSuccessMessage] = useState('');
 
     const isOpen = useSelector((state) => state.modal.addPropertyModalOpen);
@@ -69,7 +71,7 @@ const AddProperty = () => {
     };
 
     const submitForm = async () => {
-        if (dataCategory && dataTitle && dataDescription && dataPrice && dataCountry && dataImage) {
+        if (dataCategory && dataTitle && dataDescription && dataPrice && dataCountry && dataCity && dataAddress && dataImage) {
             const formData = new FormData();
             formData.append('category', dataCategory);
             formData.append('title', dataTitle);
@@ -80,7 +82,9 @@ const AddProperty = () => {
             formData.append('guests', dataGuests);
             formData.append('country', dataCountry.label);
             formData.append('country_code', dataCountry.value);
-            formData.append('image', dataImage);
+            formData.append('city', dataCity); 
+            formData.append('address', dataAddress); 
+            formData.append('image', dataImage); 
 
             try {
                 const response = await axiosInstance.post('/api/properties/create/', formData);
@@ -91,7 +95,7 @@ const AddProperty = () => {
                     setTimeout(() => {
                         setSuccessMessage('');
                         navigate('/');
-                        dispatch(closeLoginModal());  
+                        dispatch(closeAddPropertyModal());  
                     }, 2000);
                 } else {
                     const tmpErrors = Array.isArray(response.data.message)
@@ -242,11 +246,28 @@ const AddProperty = () => {
                                 </>
                             ) : currentStep === 4 ? (
                                 <>
-                                    <h2 className="mb-4 text-center">Location</h2>
-                                    <SelectCountry
-                                        value={dataCountry}
-                                        onChange={setDataCountry}
-                                    />
+                                    <h2 className="mb-4 text-center">Enter Location Details</h2>
+                                    <SelectCountry value={dataCountry} onChange={setDataCountry} />
+                                    <div className="form-group mb-3">
+                                        <label className="form-label">City</label>
+                                        <input
+                                            type="text"
+                                            value={dataCity}
+                                            onChange={(e) => setDataCity(e.target.value)}
+                                            className="form-control rounded-pill"
+                                            placeholder="Enter city"
+                                        />
+                                    </div>
+                                    <div className="form-group mb-3">
+                                        <label className="form-label">Address</label>
+                                        <input
+                                            type="text"
+                                            value={dataAddress}
+                                            onChange={(e) => setDataAddress(e.target.value)}
+                                            className="form-control rounded-pill"
+                                            placeholder="Enter address"
+                                        />
+                                    </div>
                                     <div className="d-flex justify-content-between">
                                         <CustomButton
                                             label="Previous"
@@ -267,8 +288,9 @@ const AddProperty = () => {
                                         <label className="form-label">Upload Image</label>
                                         <input
                                             type="file"
+                                            accept="image/*"
                                             onChange={setImage}
-                                            className="form-control rounded"
+                                            className="form-control rounded-pill"
                                         />
                                     </div>
                                     <div className="d-flex justify-content-between">
@@ -280,29 +302,32 @@ const AddProperty = () => {
                                         <CustomButton
                                             label="Submit"
                                             onClick={submitForm}
-                                            className="btn btn-success text-white rounded-pill px-4 py-2"
+                                            className="btn btn-danger text-white rounded-pill px-4 py-2"
                                         />
                                     </div>
                                 </>
                             ) : null}
-    
+
                             {errors.length > 0 && (
-                                <div className="alert alert-danger">
+                                <div className="alert alert-danger mt-3">
                                     {errors.map((error, index) => (
-                                        <div key={index}>{error}</div>
+                                        <p key={index} className="mb-1">
+                                            {error}
+                                        </p>
                                     ))}
                                 </div>
                             )}
                             {successMessage && (
-                                <div className="alert alert-success">
+                                <div className="alert alert-success mt-3">
                                     {successMessage}
                                 </div>
                             )}
                         </div>
                     </div>
                 </div>
-                </div>
-            )
+            </div>
         )
-}
+    );
+};
+
 export default AddProperty;
