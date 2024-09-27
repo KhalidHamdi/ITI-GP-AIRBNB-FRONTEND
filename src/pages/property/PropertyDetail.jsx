@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../axios"; 
 import ReservationSidebar from "../../components/Reservations/ReservationSidebar";
 import ReviewForm from "../../components/reviews/ReviewForm";
 import ReviewList from "../../components/reviews/ReviewList";
@@ -18,13 +18,13 @@ const PropertyDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/properties/${id}`);
+        const response = await axiosInstance.get(`/api/properties/${id}`);
         setProperty(response.data);
         setLoading(false);
 
         const address = `${response.data.address}, ${response.data.city}, ${response.data.country}`;
         
-        const openCageResponse = await axios.get(
+        const openCageResponse = await axiosInstance.get(
           `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=3a389cf56bd542119af218f4ca50cd66`
         );
         const coordinates = openCageResponse.data.results[0].geometry;
@@ -37,7 +37,7 @@ const PropertyDetail = () => {
 
     const fetchReviews = async () => {
       try {
-        const reviewsResponse = await axios.get(`http://localhost:8000/api/properties/${id}/reviews/`);
+        const reviewsResponse = await axiosInstance.get(`/api/properties/${id}/reviews/`);
         setReviews(reviewsResponse.data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
