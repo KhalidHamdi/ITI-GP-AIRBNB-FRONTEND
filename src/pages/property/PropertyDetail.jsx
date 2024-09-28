@@ -1,3 +1,4 @@
+// PropertyDetail.jsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
@@ -22,20 +23,30 @@ const PropertyDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get(`/api/properties/${id}`);
+        const response = await axiosInstance.get(`/api/properties/${id}/`);
         setProperty(response.data);
         setLoading(false);
 
         const address = `${response.data.address}, ${response.data.city}, ${response.data.country}`;
         
+        // Use the backend proxy endpoint for geocode
         const openCageResponse = await axiosInstance.get(
-          `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=3a389cf56bd542119af218f4ca50cd66`
+          `/api/properties/geocode/`,
+          {
+            params: { q: address },
+            // No need to include API key here
+          }
         );
-        const coordinates = openCageResponse.data.results[0].geometry;
-        setPosition([coordinates.lat, coordinates.lng]);
+        if (openCageResponse.data && openCageResponse.data.results.length > 0) {
+          const coordinates = openCageResponse.data.results[0].geometry;
+          setPosition([coordinates.lat, coordinates.lng]);
+        } else {
+          setError("Geocode data not found.");
+        }
       } catch (error) {
         console.error("Error fetching property data:", error);
         setLoading(false);
+        setError(error.response?.data?.error || "Unknown error.");
       }
     };
 
