@@ -12,6 +12,7 @@ import MyReservationsPage from "./components/home/ReservationsPage";
 import LoginModal from "./components/modals/LoginModal";
 import SignupModal from "./components/modals/SignupModal";
 import LandlordDetailPage from "./pages/landlord/LandlordDetailPage";
+import FilterModal from "./components/modals/FilterModal";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Header />
       <LoginModal />
       <SignupModal />
+      <FilterModal/>
       <AddProperty />
       <Routes>
         <Route path="/home" element={<Home />} />

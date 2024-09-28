@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import PropertyListItem from "./PropertyListItem";
 import axiosInstance from "../../axios";
 
-const PropertyList = ({ landlord_id = null ,selectedCategory }) => {
+const PropertyList = ({ landlord_id = null, selectedCategory, filteredProperties }) => {
   const [properties, setProperties] = useState([]);
   const [error, setError] = useState(null);
 
@@ -12,24 +12,29 @@ const PropertyList = ({ landlord_id = null ,selectedCategory }) => {
     if (landlord_id) {
       url += `?landlord_id=${landlord_id}`;
     }
-      
+
     try {
-        console.log(selectedCategory)
-      // Construct the URL based on whether a category is selected or not
-      const url = selectedCategory
-        ? `/api/properties/?category=${selectedCategory}`
+      // If filtered properties are provided, use them
+      if (filteredProperties) {
+        setProperties(filteredProperties);
+      } else {
+        // Otherwise, fetch properties based on selected category
+        const url = selectedCategory
+          ? `/api/properties/?category=${selectedCategory}`
           : "/api/properties/";
-        console.log(url)
-      const response = await axiosInstance.get(url);
-      setProperties(response.data.data);
+        const response = await axiosInstance.get(url);
+        setProperties(response.data.data);
+      }
     } catch (error) {
       setError("Failed to fetch properties.");
     }
   };
 
   useEffect(() => {
-    getProperties();
-  }, [selectedCategory]);
+    if (!filteredProperties) {
+      getProperties();
+    }
+  }, [selectedCategory, filteredProperties]);
 
   if (error) {
     return <div>Error: {error}</div>;
