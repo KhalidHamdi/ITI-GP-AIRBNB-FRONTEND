@@ -1,8 +1,121 @@
 {
-  "hash": "0534698b",
+  "hash": "475bc085",
   "configHash": "db8053af",
-  "lockfileHash": "e3b0c442",
-  "browserHash": "a17af164",
-  "optimized": {},
-  "chunks": {}
+  "lockfileHash": "f1f6e808",
+  "browserHash": "2440cca3",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "41cc3ba3",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "497ee0fc",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.js",
+      "file": "react-router-dom.js",
+      "fileHash": "a70d86f2",
+      "needsInterop": false
+    },
+    "bootstrap/dist/js/bootstrap.bundle.min.js": {
+      "src": "../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "file": "bootstrap_dist_js_bootstrap__bundle__min__js.js",
+      "fileHash": "a87ee6a8",
+      "needsInterop": true
+    },
+    "react-redux": {
+      "src": "../../node_modules/react-redux/dist/react-redux.mjs",
+      "file": "react-redux.js",
+      "fileHash": "63424ac8",
+      "needsInterop": false
+    },
+    "@reduxjs/toolkit": {
+      "src": "../../node_modules/@reduxjs/toolkit/dist/redux-toolkit.modern.mjs",
+      "file": "@reduxjs_toolkit.js",
+      "fileHash": "a84857ce",
+      "needsInterop": false
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "23aa35dc",
+      "needsInterop": false
+    },
+    "world-countries": {
+      "src": "../../node_modules/world-countries/index.mjs",
+      "file": "world-countries.js",
+      "fileHash": "173bcb77",
+      "needsInterop": false
+    },
+    "js-cookie": {
+      "src": "../../node_modules/js-cookie/dist/js.cookie.mjs",
+      "file": "js-cookie.js",
+      "fileHash": "740a682d",
+      "needsInterop": false
+    },
+    "react-leaflet": {
+      "src": "../../node_modules/react-leaflet/lib/index.js",
+      "file": "react-leaflet.js",
+      "fileHash": "57b5f167",
+      "needsInterop": false
+    },
+    "leaflet": {
+      "src": "../../node_modules/leaflet/dist/leaflet-src.js",
+      "file": "leaflet.js",
+      "fileHash": "39441a98",
+      "needsInterop": true
+    },
+    "react-use-websocket": {
+      "src": "../../node_modules/react-use-websocket/dist/index.js",
+      "file": "react-use-websocket.js",
+      "fileHash": "642b6664",
+      "needsInterop": true
+    },
+    "react-date-range": {
+      "src": "../../node_modules/react-date-range/dist/index.js",
+      "file": "react-date-range.js",
+      "fileHash": "ff09461a",
+      "needsInterop": true
+    },
+    "date-fns": {
+      "src": "../../node_modules/date-fns/index.js",
+      "file": "date-fns.js",
+      "fileHash": "d8ad4e9c",
+      "needsInterop": false
+    },
+    "react-bootstrap": {
+      "src": "../../node_modules/react-bootstrap/esm/index.js",
+      "file": "react-bootstrap.js",
+      "fileHash": "e8ecdba2",
+      "needsInterop": false
+    },
+    "lucide-react": {
+      "src": "../../node_modules/lucide-react/dist/esm/lucide-react.js",
+      "file": "lucide-react.js",
+      "fileHash": "ec22ebd6",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-CXRN6EGV": {
+      "file": "chunk-CXRN6EGV.js"
+    },
+    "chunk-V357ZUOM": {
+      "file": "chunk-V357ZUOM.js"
+    },
+    "chunk-UHINIFCJ": {
+      "file": "chunk-UHINIFCJ.js"
+    },
+    "chunk-W4EHDCLL": {
+      "file": "chunk-W4EHDCLL.js"
+    },
+    "chunk-EWTE5DHJ": {
+      "file": "chunk-EWTE5DHJ.js"
+    }
+  }
 }
