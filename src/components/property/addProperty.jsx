@@ -69,26 +69,26 @@ const AddProperty = () => {
             setDataImage(tmpImage);
         }
     };
-
     const submitForm = async () => {
         if (dataCategory && dataTitle && dataDescription && dataPrice && dataCountry && dataCity && dataAddress && dataImage) {
             const formData = new FormData();
-            formData.append('category', dataCategory);
+            formData.append('category', String(dataCategory)); // Ensure it's a string
             formData.append('title', dataTitle);
             formData.append('description', dataDescription);
             formData.append('price_per_night', dataPrice);
             formData.append('bedrooms', dataBedrooms);
             formData.append('bathrooms', dataBathrooms);
             formData.append('guests', dataGuests);
-            formData.append('country', dataCountry.label);
-            formData.append('country_code', dataCountry.value);
+            formData.append('country', dataCountry?.label); // Ensure this is a string
+            formData.append('country_code', dataCountry?.value); // Ensure this is a string
             formData.append('city', dataCity); 
             formData.append('address', dataAddress); 
             formData.append('image', dataImage); 
-
+    
             try {
                 const response = await axiosInstance.post('/api/properties/create/', formData);
-
+                console.log(response.data); // Log the response data for inspection
+    
                 if (response.status === 200 || response.status === 201) {
                     setErrors([]);
                     setSuccessMessage('Property added successfully!');
@@ -104,6 +104,7 @@ const AddProperty = () => {
                     setErrors(tmpErrors);
                 }
             } catch (error) {
+                console.error(error.response.data); // Log the error response data for inspection
                 if (error.response && error.response.data && error.response.data.message) {
                     const tmpErrors = Array.isArray(error.response.data.message)
                         ? error.response.data.message
