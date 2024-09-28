@@ -6,10 +6,9 @@ const axiosInstance = axios.create({
     headers: {
       'Content-Type': 'application/json',
     },
-    withCredentials: true, 
+    withCredentials: true,
 });
 
-// Add a request interceptor
 axiosInstance.interceptors.request.use(
     config => {
         const token = Cookies.get('authToken');

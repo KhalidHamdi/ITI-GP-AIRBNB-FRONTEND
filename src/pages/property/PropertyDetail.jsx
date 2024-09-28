@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axiosInstance from "../../axios";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import ReservationSidebar from "../../components/Reservations/ReservationSidebar";
 import ReviewForm from "../../components/reviews/ReviewForm";
 import ReviewList from "../../components/reviews/ReviewList";
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -28,12 +28,10 @@ const PropertyDetail = () => {
 
         const address = `${response.data.address}, ${response.data.city}, ${response.data.country}`;
 
-        const openCageResponse = await axiosInstance.get(
-          `/api/properties/geocode/`,
-          {
-            params: { q: address },
-          }
-        );
+        const openCageResponse = await axiosInstance.get(`/api/properties/geocode/`, {
+          params: { q: address },
+        });
+
         if (openCageResponse.data && openCageResponse.data.results.length > 0) {
           const coordinates = openCageResponse.data.results[0].geometry;
           setPosition([coordinates.lat, coordinates.lng]);
@@ -57,7 +55,7 @@ const PropertyDetail = () => {
 
     const checkAuthStatus = () => {
       const accessToken = Cookies.get('authToken');
-      const userId = localStorage.getItem('userId');
+      const userId = localStorage.getItem("userId");
       if (accessToken && userId) {
         setIsAuthenticated(true);
         setCurrentUser({ id: userId });
@@ -74,7 +72,9 @@ const PropertyDetail = () => {
 
   useEffect(() => {
     if (currentUser && reviews.length > 0) {
-      const userReview = reviews.find(review => review.user.toString() === currentUser.id);
+      const userReview = reviews.find((review) => 
+        review.user && review.user.toString() === currentUser.id.toString()
+      );
       setHasReviewed(!!userReview);
     }
   }, [currentUser, reviews]);
@@ -90,14 +90,15 @@ const PropertyDetail = () => {
   });
   L.Marker.prototype.options.icon = DefaultIcon;
 
-  if (loading)
+  if (loading) {
     return (
       <div className="text-center mt-5">
         <div className="spinner-border text-primary" role="status"></div>
       </div>
     );
-  if (!property)
-    return <div className="text-center mt-5">Property not found</div>;
+  }
+
+  if (!property) return <div className="text-center mt-5">Property not found</div>;
 
   return (
     <div className="container mt-4" style={{ maxWidth: "1100px" }}>
@@ -135,13 +136,7 @@ const PropertyDetail = () => {
 
       <div className="row mt-4">
         <div className="col-12">
-          <div
-            style={{
-              height: "400px",
-              overflow: "hidden",
-              borderRadius: "12px",
-            }}
-          >
+          <div style={{ height: "400px", overflow: "hidden", borderRadius: "12px" }}>
             <img
               src={property.image_url}
               alt={property.title}
@@ -156,10 +151,7 @@ const PropertyDetail = () => {
         <div className="col-lg-7">
           <div className="d-flex justify-content-between align-items-center pb-4 border-bottom">
             <div>
-              <Link
-                to={`/landlord/${property.landlord.username}`}
-                className="text-decoration-none"
-              >
+              <Link to={`/landlord/${property.landlord.username}`} className="text-decoration-none">
                 <h3 className="fs-5 fw-bold mb-1">
                   {property.landlord.username} is a Superhost
                 </h3>
@@ -175,11 +167,11 @@ const PropertyDetail = () => {
           <div className="py-4 border-bottom">
             <h3 className="fs-4 fw-bold mb-4">Property Description</h3>
             <p style={{ whiteSpace: "pre-line" }}>{property.description}</p>
-            <br />
           </div>
         </div>
         <ReservationSidebar property={property} userId={id} />
       </div>
+
       <hr className="my-5" />
 
       <ReviewList reviews={reviews} />
@@ -190,13 +182,12 @@ const PropertyDetail = () => {
         hasReviewed ? (
           <p>Thank you for your review!</p>
         ) : (
-          <ReviewForm
-            propertyId={id}
-            onReviewAdded={handleReviewAdded}
-          />
+          <ReviewForm propertyId={id} onReviewAdded={handleReviewAdded} />
         )
       ) : (
-        <p>Please <Link to="/login">log in</Link> to submit a review.</p>
+        <p>
+          Please <Link to="/login">log in</Link> to submit a review.
+        </p>
       )}
 
       <hr className="my-5" />
@@ -204,7 +195,9 @@ const PropertyDetail = () => {
       <div className="row mb-5">
         <div className="col-12">
           <h3 className="fs-4 fw-bold mb-4">Where you'll be</h3>
-          <p>{property.address}, {property.city}, {property.country}</p>
+          <p>
+            {property.address}, {property.city}, {property.country}
+          </p>
           {position ? (
             <MapContainer
               center={position}
@@ -235,27 +228,28 @@ const PropertyDetail = () => {
           <h3 className="fs-4 fw-bold mb-4">Things to know</h3>
           <div className="row">
             <div className="col-md-4 mb-4 mb-md-0">
-              <h5 className="fs-5 fw-bold">House rules</h5>
-              <p className="mb-2">
-                <i className="bi bi-clock me-2"></i>Check-in after 3:00 PM
-              </p>
-              <p className="mb-2">
-                <i className="bi bi-clock-history me-2"></i>Check-out before
-                11:00 AM
-              </p>
+              <h4 className="fs-6 fw-bold mb-3">House rules</h4>
+              <ul className="list-unstyled">
+                {property.house_rules && property.house_rules.map((rule, index) => (
+                  <li key={index}>{rule}</li>
+                ))}
+              </ul>
             </div>
             <div className="col-md-4 mb-4 mb-md-0">
-              <h5 className="fs-5 fw-bold">Safety & Property</h5>
-              <p className="mb-2">
-                <i className="bi bi-alarm me-2"></i>Smoke alarm
-              </p>
-              <p className="mb-2">
-                <i className="bi bi-door-closed me-2"></i>Carbon monoxide alarm
-              </p>
+              <h4 className="fs-6 fw-bold mb-3">Safety & Property</h4>
+              <ul className="list-unstyled">
+                {property.safety && property.safety.map((safetyItem, index) => (
+                  <li key={index}>{safetyItem}</li>
+                ))}
+              </ul>
             </div>
-            <div className="col-md-4 mb-4 mb-md-0">
-              <h5 className="fs-5 fw-bold">Cancellation policy</h5>
-              <p className="mb-2">Free cancellation for 48 hours.</p>
+            <div className="col-md-4">
+              <h4 className="fs-6 fw-bold mb-3">Cancellation Policy</h4>
+              <ul className="list-unstyled">
+                {property.cancellation && property.cancellation.map((policyItem, index) => (
+                  <li key={index}>{policyItem}</li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
