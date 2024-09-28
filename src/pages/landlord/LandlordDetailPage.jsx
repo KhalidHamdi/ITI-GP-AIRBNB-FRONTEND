@@ -50,7 +50,7 @@ const LandlordDetailPage = () => {
         </aside>
 
         {/* Main Section for Property Listings */}
-        <PropertyList landlord_id={username} />
+        <PropertyList landlord_username={username} />
       </div>
     </div>
   );
