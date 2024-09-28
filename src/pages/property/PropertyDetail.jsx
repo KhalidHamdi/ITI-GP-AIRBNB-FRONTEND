@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axiosInstance from "../../axios"; 
+import axiosInstance from "../../axios";
+import Cookies from 'js-cookie';
 import ReservationSidebar from "../../components/Reservations/ReservationSidebar";
 import ReviewForm from "../../components/reviews/ReviewForm";
 import ReviewList from "../../components/reviews/ReviewList";
@@ -14,6 +15,9 @@ const PropertyDetail = () => {
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState([]);
   const [position, setPosition] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,12 +48,33 @@ const PropertyDetail = () => {
       }
     };
 
+    const checkAuthStatus = () => {
+      const accessToken = Cookies.get('accessToken');
+      const userId = localStorage.getItem('userId');
+      if (accessToken && userId) {
+        setIsAuthenticated(true);
+        setCurrentUser({ id: userId });
+      } else {
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+      }
+    };
+
     fetchData();
     fetchReviews();
+    checkAuthStatus();
   }, [id]);
+
+  useEffect(() => {
+    if (currentUser && reviews.length > 0) {
+      const userReview = reviews.find(review => review.user.toString() === currentUser.id);
+      setHasReviewed(!!userReview);
+    }
+  }, [currentUser, reviews]);
 
   const handleReviewAdded = (newReview) => {
     setReviews([...reviews, newReview]);
+    setHasReviewed(true);
   };
 
   const DefaultIcon = L.icon({
@@ -150,6 +175,22 @@ const PropertyDetail = () => {
 
       <hr className="my-5" />
 
+      {isAuthenticated ? (
+        hasReviewed ? (
+          <p>Thank you for your review!</p>
+        ) : (
+          <ReviewForm 
+            propertyId={id} 
+            onReviewAdded={handleReviewAdded} 
+            axiosInstance={axiosInstance}
+          />
+        )
+      ) : (
+        <p>Please log in to submit a review.</p>
+      )}
+
+      <hr className="my-5" />
+
       <div className="row mb-5">
         <div className="col-12">
           <h3 className="fs-4 fw-bold mb-4">Where you'll be</h3>
@@ -176,10 +217,6 @@ const PropertyDetail = () => {
           )}
         </div>
       </div>
-
-      <hr className="my-5" />
-
-      <ReviewForm propertyId={id} onReviewAdded={handleReviewAdded} />
 
       <hr className="my-5" />
 

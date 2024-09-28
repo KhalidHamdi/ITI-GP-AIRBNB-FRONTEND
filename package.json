@@ -20,6 +20,8 @@
     "bootstrap-icons": "^1.11.3",
     "don": "^0.2.0",
     "embla-carousel-react": "^8.3.0",
+    "express": "^4.21.0",
+    "js-cookie": "^3.0.5",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.441.0",
     "react": "^18.3.1",
