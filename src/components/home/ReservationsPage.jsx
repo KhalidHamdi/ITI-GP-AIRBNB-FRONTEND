@@ -10,14 +10,15 @@ const MyReservationsPage = () => {
     const fetchReservations = async () => {
       try {
         const response = await axiosInstance.get("/api/auth/myreservations/");
-        setReservations(response);
+        setReservations(response.data); 
       } catch (error) {
         console.error("Error fetching reservations:", error);
       }
     };
-
+  
     fetchReservations();
   }, []);
+
   // const reservations = [
   //   {
   //     id: 1,
