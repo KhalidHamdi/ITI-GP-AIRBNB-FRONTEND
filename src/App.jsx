@@ -11,6 +11,7 @@ import ConversationDetail from './components/chat/conversationDetails';
 import MyReservationsPage from './components/home/ReservationsPage';
 import LoginModal from './components/modals/LoginModal';
 import SignupModal from './components/modals/SignupModal';
+import PasswordResetModal from './components/modals/PasswordResetModal'; // Import the new modal
 import LandlordDetailPage from "./pages/landlord/LandlordDetailPage";
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
       <Header />
         <LoginModal />
         <SignupModal />
+        <PasswordResetModal />
         <AddProperty />
       <Routes>
         <Route path="/home" element={<Home />} />
