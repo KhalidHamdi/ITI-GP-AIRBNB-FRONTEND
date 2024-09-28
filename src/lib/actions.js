@@ -1,16 +1,16 @@
 import Cookies from 'js-cookie'; 
 
-export const handleLogin = (key, userId) => {
-    if (key) {
-        Cookies.set('authToken', key, { secure: true, sameSite: 'Lax' });
-        console.log('Token set successfully');
-        
-        localStorage.setItem('userId', userId);
-        console.log('User ID set successfully');
-    } else {
-        console.error('Token not found in response');
-    }
+export const handleLogin = (accessToken, refreshToken, userId) => {
+  if (accessToken) {
+    Cookies.set('authToken', accessToken, { sameSite: 'Lax' }); 
+    console.log('Access token set successfully');
+    Cookies.set('refreshToken', refreshToken, { sameSite: 'Lax' });
+    localStorage.setItem('userId', userId);
+  } else {
+    console.error('Access token not found in response');
+  }
 };
+
 
 export const handleLogout = () => {
     Cookies.remove('authToken');
