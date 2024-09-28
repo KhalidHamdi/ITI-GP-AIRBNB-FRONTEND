@@ -1,10 +1,10 @@
 // src/components/home/UserMenu.jsx
-import React from 'react';
-import { Menu } from 'lucide-react';
-import AvatarComponent from './Avatar';
-import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { openLoginModal, openSignupModal } from '../../redux/modalSlice';
+import React from "react";
+import { Menu } from "lucide-react";
+import AvatarComponent from "./Avatar";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { openLoginModal, openSignupModal } from "../../redux/modalSlice";
 
 const UserMenu = ({ airbnbYourHome }) => {
   const dispatch = useDispatch();
@@ -21,14 +21,23 @@ const UserMenu = ({ airbnbYourHome }) => {
         <Menu />
         <AvatarComponent />
       </button>
-      <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuDropdown">
+      <ul
+        className="dropdown-menu dropdown-menu-end"
+        aria-labelledby="userMenuDropdown"
+      >
         <li>
-          <button className="dropdown-item" onClick={() => dispatch(openLoginModal())}>
+          <button
+            className="dropdown-item"
+            onClick={() => dispatch(openLoginModal())}
+          >
             Login
           </button>
         </li>
         <li>
-          <button className="dropdown-item" onClick={() => dispatch(openSignupModal())}>
+          <button
+            className="dropdown-item"
+            onClick={() => dispatch(openSignupModal())}
+          >
             Sign up
           </button>
         </li>
@@ -40,6 +49,11 @@ const UserMenu = ({ airbnbYourHome }) => {
         <li>
           <Link to="/MyReservations" className="dropdown-item">
             My Reservation
+          </Link>
+        </li>
+        <li>
+          <Link to="/Payment" className="dropdown-item">
+            Payment
           </Link>
         </li>
         <li>
