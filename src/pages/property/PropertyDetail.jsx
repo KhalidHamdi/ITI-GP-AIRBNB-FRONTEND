@@ -1,6 +1,6 @@
 // PropertyDetail.jsx
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams , Link} from "react-router-dom";
 import axiosInstance from "../../axios";
 import Cookies from 'js-cookie';
 import ReservationSidebar from "../../components/Reservations/ReservationSidebar";
@@ -9,6 +9,8 @@ import ReviewList from "../../components/reviews/ReviewList";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+
+
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -28,7 +30,7 @@ const PropertyDetail = () => {
         setLoading(false);
 
         const address = `${response.data.address}, ${response.data.city}, ${response.data.country}`;
-        
+
         // Use the backend proxy endpoint for geocode
         const openCageResponse = await axiosInstance.get(
           `/api/properties/geocode/`,
@@ -76,6 +78,7 @@ const PropertyDetail = () => {
     checkAuthStatus();
   }, [id]);
 
+  console.log(property)
   useEffect(() => {
     if (currentUser && reviews.length > 0) {
       const userReview = reviews.find(review => review.user.toString() === currentUser.id);
@@ -160,9 +163,14 @@ const PropertyDetail = () => {
         <div className="col-lg-7">
           <div className="d-flex justify-content-between align-items-center pb-4 border-bottom">
             <div>
-              <h2 style={{ fontSize: "22px" }} className="fw-bold mb-2">
-                Entire rental unit hosted by Host Name
-              </h2>
+              <Link
+                to={`/landlord/${property.landlord.username}`}
+                className="text-decoration-none"
+              >
+                <h3 className="fs-5 fw-bold mb-1">
+                  {property.landlord.username} is a Superhost
+                </h3>
+              </Link>
               <p className="mb-0 text-muted">
                 {property.guests} guests · {property.bedrooms} bedroom
                 {property.bedrooms > 1 ? "s" : ""} · {property.bathrooms}{" "}
@@ -190,9 +198,9 @@ const PropertyDetail = () => {
         hasReviewed ? (
           <p>Thank you for your review!</p>
         ) : (
-          <ReviewForm 
-            propertyId={id} 
-            onReviewAdded={handleReviewAdded} 
+          <ReviewForm
+            propertyId={id}
+            onReviewAdded={handleReviewAdded}
             axiosInstance={axiosInstance}
           />
         )

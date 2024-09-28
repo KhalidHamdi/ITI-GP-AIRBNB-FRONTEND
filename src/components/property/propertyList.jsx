@@ -2,19 +2,26 @@ import React, { useEffect, useState } from "react";
 import PropertyListItem from "./PropertyListItem";
 import axiosInstance from "../../axios";
 
-const PropertyList = () => {
+const PropertyList = ({ landlord_id = null }) => {
     const [properties, setProperties] = useState([]);
     const [error, setError] = useState(null);
 
     const getProperties = async () => {
-        try {
-            const response = await axiosInstance.get('/api/properties/');
-            setProperties(response.data.data);
-        } catch (error) {
-            setError('Failed to fetch properties..');
-        }
-    };
+        let url = "/api/properties/";
     
+        if (landlord_id) {
+          url += `?landlord_id=${landlord_id}`;
+        }
+    
+        try {
+          const response = await axiosInstance.get(url);
+          setProperties(response.data.data);
+        } catch (error) {
+          setError("Failed to fetch properties..");
+        }
+      };
+
+      
     useEffect(() => {
         getProperties();
     }, []);
