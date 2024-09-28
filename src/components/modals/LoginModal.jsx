@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from './Modal';
 import { useSelector, useDispatch } from 'react-redux';
-import { closeLoginModal } from '../../redux/modalSlice';
+import { closeLoginModal , openPasswordResetModal } from '../../redux/modalSlice';
 import CustomButton from '../forms/CustomButton';
 import { handleLogin } from '../../lib/actions';
 import axiosInstance from '../../axios';
+import PasswordResetModal from './PasswordResetModal'; // Import the new modal
 
 const LoginModal = () => {
   const navigate = useNavigate();
@@ -42,6 +43,10 @@ const LoginModal = () => {
     } catch (error) {
       setErrors(error.response?.data?.non_field_errors || ['Login failed. Please try again.']);
     }
+  };
+
+  const openResetModal = () => {
+      dispatch(openPasswordResetModal());
   };
 
   
@@ -83,10 +88,23 @@ const LoginModal = () => {
       )}
 
       <CustomButton label="Submit" type="submit" />
+
+      <div className="mt-3">
+                <button type="button" className="btn btn-link" onClick={openResetModal}>
+                    Forgot Password?
+                </button>
+            </div>
     </form>
   );
 
-  return <Modal isOpen={isOpen} close={close} label="Log in" content={content} />;
+  // return <Modal isOpen={isOpen} close={close} label="Log in" content={content} />;
+  return (
+    <>
+        <Modal isOpen={isOpen} close={close} label="Log in" content={content} />
+        <PasswordResetModal /> {/* Ensure this component is rendered */}
+    </>
+  );
+
 };
 
 export default LoginModal;
