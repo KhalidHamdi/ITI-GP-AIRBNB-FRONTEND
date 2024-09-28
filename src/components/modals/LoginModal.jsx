@@ -1,4 +1,3 @@
-// src/components/modals/LoginModal.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from './Modal';
@@ -6,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { closeLoginModal } from '../../redux/modalSlice';
 import CustomButton from '../forms/CustomButton';
 import { handleLogin } from '../../lib/actions';
-import axiosInstance from '../../axios'; // Adjust the path based on your project structure
+import axiosInstance from '../../axios';
 
 const LoginModal = () => {
   const navigate = useNavigate();
@@ -14,8 +13,7 @@ const LoginModal = () => {
   const isOpen = useSelector((state) => state.modal.loginModalOpen);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState([]); // Add this line
-
+  const [errors, setErrors] = useState([]); 
 
   const close = () => {
     dispatch(closeLoginModal());
@@ -24,21 +22,29 @@ const LoginModal = () => {
   const submitLogin = async (e) => {
     e.preventDefault();
 
-    const formData = {
-      email,
+    const loginData = {
+      email, // Use 'username' instead of 'email' as per your backend
       password,
     };
 
-    const response = await axiosInstance.post('/api/auth/login/', formData);
-
-    if (response.access) {
-      handleLogin(response.user.pk, response.access, response.refresh);
-      close();
-      navigate('/');
-    } else {
-      setErrors(response.non_field_errors || ['Login failed. Please try again.']);
+    try {
+      const response = await axiosInstance.post('/api/auth/login/', loginData);
+      
+      if (response.data.key) {
+        handleLogin(response.data.key);
+        close();
+        navigate('/');
+        window.location.reload();
+        console.log("Login successful");
+      } else {
+        setErrors(['Login failed. Please try again.']);
+      }
+    } catch (error) {
+      setErrors(error.response?.data?.non_field_errors || ['Login failed. Please try again.']);
     }
   };
+
+  
 
   const content = (
     <form onSubmit={submitLogin}>
@@ -80,8 +86,9 @@ const LoginModal = () => {
     </form>
   );
 
-return <Modal isOpen={isOpen} close={close} label="Log in" content={content} />;
-
+  return <Modal isOpen={isOpen} close={close} label="Log in" content={content} />;
 };
 
 export default LoginModal;
+
+

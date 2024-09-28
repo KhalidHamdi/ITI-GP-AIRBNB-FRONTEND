@@ -1,10 +1,17 @@
-// src/lib/actions.js
+import Cookies from 'js-cookie'; 
+
 
 export const handleLogin = (userId, accessToken, refreshToken) => {
-    // Save tokens and user info to localStorage or state
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
+    Cookies.set('accessToken', accessToken, { secure: true, sameSite: 'Lax' });
+    Cookies.set('refreshToken', refreshToken, { secure: true, sameSite: 'Lax' });
     localStorage.setItem('userId', userId);
-    // Dispatch actions to update user state if using Redux
-  };
-  
+};
+
+export const handleLogout = () => {
+  Cookies.remove('accessToken');
+  Cookies.remove('refreshToken');
+  Cookies.remove('csrftoken');
+  localStorage.removeItem('userId');
+};
+
+

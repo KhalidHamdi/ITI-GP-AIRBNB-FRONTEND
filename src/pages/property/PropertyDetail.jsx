@@ -1,12 +1,16 @@
+// PropertyDetail.jsx
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams , Link} from "react-router-dom";
 import axiosInstance from "../../axios";
+import Cookies from 'js-cookie';
 import ReservationSidebar from "../../components/Reservations/ReservationSidebar";
 import ReviewForm from "../../components/reviews/ReviewForm";
 import ReviewList from "../../components/reviews/ReviewList";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -14,46 +18,77 @@ const PropertyDetail = () => {
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState([]);
   const [position, setPosition] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get(`/api/properties/${id}`);
+        const response = await axiosInstance.get(`/api/properties/${id}/`);
         setProperty(response.data);
         setLoading(false);
 
         const address = `${response.data.address}, ${response.data.city}, ${response.data.country}`;
 
+        // Use the backend proxy endpoint for geocode
         const openCageResponse = await axiosInstance.get(
-          `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
-            address
-          )}&key=3a389cf56bd542119af218f4ca50cd66`
+          `/api/properties/geocode/`,
+          {
+            params: { q: address },
+            // No need to include API key here
+          }
         );
-        const coordinates = openCageResponse.data.results[0].geometry;
-        setPosition([coordinates.lat, coordinates.lng]);
+        if (openCageResponse.data && openCageResponse.data.results.length > 0) {
+          const coordinates = openCageResponse.data.results[0].geometry;
+          setPosition([coordinates.lat, coordinates.lng]);
+        } else {
+          setError("Geocode data not found.");
+        }
       } catch (error) {
         console.error("Error fetching property data:", error);
         setLoading(false);
+        setError(error.response?.data?.error || "Unknown error.");
       }
     };
 
     const fetchReviews = async () => {
       try {
-        const reviewsResponse = await axiosInstance.get(
-          `/api/properties/${id}/reviews/`
-        );
+        const reviewsResponse = await axiosInstance.get(`/api/properties/${id}/reviews/`);
         setReviews(reviewsResponse.data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       }
     };
 
+    const checkAuthStatus = () => {
+      const accessToken = Cookies.get('accessToken');
+      const userId = localStorage.getItem('userId');
+      if (accessToken && userId) {
+        setIsAuthenticated(true);
+        setCurrentUser({ id: userId });
+      } else {
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+      }
+    };
+
     fetchData();
     fetchReviews();
+    checkAuthStatus();
   }, [id]);
+
+  console.log(property)
+  useEffect(() => {
+    if (currentUser && reviews.length > 0) {
+      const userReview = reviews.find(review => review.user.toString() === currentUser.id);
+      setHasReviewed(!!userReview);
+    }
+  }, [currentUser, reviews]);
 
   const handleReviewAdded = (newReview) => {
     setReviews([...reviews, newReview]);
+    setHasReviewed(true);
   };
 
   const DefaultIcon = L.icon({
@@ -68,7 +103,6 @@ const PropertyDetail = () => {
         <div className="spinner-border text-primary" role="status"></div>
       </div>
     );
-  console.log("Property Details", property);
   if (!property)
     return <div className="text-center mt-5">Property not found</div>;
 
@@ -130,11 +164,11 @@ const PropertyDetail = () => {
           <div className="d-flex justify-content-between align-items-center pb-4 border-bottom">
             <div>
               <Link
-                to={`/landlord/${property.landlord.id}`}
+                to={`/landlord/${property.landlord.username}`}
                 className="text-decoration-none"
               >
                 <h3 className="fs-5 fw-bold mb-1">
-                  {property.landlord.name} is a Superhost
+                  {property.landlord.username} is a Superhost
                 </h3>
               </Link>
               <p className="mb-0 text-muted">
@@ -160,12 +194,26 @@ const PropertyDetail = () => {
 
       <hr className="my-5" />
 
+      {isAuthenticated ? (
+        hasReviewed ? (
+          <p>Thank you for your review!</p>
+        ) : (
+          <ReviewForm
+            propertyId={id}
+            onReviewAdded={handleReviewAdded}
+            axiosInstance={axiosInstance}
+          />
+        )
+      ) : (
+        <p>Please log in to submit a review.</p>
+      )}
+
+      <hr className="my-5" />
+
       <div className="row mb-5">
         <div className="col-12">
           <h3 className="fs-4 fw-bold mb-4">Where you'll be</h3>
-          <p>
-            {property.address}, {property.city}, {property.country}
-          </p>
+          <p>{property.address}, {property.city}, {property.country}</p>
           {position ? (
             <MapContainer
               center={position}
@@ -188,10 +236,6 @@ const PropertyDetail = () => {
           )}
         </div>
       </div>
-
-      <hr className="my-5" />
-
-      <ReviewForm propertyId={id} onReviewAdded={handleReviewAdded} />
 
       <hr className="my-5" />
 
