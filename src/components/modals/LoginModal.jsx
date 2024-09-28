@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from './Modal';
 import { useSelector, useDispatch } from 'react-redux';
-import { closeLoginModal , openPasswordResetModal } from '../../redux/modalSlice';
+import { closeLoginModal, openPasswordResetModal } from '../../redux/modalSlice';
 import CustomButton from '../forms/CustomButton';
 import { handleLogin } from '../../lib/actions';
 import axiosInstance from '../../axios';
-import PasswordResetModal from './PasswordResetModal'; // Import the new modal
+import PasswordResetModal from './PasswordResetModal';
 
 const LoginModal = () => {
   const navigate = useNavigate();
@@ -14,42 +14,51 @@ const LoginModal = () => {
   const isOpen = useSelector((state) => state.modal.loginModalOpen);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState([]); 
+  const [errors, setErrors] = useState([]);
 
   const close = () => {
     dispatch(closeLoginModal());
   };
 
-  const submitLogin = async (e) => {
-    e.preventDefault();
 
-    const loginData = {
-      email, // Use 'username' instead of 'email' as per your backend
-      password,
-    };
 
-    try {
-      const response = await axiosInstance.post('/api/auth/login/', loginData);
-      
-      if (response.data.key) {
-        handleLogin(response.data.key);
-        close();
-        navigate('/');
-        window.location.reload();
-        console.log("Login successful");
-      } else {
-        setErrors(['Login failed. Please try again.']);
+    const submitLogin = async (e) => {
+      e.preventDefault();
+    
+      const loginData = {
+        email,  // Adjust to match your backend, if necessary
+        password,
+      };
+    
+      try {
+        const response = await axiosInstance.post('/api/auth/login/', loginData);
+    
+        if (response.data.key) {
+          // Store both the token and the user details
+          handleLogin(response.data.key, response.data.user_id);  // Or store more user info if necessary
+          close();
+          navigate('/');
+          console.log("Login successful");
+        } else {
+          setErrors(['Login failed. Token or User ID not found in response.']);
+        }
+      } catch (error) {
+        console.error("Login error:", error.response?.data);
+        if (error.response?.data?.non_field_errors) {
+          setErrors(error.response.data.non_field_errors);
+        } else if (error.response?.data) {
+          const fieldErrors = Object.entries(error.response.data)
+            .map(([field, messages]) => `${field}: ${messages.join(', ')}`);
+          setErrors(fieldErrors);
+        } else {
+          setErrors(['Login failed. Please check your credentials and try again.']);
+        }
       }
-    } catch (error) {
-      setErrors(error.response?.data?.non_field_errors || ['Login failed. Please try again.']);
-    }
-  };
-
+    };
+    
   const openResetModal = () => {
-      dispatch(openPasswordResetModal());
+    dispatch(openPasswordResetModal());
   };
-
-  
 
   const content = (
     <form onSubmit={submitLogin}>
@@ -90,23 +99,19 @@ const LoginModal = () => {
       <CustomButton label="Submit" type="submit" />
 
       <div className="mt-3">
-                <button type="button" className="btn btn-link" onClick={openResetModal}>
-                    Forgot Password?
-                </button>
-            </div>
+        <button type="button" className="btn btn-link" onClick={openResetModal}>
+          Forgot Password?
+        </button>
+      </div>
     </form>
   );
 
-  // return <Modal isOpen={isOpen} close={close} label="Log in" content={content} />;
   return (
     <>
-        <Modal isOpen={isOpen} close={close} label="Log in" content={content} />
-        <PasswordResetModal /> {/* Ensure this component is rendered */}
+      <Modal isOpen={isOpen} close={close} label="Log in" content={content} />
+      <PasswordResetModal /> {/* Ensure this component is rendered */}
     </>
   );
-
 };
 
 export default LoginModal;
-
-

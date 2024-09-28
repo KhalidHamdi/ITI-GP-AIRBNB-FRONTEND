@@ -1,13 +1,26 @@
-// src/axios.js
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8000', 
+    baseURL: 'http://localhost:8000/', 
     headers: {
-      'Content-Type': 'multipart/form-data',
-      // 'Content-Type': 'application/json',
+      'Content-Type': 'application/json',
     },
     withCredentials: true, 
 });
+
+// Add a request interceptor
+axiosInstance.interceptors.request.use(
+    config => {
+        const token = Cookies.get('authToken');
+        if (token) {
+            config.headers['Authorization'] = 'Token ' + token;
+        }
+        return config;
+    },
+    error => {
+        return Promise.reject(error);
+    }
+);
 
 export default axiosInstance;

@@ -1,6 +1,5 @@
-// PropertyDetail.jsx
 import React, { useEffect, useState } from "react";
-import { useParams , Link} from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axiosInstance from "../../axios";
 import Cookies from 'js-cookie';
 import ReservationSidebar from "../../components/Reservations/ReservationSidebar";
@@ -9,8 +8,6 @@ import ReviewList from "../../components/reviews/ReviewList";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-
-
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -31,24 +28,21 @@ const PropertyDetail = () => {
 
         const address = `${response.data.address}, ${response.data.city}, ${response.data.country}`;
 
-        // Use the backend proxy endpoint for geocode
         const openCageResponse = await axiosInstance.get(
           `/api/properties/geocode/`,
           {
             params: { q: address },
-            // No need to include API key here
           }
         );
         if (openCageResponse.data && openCageResponse.data.results.length > 0) {
           const coordinates = openCageResponse.data.results[0].geometry;
           setPosition([coordinates.lat, coordinates.lng]);
         } else {
-          setError("Geocode data not found.");
+          console.error("Geocode data not found.");
         }
       } catch (error) {
         console.error("Error fetching property data:", error);
         setLoading(false);
-        setError(error.response?.data?.error || "Unknown error.");
       }
     };
 
@@ -62,7 +56,7 @@ const PropertyDetail = () => {
     };
 
     const checkAuthStatus = () => {
-      const accessToken = Cookies.get('accessToken');
+      const accessToken = Cookies.get('authToken');
       const userId = localStorage.getItem('userId');
       if (accessToken && userId) {
         setIsAuthenticated(true);
@@ -78,7 +72,6 @@ const PropertyDetail = () => {
     checkAuthStatus();
   }, [id]);
 
-  console.log(property)
   useEffect(() => {
     if (currentUser && reviews.length > 0) {
       const userReview = reviews.find(review => review.user.toString() === currentUser.id);
@@ -187,7 +180,6 @@ const PropertyDetail = () => {
         </div>
         <ReservationSidebar property={property} userId={id} />
       </div>
-
       <hr className="my-5" />
 
       <ReviewList reviews={reviews} />
@@ -201,11 +193,10 @@ const PropertyDetail = () => {
           <ReviewForm
             propertyId={id}
             onReviewAdded={handleReviewAdded}
-            axiosInstance={axiosInstance}
           />
         )
       ) : (
-        <p>Please log in to submit a review.</p>
+        <p>Please <Link to="/login">log in</Link> to submit a review.</p>
       )}
 
       <hr className="my-5" />
