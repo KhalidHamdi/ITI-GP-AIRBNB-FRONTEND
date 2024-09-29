@@ -18,6 +18,7 @@ const PropertyDetail = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,10 +66,25 @@ const PropertyDetail = () => {
       }
     };
 
+    const checkFavoriteStatus = async () => {
+      if (isAuthenticated) {
+        try {
+          const response = await axiosInstance.get("/api/favorites/");
+          const favorites = response.data;
+          const isFav = favorites.some((fav) => fav.id === parseInt(id));
+          setIsFavorite(isFav);
+        } catch (error) {
+          console.error("Error checking favorite status", error);
+        }
+      }
+    };
+
     fetchData();
     fetchReviews();
     checkAuthStatus();
-  }, [id]);
+    checkFavoriteStatus();
+  }, [id, isAuthenticated]);
+
 
   useEffect(() => {
     if (currentUser && reviews.length > 0) {
@@ -83,6 +99,21 @@ const PropertyDetail = () => {
     setReviews([...reviews, newReview]);
     setHasReviewed(true);
   };
+
+  const toggleFavorite = async () => {
+    try {
+      if (isFavorite) {
+        await axiosInstance.post(`/api/favorites/remove/${id}/`);
+        setIsFavorite(false);
+      } else {
+        await axiosInstance.post(`/api/favorites/add/${id}/`);
+        setIsFavorite(true);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite", error);
+    }
+  };
+  
 
   const DefaultIcon = L.icon({
     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -126,8 +157,9 @@ const PropertyDetail = () => {
               <button className="btn btn-link text-dark me-2">
                 <i className="bi bi-upload me-2"></i>Share
               </button>
-              <button className="btn btn-link text-dark">
-                <i className="bi bi-heart me-2"></i>Save
+              <button className="btn btn-link text-dark" onClick={toggleFavorite}>
+                <i className={`bi ${isFavorite ? "bi-heart-fill" : "bi-heart"} me-2`}></i>
+                {isFavorite ? "Saved" : "Save"}
               </button>
             </div>
           </div>
