@@ -15,6 +15,8 @@ import PasswordResetModal from "./components/modals/PasswordResetModal"; // Impo
 import ResetPasswordConfirm from "./components/modals/ResetPasswordConfirm";
 import LandlordDetailPage from "./pages/landlord/LandlordDetailPage";
 import BookingPage from "./components/payment/BookingPage";
+import FilterModal from './components/modals/FilterModal';
+
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
       <SignupModal />
       <PasswordResetModal />
       <AddProperty />
+      <FilterModal />
+
       <Routes>
         <Route
           path="/reset-password/:uid/:token/"
