@@ -42,11 +42,19 @@ const LandlordDetailPage = () => {
         <aside className="col-md-3 mb-4">
           <div className="card text-center p-4 border-0 shadow-sm">
             <img
-              src={landlord.avatar_url}
+              src={
+                landlord.avatar ||
+                "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg"
+              }
               alt={landlord.username}
               width="200"
               height="200"
-              className="rounded-circle mx-auto"
+              className="img-fluid rounded mx-auto d-block"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src =
+                  "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg";
+              }}
             />
 
             <h1 className="mt-3 h4">{landlord.username}</h1>

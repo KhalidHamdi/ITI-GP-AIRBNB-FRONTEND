@@ -39,6 +39,11 @@ const UserMenu = ({ airbnbYourHome }) => {
                 {isLoggedIn ? (
                     <>
                         <li>
+                            <Link to="/profile" className="dropdown-item">
+                                User Profile
+                            </Link>
+                        </li>
+                        <li>
                             <Link to="/chat" className="dropdown-item">
                                 Inbox
                             </Link>
@@ -46,6 +51,11 @@ const UserMenu = ({ airbnbYourHome }) => {
                         <li>
                             <Link to="/MyReservations" className="dropdown-item">
                                 My Reservations
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="/my-favorites" className="dropdown-item">
+                                My Favorites
                             </Link>
                         </li>
                         <li>

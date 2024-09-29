@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import PropertyListItem from "./PropertyListItem";
 import axiosInstance from "../../axios";
+import { useLocation } from "react-router-dom"; 
 
-const PropertyList = ({ landlord_username = null }) => {
+const PropertyList = ({ landlord_username = null , selectedCategory, filteredProperties}) => {
   const [properties, setProperties] = useState([]);
   const [error, setError] = useState(null);
+  const location = useLocation();
 
   const getProperties = async () => {
     let url = "/api/properties/";
@@ -14,16 +16,32 @@ const PropertyList = ({ landlord_username = null }) => {
       console.log(url);
     }
     try {
-      const response = await axiosInstance.get(url);
-      setProperties(response.data.data);
+        if (filteredProperties || location.state?.properties) {
+            setProperties(filteredProperties || location.state.properties);
+        } else {
+            const response = await axiosInstance.get(
+                selectedCategory ? `/api/properties/?category=${selectedCategory}` : url
+            );
+            setProperties(response.data.data);
+        }
     } catch (error) {
-      setError("Failed to fetch properties..");
+        setError("Failed to fetch properties.");
     }
   };
 
   useEffect(() => {
     getProperties();
   }, [landlord_username]);
+    
+    
+  useEffect(() => {
+    if (!filteredProperties && !location.state?.properties) {
+        getProperties();
+    } else {
+        setProperties(filteredProperties || location.state.properties);
+    }
+}, [selectedCategory, filteredProperties, location.state?.properties]);
+
 
   if (error) {
     return <div>Error: {error}</div>;
