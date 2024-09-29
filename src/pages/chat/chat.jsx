@@ -1,6 +1,6 @@
 import Conversation from "../../components/chat/conversation";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../../axios";
 
 function Chat() {
   const [conversations, setConversations] = useState([]);
@@ -8,7 +8,7 @@ function Chat() {
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/chat");
+        const response = await axiosInstance.get("api/chat");
         console.log("API Response Data:", response.data);
         setConversations(response.data);
       } catch (error) {

@@ -32,22 +32,22 @@ function ConversationDetail() {
   }, []);
 
   // Fetch users for selection
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch("http://127.0.0.1:8000/api/users/");
-        if (!response.ok) {
-          throw new Error("Failed to fetch users");
-        }
-        const userData = await response.json();
-        setUsers(userData);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     try {
+  //       const response = await fetch("http://127.0.0.1:8000/api/users/");
+  //       if (!response.ok) {
+  //         throw new Error("Failed to fetch users");
+  //       }
+  //       const userData = await response.json();
+  //       setUsers(userData);
+  //     } catch (error) {
+  //       console.error("Error fetching users:", error);
+  //     }
+  //   };
 
-    fetchUsers();
-  }, []);
+  //   fetchUsers();
+  // }, []);
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
     onOpen: () => console.log("Connected to WebSocket"),
@@ -62,29 +62,29 @@ function ConversationDetail() {
     },
   });
 
-  const saveMessageToDatabase = async (messageData) => {
-    try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/chat/messages/save/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(messageData),
-        }
-      );
+  // const saveMessageToDatabase = async (messageData) => {
+  //   try {
+  //     const response = await fetch(
+  //       "http://127.0.0.1:8000/api/chat/messages/save/",
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(messageData),
+  //       }
+  //     );
 
-      if (!response.ok) {
-        throw new Error("Failed to save message");
-      }
+  //     if (!response.ok) {
+  //       throw new Error("Failed to save message");
+  //     }
 
-      const data = await response.json();
-      console.log("Message saved:", data);
-    } catch (error) {
-      console.error("Error saving message:", error);
-    }
-  };
+  //     const data = await response.json();
+  //     console.log("Message saved:", data);
+  //   } catch (error) {
+  //     console.error("Error saving message:", error);
+  //   }
+  // };
 
   // Check if WebSocket is open before sending a message
   const handleSendMessage = () => {
@@ -100,7 +100,7 @@ function ConversationDetail() {
       console.log("Sending message data:", messageData);
       sendMessage(JSON.stringify(messageData));
       setNewMessage("");
-      saveMessageToDatabase(messageData.data);
+      // saveMessageToDatabase(messageData.data);
     } else {
       console.log(
         "WebSocket is not connected or no user selected. Current state:",
