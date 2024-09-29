@@ -1,13 +1,12 @@
 // modalSlice.jsx
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const modalSlice = createSlice({
-  name: "modal",
+  name: 'modal',
   initialState: {
     addPropertyModalOpen: false,
     loginModalOpen: false,
     signupModalOpen: false,
-    filterModalOpen: false,
   },
   reducers: {
     // AddProperty modal actions
@@ -31,13 +30,6 @@ const modalSlice = createSlice({
     closeSignupModal: (state) => {
       state.signupModalOpen = false;
     },
-    // Filter modal actions
-    openFilterModal: (state) => {
-        state.filterModalOpen = true;
-    },
-    closeFilterModal: (state) => {
-      state.filterModalOpen = false;
-    },
     // PasswordReset
     openPasswordResetModal: (state) => { // Add this reducer
       state.passwordResetModalOpen = true;
@@ -59,7 +51,5 @@ export const {
   closeSignupModal,
   openPasswordResetModal, // Export the action
   closePasswordResetModal, // Export the action
-  openFilterModal,
-  closeFilterModal,
 } = modalSlice.actions;
 export default modalSlice.reducer;

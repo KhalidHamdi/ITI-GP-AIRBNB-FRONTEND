@@ -14,13 +14,7 @@ import SignupModal from "./components/modals/SignupModal";
 import PasswordResetModal from "./components/modals/PasswordResetModal"; // Import the new modal
 import ResetPasswordConfirm from "./components/modals/ResetPasswordConfirm";
 import LandlordDetailPage from "./pages/landlord/LandlordDetailPage";
-
-import FilterModal from './components/modals/FilterModal';
-import PropertyContainer from './pages/category/CategoryPage'; // Import PropertyContainer
-
-
 import BookingPage from "./components/payment/BookingPage";
-
 
 function App() {
   return (
@@ -30,8 +24,6 @@ function App() {
       <SignupModal />
       <PasswordResetModal />
       <AddProperty />
-      <FilterModal />
-
       <Routes>
         <Route
           path="/reset-password/:uid/:token/"
@@ -41,9 +33,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/properties/:id" element={<PropertyDetail />} />
         <Route path="/category/:slug" element={<CategoryPage />} />
-        <Route path="/properties" element={<PropertyContainer />} /> {/* New route */}
         <Route path="/chat" element={<Chat />} />
-        <Route path="/conversationDetail/:id" element={<ConversationDetail />} />
+        <Route
+          path="/conversationDetail/:id"
+          element={<ConversationDetail />}
+        />
         <Route path="/MyReservations" element={<MyReservationsPage />} />
         <Route path="/landlord/:username" element={<LandlordDetailPage />} />
         <Route path="/payment" element={<BookingPage />} />
