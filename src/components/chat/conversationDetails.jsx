@@ -3,30 +3,108 @@ import { useParams } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./conversationDetails.css";
 
-function ConversationDetail({ userName }) {
+function ConversationDetail() {
   const { id: conversationId } = useParams(); // Get conversationId from URL parameters
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [socketUrl, setSocketUrl] = useState(null);
+  const [userName, setUserName] = useState("Anonymous"); // Default username
+  const [users, setUsers] = useState([]); // To store users for selection
+  const [selectedUserId, setSelectedUserId] = useState(null); // Store the ID of the selected user
 
-  // Set WebSocket URL without the token
+  // Set WebSocket URL
   useEffect(() => {
-    console.log("conversationId:", conversationId);
     if (conversationId) {
       const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
-      console.log("WebSocket URL:", wsUrl); // Check the URL in the console
-      setSocketUrl(wsUrl); // No token for testing
+      setSocketUrl(wsUrl);
     }
   }, [conversationId]);
+
+  // Get token from local storage and fetch user info
+  useEffect(() => {
+    const token = localStorage.getItem("authToken"); // Retrieve token
+    if (token) {
+      fetchUsernameFromToken(token);
+    }
+  }, []);
+
+  // Function to fetch user info based on the token
+  const fetchUsernameFromToken = async (token) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/auth/user/", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user info");
+      }
+
+      const userData = await response.json();
+      setUserName(userData.username); // Set the username from the response
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  };
+
+  // Fetch users for selection
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/users/");
+        if (!response.ok) {
+          throw new Error("Failed to fetch users");
+        }
+        const userData = await response.json();
+        setUsers(userData);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
     onOpen: () => console.log("Connected to WebSocket"),
     onClose: () => console.log("Disconnected from WebSocket"),
     onMessage: (event) => {
-      const newMessage = JSON.parse(event.data);
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      try {
+        const newMessage = JSON.parse(event.data);
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      } catch (error) {
+        console.error("Error parsing message:", error);
+      }
     },
   });
+
+  const saveMessageToDatabase = async (messageData) => {
+    const token = localStorage.getItem("authToken"); // Get token
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/chat/messages/save/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include token in the request
+          },
+          body: JSON.stringify(messageData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save message");
+      }
+
+      const data = await response.json();
+      console.log("Message saved:", data);
+    } catch (error) {
+      console.error("Error saving message:", error);
+    }
+  };
 
   // Check if WebSocket is open before sending a message
   const handleSendMessage = () => {
@@ -36,19 +114,36 @@ function ConversationDetail({ userName }) {
           conversation_id: conversationId,
           body: newMessage,
           name: userName || "Anonymous",
-          sent_to_id: 2, // Dynamic user ID, can be passed as props
+          sent_to_id: selectedUserId,
         },
       };
-      console.log("Sending message data:", messageData);
       sendMessage(JSON.stringify(messageData));
       setNewMessage("");
+      saveMessageToDatabase(messageData.data);
     } else {
-      console.log("WebSocket is not connected.");
+      console.log("WebSocket is not connected. Current state:", readyState);
     }
   };
 
   return (
     <div className="chat-container">
+      <div className="user-list">
+        {users.map((user) => (
+          <div
+            key={user.id}
+            onClick={() => setSelectedUserId(user.id)}
+            style={{
+              cursor: "pointer",
+              padding: "5px",
+              backgroundColor:
+                selectedUserId === user.id ? "#d1e7dd" : "transparent",
+            }}
+          >
+            {user.name}
+          </div>
+        ))}
+      </div>
+
       <div className="message-container">
         {messages.map((message, index) => (
           <div
