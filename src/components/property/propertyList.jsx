@@ -2,29 +2,56 @@ import React, { useEffect, useState, useCallback } from "react";
 import PropertyListItem from "./PropertyListItem";
 import axiosInstance from "../../axios";
 
-const PropertyList = ({ landlord_id = null }) => {
-    const [properties, setProperties] = useState([]);
-    const [error, setError] = useState(null);
+const PropertyList = ({ landlord_username = null }) => {
+  const [properties, setProperties] = useState([]);
+  const [error, setError] = useState(null);
 
-    const getProperties = useCallback(async () => {
-        let url = "/api/properties/";
+//     const getProperties = useCallback(async () => {
+//         let url = "/api/properties/";
     
-        if (landlord_id) {
-          url += `?landlord_id=${landlord_id}`;
-        }
+//         if (landlord_id) {
+//           url += `?landlord_id=${landlord_id}`;
+//         }
     
-        try {
-          const response = await axiosInstance.get(url);
-          setProperties(response.data.data);
-        } catch (error) {
-          setError("Failed to fetch properties.");
-        }
-    }, [landlord_id]);
+//         try {
+//           const response = await axiosInstance.get(url);
+//           setProperties(response.data.data);
+//         } catch (error) {
+//           setError("Failed to fetch properties.");
+//         }
+//     }, [landlord_id]);
 
-    useEffect(() => {
-        getProperties();
-    }, [getProperties]);
+//     useEffect(() => {
+//         getProperties();
+//     }, [getProperties]);
 
+//     const handleFavoriteToggle = (propertyId, isFavorite) => {
+//         setProperties(prevProperties =>
+//             prevProperties.map(property =>
+//                 property.id === propertyId
+//                     ? { ...property, isFavorite }
+//                     : property
+//             )
+//         );
+//     };
+
+//     if (error) {
+//         return <div>Error: {error}</div>;
+
+  const getProperties = async () => {
+    let url = "/api/properties/";
+
+    if (landlord_username) {
+      url += `?landlord_username=${landlord_username}`;
+      console.log(url);
+    }
+    try {
+      const response = await axiosInstance.get(url);
+      setProperties(response.data.data);
+    } catch (error) {
+      setError("Failed to fetch properties..");
+      
+      
     const handleFavoriteToggle = (propertyId, isFavorite) => {
         setProperties(prevProperties =>
             prevProperties.map(property =>
@@ -37,7 +64,17 @@ const PropertyList = ({ landlord_id = null }) => {
 
     if (error) {
         return <div>Error: {error}</div>;
+      
     }
+  };
+
+  useEffect(() => {
+    getProperties();
+  }, [landlord_username]);
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
     return (
         <div className="container my-4">
@@ -53,6 +90,7 @@ const PropertyList = ({ landlord_id = null }) => {
             </div>
         </div>
     );
+
 };
 
 export default PropertyList;

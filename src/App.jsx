@@ -16,18 +16,22 @@ import ResetPasswordConfirm from './components/modals/ResetPasswordConfirm';
 import LandlordDetailPage from "./pages/landlord/LandlordDetailPage";
 import MyFavoritesPage from './components/home/MyFavoritesPage';
 import UserProfile from './components/userprofile/UserProfile';
+import BookingPage from "./components/payment/BookingPage";
 
 
 function App() {
   return (
     <div className="app">
       <Header />
-        <LoginModal />
-        <SignupModal />
-        <PasswordResetModal />
-        <AddProperty />
+      <LoginModal />
+      <SignupModal />
+      <PasswordResetModal />
+      <AddProperty />
       <Routes>
-        <Route path="/reset-password/:uid/:token/" element={<ResetPasswordConfirm />} />
+        <Route
+          path="/reset-password/:uid/:token/"
+          element={<ResetPasswordConfirm />}
+        />
         <Route path="/home" element={<Home />} />
         <Route path="/" element={<Home />} />
         <Route path="/properties/:id" element={<PropertyDetail />} />
@@ -38,9 +42,11 @@ function App() {
           element={<ConversationDetail />}
         />
         <Route path="/MyReservations" element={<MyReservationsPage />} />
-        <Route path="/landlord/:id" element={<LandlordDetailPage />} />
         <Route path="/my-favorites" element={<MyFavoritesPage />} />
         <Route path="/profile" element={<UserProfile />} /> 
+
+        <Route path="/landlord/:username" element={<LandlordDetailPage />} />
+        <Route path="/payment" element={<BookingPage />} />
       </Routes>
       <Footer />
     </div>
