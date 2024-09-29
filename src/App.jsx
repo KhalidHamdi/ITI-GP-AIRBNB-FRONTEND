@@ -17,6 +17,8 @@ import LandlordDetailPage from "./pages/landlord/LandlordDetailPage";
 import BookingPage from "./components/payment/BookingPage";
 import FilterModal from './components/modals/FilterModal';
 import PropertyContainer from './pages/category/CategoryPage'; // Import PropertyContainer
+import UserProfile from './components/userprofile/UserProfile';
+
 
 
 function App() {
@@ -34,6 +36,7 @@ function App() {
           path="/reset-password/:uid/:token/"
           element={<ResetPasswordConfirm />}
         />
+        <Route path="/profile" element={<UserProfile />} />
         <Route path="/home" element={<Home />} />
         <Route path="/" element={<Home />} />
         <Route path="/properties/:id" element={<PropertyDetail />} />
