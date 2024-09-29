@@ -18,7 +18,7 @@ const PropertyDetail = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [isFavorite, setIsFavorite] = useState(false); 
+  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +28,6 @@ const PropertyDetail = () => {
         setLoading(false);
 
         const address = `${response.data.address}, ${response.data.city}, ${response.data.country}`;
-
         const openCageResponse = await axiosInstance.get(`/api/properties/geocode/`, {
           params: { q: address },
         });
@@ -66,25 +65,10 @@ const PropertyDetail = () => {
       }
     };
 
-    const checkFavoriteStatus = async () => {
-      if (isAuthenticated) {
-        try {
-          const response = await axiosInstance.get("/api/favorites/");
-          const favorites = response.data;
-          const isFav = favorites.some((fav) => fav.id === parseInt(id));
-          setIsFavorite(isFav);
-        } catch (error) {
-          console.error("Error checking favorite status", error);
-        }
-      }
-    };
-
     fetchData();
     fetchReviews();
     checkAuthStatus();
-    checkFavoriteStatus();
   }, [id, isAuthenticated]);
-
 
   useEffect(() => {
     if (currentUser && reviews.length > 0) {
@@ -101,19 +85,40 @@ const PropertyDetail = () => {
   };
 
   const toggleFavorite = async () => {
+    const token = Cookies.get('authToken');
+    if (!token) return;
+
     try {
       if (isFavorite) {
-        await axiosInstance.post(`/api/favorites/remove/${id}/`);
-        setIsFavorite(false);
+        await axiosInstance.delete(`/api/favorite/${property.id}/`); 
       } else {
-        await axiosInstance.post(`/api/favorites/add/${id}/`);
-        setIsFavorite(true);
+        await axiosInstance.post(`/api/favorite/`, { property_id: property.id }); 
       }
+      setIsFavorite(!isFavorite);
     } catch (error) {
-      console.error("Error toggling favorite", error);
+      console.error("Error toggling favorite status:", error);
     }
   };
-  
+
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      const token = Cookies.get('authToken');
+      if (!token) return;
+
+      try {
+        const response = await axiosInstance.get("/api/favorite/");
+        const favorites = response.data;
+        const favStatus = favorites.some((fav) => fav.property.id === property.id);
+        setIsFavorite(favStatus);
+      } catch (error) {
+        console.error("Error checking favorite status", error);
+      }
+    };
+
+    if (property) {
+      checkFavoriteStatus();
+    }
+  }, [property]);
 
   const DefaultIcon = L.icon({
     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -158,14 +163,13 @@ const PropertyDetail = () => {
                 <i className="bi bi-upload me-2"></i>Share
               </button>
               <button className="btn btn-link text-dark" onClick={toggleFavorite}>
-                <i className={`bi ${isFavorite ? "bi-heart-fill" : "bi-heart"} me-2`}></i>
-                {isFavorite ? "Saved" : "Save"}
+                <i className={`bi-heart${isFavorite ? '-fill' : ''}`}> Fav </i>
               </button>
             </div>
           </div>
         </div>
-      </div>
-
+      </div>  
+      
       <div className="row mt-4">
         <div className="col-12">
           <div style={{ height: "400px", overflow: "hidden", borderRadius: "12px" }}>
@@ -222,72 +226,74 @@ const PropertyDetail = () => {
         </p>
       )}
 
-      <hr className="my-5" />
 
-      <div className="row mb-5">
-        <div className="col-12">
-          <h3 className="fs-4 fw-bold mb-4">Where you'll be</h3>
-          <p>
-            {property.address}, {property.city}, {property.country}
-          </p>
-          {position ? (
-            <MapContainer
-              center={position}
-              zoom={13}
-              scrollWheelZoom={false}
-              style={{ height: "480px", borderRadius: "12px" }}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              />
-              <Marker position={position}>
-                <Popup>
-                  {property.title} <br /> {property.city}, {property.country}
-                </Popup>
-              </Marker>
-            </MapContainer>
-          ) : (
-            <p>Loading map...</p>
-          )}
-        </div>
+<hr className="my-5" />
+
+<div className="row mb-5">
+  <div className="col-12">
+    <h3 className="fs-4 fw-bold mb-4">Where you'll be</h3>
+    <p>
+      {property.address}, {property.city}, {property.country}
+    </p>
+    {position ? (
+      <MapContainer
+        center={position}
+        zoom={13}
+        scrollWheelZoom={false}
+        style={{ height: "480px", borderRadius: "12px" }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+        <Marker position={position}>
+          <Popup>
+            {property.title} <br /> {property.city}, {property.country}
+          </Popup>
+        </Marker>
+      </MapContainer>
+    ) : (
+      <p>Loading map...</p>
+    )}
+  </div>
+</div>
+
+<hr className="my-5" />
+
+<div className="row mb-5">
+  <div className="col-12">
+    <h3 className="fs-4 fw-bold mb-4">Things to know</h3>
+    <div className="row">
+      <div className="col-md-4 mb-4 mb-md-0">
+        <h4 className="fs-6 fw-bold mb-3">House rules</h4>
+        <ul className="list-unstyled">
+          {property.house_rules && property.house_rules.map((rule, index) => (
+            <li key={index}>{rule}</li>
+          ))}
+        </ul>
       </div>
-
-      <hr className="my-5" />
-
-      <div className="row mb-5">
-        <div className="col-12">
-          <h3 className="fs-4 fw-bold mb-4">Things to know</h3>
-          <div className="row">
-            <div className="col-md-4 mb-4 mb-md-0">
-              <h4 className="fs-6 fw-bold mb-3">House rules</h4>
-              <ul className="list-unstyled">
-                {property.house_rules && property.house_rules.map((rule, index) => (
-                  <li key={index}>{rule}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="col-md-4 mb-4 mb-md-0">
-              <h4 className="fs-6 fw-bold mb-3">Safety & Property</h4>
-              <ul className="list-unstyled">
-                {property.safety && property.safety.map((safetyItem, index) => (
-                  <li key={index}>{safetyItem}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="col-md-4">
-              <h4 className="fs-6 fw-bold mb-3">Cancellation Policy</h4>
-              <ul className="list-unstyled">
-                {property.cancellation && property.cancellation.map((policyItem, index) => (
-                  <li key={index}>{policyItem}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
+      <div className="col-md-4 mb-4 mb-md-0">
+        <h4 className="fs-6 fw-bold mb-3">Safety & Property</h4>
+        <ul className="list-unstyled">
+          {property.safety && property.safety.map((safetyItem, index) => (
+            <li key={index}>{safetyItem}</li>
+          ))}
+        </ul>
+      </div>
+      <div className="col-md-4">
+        <h4 className="fs-6 fw-bold mb-3">Cancellation Policy</h4>
+        <ul className="list-unstyled">
+          {property.cancellation && property.cancellation.map((policyItem, index) => (
+            <li key={index}>{policyItem}</li>
+          ))}
+        </ul>
       </div>
     </div>
-  );
+  </div>
+</div>
+</div>
+);
 };
 
 export default PropertyDetail;
+

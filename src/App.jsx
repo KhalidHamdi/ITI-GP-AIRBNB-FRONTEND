@@ -18,6 +18,7 @@ import BookingPage from "./components/payment/BookingPage";
 import FilterModal from './components/modals/FilterModal';
 import PropertyContainer from './pages/category/CategoryPage'; // Import PropertyContainer
 import UserProfile from './components/userprofile/UserProfile';
+import MyFavoritesPage from './components/home/MyFavoritesPage'
 
 
 
@@ -50,6 +51,7 @@ function App() {
         <Route path="/MyReservations" element={<MyReservationsPage />} />
         <Route path="/landlord/:username" element={<LandlordDetailPage />} />
         <Route path="/payment" element={<BookingPage />} />
+        <Route path="/my-favorites" element={<MyFavoritesPage />} />
       </Routes>
       <Footer />
     </div>
