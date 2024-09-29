@@ -13,7 +13,7 @@ const Search = () => {
   const fetchSuggestions = async (query) => {
     try {
       const response = await axiosInstance.get(
-        `/api/properties/`
+        /api/properties/
       );
       setSuggestions(response.data);
     } catch (error) {

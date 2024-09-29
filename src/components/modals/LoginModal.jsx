@@ -20,41 +20,41 @@ const LoginModal = () => {
     dispatch(closeLoginModal());
   };
 
-
-
-    const submitLogin = async (e) => {
-      e.preventDefault();
-    
-      const loginData = {
-        email,  // Adjust to match your backend, if necessary
-        password,
-      };
-    
-      try {
-        const response = await axiosInstance.post('/api/auth/login/', loginData);
-    
-        if (response.data.key) {
-          // Store both the token and the user details
-          handleLogin(response.data.key, response.data.user_id);  // Or store more user info if necessary
-          close();
-          navigate('/');
-          console.log("Login successful");
-        } else {
-          setErrors(['Login failed. Token or User ID not found in response.']);
-        }
-      } catch (error) {
-        console.error("Login error:", error.response?.data);
-        if (error.response?.data?.non_field_errors) {
-          setErrors(error.response.data.non_field_errors);
-        } else if (error.response?.data) {
-          const fieldErrors = Object.entries(error.response.data)
-            .map(([field, messages]) => `${field}: ${messages.join(', ')}`);
-          setErrors(fieldErrors);
-        } else {
-          setErrors(['Login failed. Please check your credentials and try again.']);
-        }
-      }
+  const submitLogin = async (e) => {
+    e.preventDefault();
+  
+    const loginData = {
+      email,
+      password,
     };
+  
+    try {
+      const response = await axiosInstance.post('/api/auth/login/', loginData);
+      console.log(response.data); 
+  
+      if (response.data.key && response.data.user_id) {
+        handleLogin(response.data.key, null, response.data.user_id); 
+        close();
+        navigate('/');
+        console.log("Login successful");
+      } else {
+        setErrors(['Login failed. Token or User ID not found in response.']);
+      }
+    } catch (error) {
+      console.error("Login error:", error.response?.data);
+      if (error.response?.data?.non_field_errors) {
+        setErrors(error.response.data.non_field_errors);
+      } else if (error.response?.data) {
+        const fieldErrors = Object.entries(error.response.data)
+          .map(([field, messages]) => `${field}: ${messages.join(', ')}`);
+        setErrors(fieldErrors);
+      } else {
+        setErrors(['Login failed. Please check your credentials and try again.']);
+      }
+    }
+  };
+  
+  
     
   const openResetModal = () => {
     dispatch(openPasswordResetModal());
@@ -109,7 +109,7 @@ const LoginModal = () => {
   return (
     <>
       <Modal isOpen={isOpen} close={close} label="Log in" content={content} />
-      <PasswordResetModal /> {/* Ensure this component is rendered */}
+      <PasswordResetModal /> 
     </>
   );
 };
