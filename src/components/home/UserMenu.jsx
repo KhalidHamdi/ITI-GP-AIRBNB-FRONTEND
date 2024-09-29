@@ -13,8 +13,8 @@ const UserMenu = ({ airbnbYourHome }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const accessToken = Cookies.get('accessToken');
-        setIsLoggedIn(!!accessToken); 
+        const authToken = Cookies.get('authToken');
+        setIsLoggedIn(!!authToken); 
     }, []);
 
     const logout = async () => {
