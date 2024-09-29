@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import Cookies from "js-cookie"; // Import js-cookie for handling cookies
 import "./conversationDetails.css";
 
 function ConversationDetail() {
@@ -20,9 +21,9 @@ function ConversationDetail() {
     }
   }, [conversationId]);
 
-  // Get token from local storage and fetch user info
+  // Get token from cookies and fetch user info
   useEffect(() => {
-    const token = localStorage.getItem("authToken"); // Retrieve token
+    const token = Cookies.get("authToken"); // Retrieve token from cookies
     if (token) {
       fetchUsernameFromToken(token);
     }
@@ -81,7 +82,7 @@ function ConversationDetail() {
   });
 
   const saveMessageToDatabase = async (messageData) => {
-    const token = localStorage.getItem("authToken"); // Get token
+    const token = Cookies.get("authToken"); // Get token from cookies
     try {
       const response = await fetch(
         "http://127.0.0.1:8000/api/chat/messages/save/",
