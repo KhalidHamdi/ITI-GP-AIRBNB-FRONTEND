@@ -4,50 +4,32 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./conversationDetails.css";
 
 function ConversationDetail() {
-  const { id: conversationId } = useParams(); // Get conversationId from URL parameters
+  const { id: conversationId } = useParams();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [socketUrl, setSocketUrl] = useState(null);
-  const [userName, setUserName] = useState("Anonymous"); // Default username
-  const [users, setUsers] = useState([]); // To store users for selection
-  const [selectedUserId, setSelectedUserId] = useState(null); // Store the ID of the selected user
+  const [userName, setUserName] = useState("Anonymous");
+  const [users, setUsers] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   // Set WebSocket URL
   useEffect(() => {
+    console.log("conversationId:", conversationId);
     if (conversationId) {
       const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
+      console.log("WebSocket URL:", wsUrl); // Check the URL in the console
       setSocketUrl(wsUrl);
     }
   }, [conversationId]);
 
-  // Get token from local storage and fetch user info
+  // Get username from local storage on component mount
   useEffect(() => {
-    const token = localStorage.getItem("authToken"); // Retrieve token
-    if (token) {
-      fetchUsernameFromToken(token);
+    const storedUserId = localStorage.getItem("userId");
+    if (storedUserId) {
+      const fetchedUserName = "User_" + storedUserId.substring(0, 5);
+      setUserName(fetchedUserName);
     }
   }, []);
-
-  // Function to fetch user info based on the token
-  const fetchUsernameFromToken = async (token) => {
-    try {
-      const response = await fetch("http://127.0.0.1:8000/api/auth/user/", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch user info");
-      }
-
-      const userData = await response.json();
-      setUserName(userData.username); // Set the username from the response
-    } catch (error) {
-      console.error("Error fetching user info:", error);
-    }
-  };
 
   // Fetch users for selection
   useEffect(() => {
@@ -81,7 +63,6 @@ function ConversationDetail() {
   });
 
   const saveMessageToDatabase = async (messageData) => {
-    const token = localStorage.getItem("authToken"); // Get token
     try {
       const response = await fetch(
         "http://127.0.0.1:8000/api/chat/messages/save/",
@@ -89,7 +70,6 @@ function ConversationDetail() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include token in the request
           },
           body: JSON.stringify(messageData),
         }
@@ -117,11 +97,15 @@ function ConversationDetail() {
           sent_to_id: selectedUserId,
         },
       };
+      console.log("Sending message data:", messageData);
       sendMessage(JSON.stringify(messageData));
       setNewMessage("");
       saveMessageToDatabase(messageData.data);
     } else {
-      console.log("WebSocket is not connected. Current state:", readyState);
+      console.log(
+        "WebSocket is not connected or no user selected. Current state:",
+        readyState
+      );
     }
   };
 
@@ -139,7 +123,7 @@ function ConversationDetail() {
                 selectedUserId === user.id ? "#d1e7dd" : "transparent",
             }}
           >
-            {user.name}
+            {user.name} {/* Display user name */}
           </div>
         ))}
       </div>
