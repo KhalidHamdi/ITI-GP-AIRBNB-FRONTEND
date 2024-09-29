@@ -1,48 +1,59 @@
 import React, { useEffect, useState } from "react";
 import PropertyListItem from "./PropertyListItem";
 import axiosInstance from "../../axios";
-import { useLocation } from "react-router-dom"; 
+import { useLocation } from "react-router-dom";
 
-const PropertyList = ({ landlord_username = null , selectedCategory, filteredProperties}) => {
+const PropertyList = ({
+  landlord_username = null,
+  selectedCategory,
+  filteredProperties,
+}) => {
   const [properties, setProperties] = useState([]);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1); // Tracks current page
+  const [totalPages, setTotalPages] = useState(1); // Tracks total number of pages
   const location = useLocation();
 
-  const getProperties = async () => {
-    let url = "/api/properties/";
+  // Fetch properties with pagination
+  const getProperties = async (page = 1) => {
+    let url = `/api/properties/?page=${page}`; // Include the page number in the URL
 
     if (landlord_username) {
-      url += `?landlord_username=${landlord_username}`;
-      console.log(url);
+      url += `&landlord_username=${landlord_username}`;
     }
+
     try {
-        if (filteredProperties || location.state?.properties) {
-            setProperties(filteredProperties || location.state.properties);
-        } else {
-            const response = await axiosInstance.get(
-                selectedCategory ? `/api/properties/?category=${selectedCategory}` : url
-            );
-            setProperties(response.data.data);
-        }
+      if (filteredProperties || location.state?.properties) {
+        setProperties(filteredProperties || location.state.properties);
+        setTotalPages(1); // No need for pagination if filtered properties are shown
+      } else {
+        const response = await axiosInstance.get(
+          selectedCategory
+            ? `/api/properties/?category=${selectedCategory}&page=${page}`
+            : url
+        );
+        setProperties(response.data.results); // Set the properties for the current page
+        setTotalPages(Math.ceil(response.data.count / 10)); // Calculate total pages
+      }
     } catch (error) {
-        setError("Failed to fetch properties.");
+      setError("Failed to fetch properties.");
     }
   };
 
+  // Fetch properties when the component mounts or when landlord_username changes
   useEffect(() => {
-    getProperties();
-  }, [landlord_username]);
-    
-    
-  useEffect(() => {
-    if (!filteredProperties && !location.state?.properties) {
-        getProperties();
-    } else {
-        setProperties(filteredProperties || location.state.properties);
+    getProperties(currentPage);
+  }, [landlord_username, currentPage]);
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      getProperties(newPage); // Fetch properties for the new page
     }
-}, [selectedCategory, filteredProperties, location.state?.properties]);
+  };
 
-
+  // Check for errors
   if (error) {
     return <div>Error: {error}</div>;
   }
@@ -56,6 +67,39 @@ const PropertyList = ({ landlord_username = null , selectedCategory, filteredPro
           </div>
         ))}
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="d-flex justify-content-center mt-3" >
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '10px',
+            marginTop:'50px',
+          }}>
+          <button
+            disabled={currentPage === 1}
+            onClick={() => handlePageChange(currentPage - 1)}
+            className="btn btn-sm btn-outline-primary mx-2"
+          >
+             &laquo; Prev
+          </button>
+
+          <span className="mx-2">
+            {currentPage} / {totalPages}
+          </span>
+
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => handlePageChange(currentPage + 1)}
+            className="btn btn-sm btn-outline-primary mx-2"
+          >
+            Next &raquo;
+          </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
