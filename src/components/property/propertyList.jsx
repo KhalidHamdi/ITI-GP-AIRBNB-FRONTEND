@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom"; // Import to use location state
+import { useLocation } from "react-router-dom"; 
 import PropertyListItem from "./PropertyListItem";
 import axiosInstance from "../../axios";
 
 const PropertyList = ({ landlord_id = null, selectedCategory, filteredProperties }) => {
     const [properties, setProperties] = useState([]);
     const [error, setError] = useState(null);
-    const location = useLocation(); // To access state passed through routing
+    const location = useLocation();
 
-    // Fetch properties based on conditions
     const getProperties = async () => {
         let url = "/api/properties/";
 
@@ -17,15 +16,12 @@ const PropertyList = ({ landlord_id = null, selectedCategory, filteredProperties
         }
 
         try {
-            // If filtered properties are passed through props or routing, use them
             if (filteredProperties || location.state?.properties) {
-                setProperties(filteredProperties || location.state.properties);  // Prioritize filtered properties
+                setProperties(filteredProperties || location.state.properties);
             } else {
-                // Otherwise, fetch properties based on selected category
-                const url = selectedCategory
-                    ? `/api/properties/?category=${selectedCategory}`
-                    : "/api/properties/";
-                const response = await axiosInstance.get(url);
+                const response = await axiosInstance.get(
+                    selectedCategory ? `/api/properties/?category=${selectedCategory}` : url
+                );
                 setProperties(response.data.data);
             }
         } catch (error) {
@@ -33,14 +29,13 @@ const PropertyList = ({ landlord_id = null, selectedCategory, filteredProperties
         }
     };
 
-    // Only fetch when no filtered properties are provided
     useEffect(() => {
         if (!filteredProperties && !location.state?.properties) {
             getProperties();
         } else {
-            setProperties(filteredProperties || location.state.properties);  // Set properties when filtering
+            setProperties(filteredProperties || location.state.properties);
         }
-    }, [selectedCategory, filteredProperties, location.state?.properties]); // Update effect dependencies
+    }, [selectedCategory, filteredProperties, location.state?.properties]);
 
     if (error) {
         return <div>Error: {error}</div>;
