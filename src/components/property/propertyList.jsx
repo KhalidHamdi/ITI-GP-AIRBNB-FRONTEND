@@ -19,7 +19,7 @@ const PropertyList = ({ landlord_id = null, selectedCategory, filteredProperties
         try {
             // If filtered properties are passed through props or routing, use them
             if (filteredProperties || location.state?.properties) {
-                setProperties(filteredProperties || location.state.properties);
+                setProperties(filteredProperties || location.state.properties);  // Prioritize filtered properties
             } else {
                 // Otherwise, fetch properties based on selected category
                 const url = selectedCategory
@@ -33,9 +33,12 @@ const PropertyList = ({ landlord_id = null, selectedCategory, filteredProperties
         }
     };
 
+    // Only fetch when no filtered properties are provided
     useEffect(() => {
         if (!filteredProperties && !location.state?.properties) {
             getProperties();
+        } else {
+            setProperties(filteredProperties || location.state.properties);  // Set properties when filtering
         }
     }, [selectedCategory, filteredProperties, location.state?.properties]); // Update effect dependencies
 

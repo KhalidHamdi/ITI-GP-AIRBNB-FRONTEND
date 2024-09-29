@@ -38,6 +38,15 @@ const modalSlice = createSlice({
     closeFilterModal: (state) => {
       state.filterModalOpen = false;
     },
+    // PasswordReset
+    openPasswordResetModal: (state) => { // Add this reducer
+      state.passwordResetModalOpen = true;
+    },
+    closePasswordResetModal: (state) => { // Add this reducer
+        state.passwordResetModalOpen = false;
+    },
+
+
   },
 });
 
@@ -48,6 +57,8 @@ export const {
   closeLoginModal,
   openSignupModal,
   closeSignupModal,
+  openPasswordResetModal, // Export the action
+  closePasswordResetModal, // Export the action
   openFilterModal,
   closeFilterModal,
 } = modalSlice.actions;

@@ -6,10 +6,12 @@ import "./Home.css";
 import PropertyList from "../../components/property/propertyList";
 import AddProperty from "../../components/property/addProperty";
 import "../../components/Reservations/ReservationSidebar";
+import AdComponent from "../../components/ads/AdComponent";
 
 const Home = () => {
   return (
     <div className="home">
+      <AdComponent/>
       <Categories />
       <PropertyList />
     </div>
