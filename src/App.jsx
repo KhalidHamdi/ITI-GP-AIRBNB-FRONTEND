@@ -15,6 +15,7 @@ import PasswordResetModal from './components/modals/PasswordResetModal';
 import ResetPasswordConfirm from './components/modals/ResetPasswordConfirm';
 import LandlordDetailPage from "./pages/landlord/LandlordDetailPage";
 import MyFavoritesPage from './components/home/MyFavoritesPage';
+import UserProfile from './components/userprofile/UserProfile';
 
 
 function App() {
@@ -38,7 +39,8 @@ function App() {
         />
         <Route path="/MyReservations" element={<MyReservationsPage />} />
         <Route path="/landlord/:id" element={<LandlordDetailPage />} />
-        <Route path="/my-favorites" element={<MyFavoritesPage />} /> 
+        <Route path="/my-favorites" element={<MyFavoritesPage />} />
+        <Route path="/profile" element={<UserProfile />} /> 
       </Routes>
       <Footer />
     </div>

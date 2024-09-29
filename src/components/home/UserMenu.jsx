@@ -39,6 +39,11 @@ const UserMenu = ({ airbnbYourHome }) => {
                 {isLoggedIn ? (
                     <>
                         <li>
+                            <Link to="/profile" className="dropdown-item">
+                                User Profile
+                            </Link>
+                        </li>
+                        <li>
                             <Link to="/chat" className="dropdown-item">
                                 Inbox
                             </Link>
