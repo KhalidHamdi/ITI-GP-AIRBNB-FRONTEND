@@ -49,6 +49,11 @@ const UserMenu = ({ airbnbYourHome }) => {
                             </Link>
                         </li>
                         <li>
+                            <Link to="/my-favorites" className="dropdown-item">
+                                My Favorites
+                            </Link>
+                        </li>
+                        <li>
                             <hr className="dropdown-divider" />
                         </li>
                         <li>
