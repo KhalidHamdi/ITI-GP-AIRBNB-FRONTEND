@@ -11,6 +11,8 @@ import ConversationDetail from "./components/chat/conversationDetails";
 import MyReservationsPage from "./components/home/ReservationsPage";
 import LoginModal from "./components/modals/LoginModal";
 import SignupModal from "./components/modals/SignupModal";
+import PasswordResetModal from "./components/modals/PasswordResetModal"; // Import the new modal
+import ResetPasswordConfirm from "./components/modals/ResetPasswordConfirm";
 import LandlordDetailPage from "./pages/landlord/LandlordDetailPage";
 
 function App() {
@@ -19,8 +21,13 @@ function App() {
       <Header />
       <LoginModal />
       <SignupModal />
+      <PasswordResetModal />
       <AddProperty />
       <Routes>
+        <Route
+          path="/reset-password/:uid/:token/"
+          element={<ResetPasswordConfirm />}
+        />
         <Route path="/home" element={<Home />} />
         <Route path="/" element={<Home />} />
         <Route path="/properties/:id" element={<PropertyDetail />} />

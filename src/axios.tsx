@@ -1,13 +1,25 @@
-// src/axios.js
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8000', 
-    // withCredentials: true, // Set to true if your backend requires credentials like cookies
+    baseURL: 'http://localhost:8000/', 
     headers: {
       'Content-Type': 'multipart/form-data',
     },
-    withCredentials: true, 
+    withCredentials: true,
 });
+
+axiosInstance.interceptors.request.use(
+    config => {
+        const token = Cookies.get('authToken');
+        if (token) {
+            config.headers['Authorization'] = 'Token ' + token;
+        }
+        return config;
+    },
+    error => {
+        return Promise.reject(error);
+    }
+);
 
 export default axiosInstance;
