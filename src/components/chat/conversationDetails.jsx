@@ -14,34 +14,51 @@ function ConversationDetail() {
 
   // Set WebSocket URL
   useEffect(() => {
-    console.log("conversationId:", conversationId);
     if (conversationId) {
       const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
-      console.log("WebSocket URL:", wsUrl); // Check the URL in the console
       setSocketUrl(wsUrl);
     }
   }, [conversationId]);
 
-  // Get username from local storage on component mount
+  // Get token from local storage and fetch user info
   useEffect(() => {
-    const storedUserId = localStorage.getItem("userId");
-    // Fetch username based on stored userId
-    if (storedUserId) {
-      const fetchedUserName = "User_" + storedUserId.substring(0, 5); // Mocked username
-      setUserName(fetchedUserName);
+    const token = localStorage.getItem("authToken"); // Retrieve token
+    if (token) {
+      fetchUsernameFromToken(token);
     }
   }, []);
+
+  // Function to fetch user info based on the token
+  const fetchUsernameFromToken = async (token) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/auth/user/", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user info");
+      }
+
+      const userData = await response.json();
+      setUserName(userData.username); // Set the username from the response
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  };
 
   // Fetch users for selection
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/users/"); // Replace with your API endpoint for users
+        const response = await fetch("http://127.0.0.1:8000/api/users/");
         if (!response.ok) {
           throw new Error("Failed to fetch users");
         }
         const userData = await response.json();
-        setUsers(userData); // Assume the response is an array of users
+        setUsers(userData);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -64,6 +81,7 @@ function ConversationDetail() {
   });
 
   const saveMessageToDatabase = async (messageData) => {
+    const token = localStorage.getItem("authToken"); // Get token
     try {
       const response = await fetch(
         "http://127.0.0.1:8000/api/chat/messages/save/",
@@ -71,6 +89,7 @@ function ConversationDetail() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include token in the request
           },
           body: JSON.stringify(messageData),
         }
@@ -94,19 +113,15 @@ function ConversationDetail() {
         data: {
           conversation_id: conversationId,
           body: newMessage,
-          name: userName || "Anonymous", // Use retrieved username
-          sent_to_id: selectedUserId, // Use selected user ID
+          name: userName || "Anonymous",
+          sent_to_id: selectedUserId,
         },
       };
-      console.log("Sending message data:", messageData);
       sendMessage(JSON.stringify(messageData));
-      setNewMessage(""); // Clear input after sending
+      setNewMessage("");
       saveMessageToDatabase(messageData.data);
     } else {
-      console.log(
-        "WebSocket is not connected or no user selected. Current state:",
-        readyState
-      );
+      console.log("WebSocket is not connected. Current state:", readyState);
     }
   };
 
@@ -116,7 +131,7 @@ function ConversationDetail() {
         {users.map((user) => (
           <div
             key={user.id}
-            onClick={() => setSelectedUserId(user.id)} // Set selected user ID
+            onClick={() => setSelectedUserId(user.id)}
             style={{
               cursor: "pointer",
               padding: "5px",
@@ -124,7 +139,7 @@ function ConversationDetail() {
                 selectedUserId === user.id ? "#d1e7dd" : "transparent",
             }}
           >
-            {user.name} {/* Display user name */}
+            {user.name}
           </div>
         ))}
       </div>
