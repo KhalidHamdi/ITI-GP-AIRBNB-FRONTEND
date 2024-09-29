@@ -1,29 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
-// import ContactButton from "../components/ContactButton";
+import ContactButton from "../../components/ContactButton";
 import PropertyList from "../../components/property/propertyList";
 
 const LandlordDetailPage = () => {
   const { username } = useParams();
   const [landlord, setLandlord] = useState(null);
   const [userId, setUserId] = useState(null);
-  console.log("Landlord data", landlord);
+  const [landlordId, setLandlordId] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const landlordData = await axiosInstance.get(`/api/auth/${username}`);
         setLandlord(landlordData.data);
+        setLandlordId(landlordData.data.id);
         // const currentUserId = sessionStorage.getItem("userId");
-        // setUserId(currentUserId);
+        const currentUserId = "3bd4857d-edca-4ab2-b3ac-2c976e5f14f4";
+        setUserId(currentUserId);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  }, [username]);
+  }, []);
+
+  console.log("Landlord data", landlord);
+  console.log("User id", userId);
+  console.log("Landlord id", landlordId);
 
   if (!landlord) {
     return <div>Loading...</div>;
@@ -45,7 +51,9 @@ const LandlordDetailPage = () => {
 
             <h1 className="mt-3 h4">{landlord.username}</h1>
 
-            {/* {userId !== id && <ContactButton userId={userId} landlordId={id} />} */}
+            {userId !== landlordId && (
+              <ContactButton userId={userId} landlordId={landlordId} />
+            )}
           </div>
         </aside>
 
