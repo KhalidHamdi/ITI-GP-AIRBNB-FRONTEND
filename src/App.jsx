@@ -14,6 +14,7 @@ import SignupModal from "./components/modals/SignupModal";
 import PasswordResetModal from "./components/modals/PasswordResetModal"; // Import the new modal
 import ResetPasswordConfirm from "./components/modals/ResetPasswordConfirm";
 import LandlordDetailPage from "./pages/landlord/LandlordDetailPage";
+import BookingPage from "./components/payment/BookingPage";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
         />
         <Route path="/MyReservations" element={<MyReservationsPage />} />
         <Route path="/landlord/:username" element={<LandlordDetailPage />} />
+        <Route path="/payment" element={<BookingPage />} />
       </Routes>
       <Footer />
     </div>

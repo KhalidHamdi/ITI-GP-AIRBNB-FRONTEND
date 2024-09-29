@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Range } from "react-date-range";
-import axiosInstance from "../../axios"; 
+import axiosInstance from "../../axios";
 import { differenceInDays, eachDayOfInterval, format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 import Calendar from "./Calendar";
 
 const initialDateRange = {
@@ -23,6 +24,8 @@ const ReservationSidebar = ({ property, userId }) => {
     (_, index) => index + 1
   );
 
+  const navigate = useNavigate();
+
   const performBooking = async () => {
     if (userId) {
       if (dateRange.startDate && dateRange.endDate) {
@@ -43,6 +46,7 @@ const ReservationSidebar = ({ property, userId }) => {
           );
           if (response.data.success) {
             console.log("Booking successful");
+            navigate("/payment", { state: { totalPrice, guests } });
           } else {
             console.log(response);
             console.log("Something went wrong...");
