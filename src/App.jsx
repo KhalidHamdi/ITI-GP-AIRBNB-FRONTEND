@@ -15,6 +15,12 @@ import PasswordResetModal from "./components/modals/PasswordResetModal"; // Impo
 import ResetPasswordConfirm from "./components/modals/ResetPasswordConfirm";
 import LandlordDetailPage from "./pages/landlord/LandlordDetailPage";
 import BookingPage from "./components/payment/BookingPage";
+import FilterModal from './components/modals/FilterModal';
+import PropertyContainer from './pages/category/CategoryPage'; // Import PropertyContainer
+import UserProfile from './components/userprofile/UserProfile';
+import MyFavoritesPage from './components/home/MyFavoritesPage'
+
+
 
 function App() {
   return (
@@ -24,14 +30,18 @@ function App() {
       <SignupModal />
       <PasswordResetModal />
       <AddProperty />
+      <FilterModal />
+
       <Routes>
         <Route
           path="/reset-password/:uid/:token/"
           element={<ResetPasswordConfirm />}
         />
+        <Route path="/profile" element={<UserProfile />} />
         <Route path="/home" element={<Home />} />
         <Route path="/" element={<Home />} />
         <Route path="/properties/:id" element={<PropertyDetail />} />
+        <Route path="/properties" element={<PropertyContainer />} /> {/* New route */}
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/chat" element={<Chat />} />
         <Route
@@ -41,6 +51,7 @@ function App() {
         <Route path="/MyReservations" element={<MyReservationsPage />} />
         <Route path="/landlord/:username" element={<LandlordDetailPage />} />
         <Route path="/payment" element={<BookingPage />} />
+        <Route path="/my-favorites" element={<MyFavoritesPage />} />
       </Routes>
       <Footer />
     </div>
