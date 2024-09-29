@@ -169,25 +169,30 @@ const Categories = ({ dataCategory, setCategory }) => {
         }
     ];
     return (
-        <div
-            className="row g-3 overflow-auto" 
-            style={{ maxHeight: '750px' }} 
-        >
-            {categoryData.map((category, index) => (
+        <div className="row g-3 overflow-auto" style={{ maxHeight: '750px' }}>
+            {/* Add an 'All Properties' button to show all properties */}
+            <div className="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
                 <div
-                    key={category.value}
-                    className="col-12 col-sm-6 col-md-4 d-flex justify-content-center" 
+                    onClick={() => setCategory("")}  // Setting category to an empty string to show all properties
+                    className={`text-center p-3 category-item d-flex flex-column align-items-center justify-content-center rounded ${dataCategory === "" ? 'border border-dark' : 'border border-light'} opacity-75`}
+                    style={{ cursor: 'pointer', transition: 'all 0.3s', width: '150px', height: '150px' }}
                 >
+                    <span className="text-muted">All Properties</span>
+                </div>
+            </div>
+
+            {categoryData.map((category) => (
+                <div key={category.value} className="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
                     <div
                         onClick={() => setCategory(category.value)}
                         className={`text-center p-3 category-item d-flex flex-column align-items-center justify-content-center rounded ${dataCategory === category.value ? 'border border-dark' : 'border border-light'} opacity-75`}
-                        style={{ cursor: 'pointer', transition: 'all 0.3s', width: '150px', height: '150px' }} 
+                        style={{ cursor: 'pointer', transition: 'all 0.3s', width: '150px', height: '150px' }}
                     >
                         <img
                             src={category.imageUrl}
                             alt={`Category - ${category.title}`}
                             className="mb-2"
-                            width={50} 
+                            width={50}
                             height={50}
                         />
                         <span className="text-muted">{category.title}</span>
@@ -196,5 +201,5 @@ const Categories = ({ dataCategory, setCategory }) => {
             ))}
         </div>
     );
-}    
+}
 export default Categories;
