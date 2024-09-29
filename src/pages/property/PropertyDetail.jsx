@@ -8,6 +8,7 @@ import ReviewList from "../../components/reviews/ReviewList";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import Home from "../home/Home";
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -193,6 +194,7 @@ const PropertyDetail = () => {
                 {property.bedrooms > 1 ? "s" : ""} · {property.bathrooms}{" "}
                 bathroom{property.bathrooms > 1 ? "s" : ""}
               </p>
+              <p className="mb-0 text-muted"> Category: {property.category}</p>
             </div>
           </div>
 
