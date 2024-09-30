@@ -3,53 +3,48 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../axios'; 
 import Cookies from 'js-cookie';
-import { useForm, Controller } from 'react-hook-form';
-import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
-import { openLoginModal } from '../../redux/modalSlice';
+import { FaEdit, FaSave, FaTimes, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaInfoCircle } from 'react-icons/fa';
+import './UserProfile.css'; // Custom CSS for additional styling
 
-// Material-UI Components
-import {
-    Container,
-    Typography,
-    Grid,
-    TextField,
-    Button,
-    Avatar,
-    Paper,
-    CircularProgress,
-} from '@mui/material';
-import { PhotoCamera } from '@mui/icons-material';
+const CustomAlert = ({ message, type }) => (
+  <div className={`alert ${type === 'error' ? 'alert-danger' : 'alert-success'} mt-4`} role="alert">
+    {message}
+  </div>
+);
 
 const UserProfile = () => {
-    const dispatch = useDispatch();
     const [user, setUser] = useState(null);
-    const [avatarPreview, setAvatarPreview] = useState(null);
-    const [loading, setLoading] = useState(false);
-
-    const { control, handleSubmit, reset, formState: { errors }, watch } = useForm({
-        defaultValues: {
-            username: '',
-            email: '',
-            first_name: '',
-            last_name: '',
-            bio: '',
-            address: '',
-            phone_number: '',
-            avatar: null,
-        }
+    const [formData, setFormData] = useState({ 
+        username: '', 
+        email: '', 
+        first_name: '', 
+        last_name: '', 
+        bio: '', 
+        address: '', 
+        phone_number: '', 
+        avatar: null 
     });
+    const [isEditing, setIsEditing] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     useEffect(() => {
         fetchUserProfile();
     }, []);
 
     const fetchUserProfile = async () => {
-        setLoading(true);
         try {
-            const response = await axiosInstance.get('/api/auth/profile/');
+            const authToken = Cookies.get('authToken');
+            if (!authToken) {
+                setError('No auth token found. Please log in.');
+                return;
+            }
+
+            const response = await axiosInstance.get('/api/auth/profile/', {
+                headers: { 'Authorization': `Token ${authToken}` }
+            });
             setUser(response.data);
-            reset({
+            setFormData({
                 username: response.data.username || '',
                 email: response.data.email || '',
                 first_name: response.data.first_name || '',
@@ -57,274 +52,266 @@ const UserProfile = () => {
                 bio: response.data.bio || '',
                 address: response.data.address || '',
                 phone_number: response.data.phone_number || '',
-                avatar: null,
+                avatar: null, // Avatar will be handled separately
             });
-            setAvatarPreview(response.data.avatar || null);
         } catch (err) {
-            toast.error('Failed to fetch user profile. Please try again.');
-            console.error(err);
-        } finally {
-            setLoading(false);
+            setError('Failed to fetch user profile. Please try again.');
         }
     };
 
-    const onSubmit = async (data) => {
-        setLoading(true);
-        setAvatarPreview(data.avatar ? URL.createObjectURL(data.avatar[0]) : avatarPreview);
-        const form = new FormData();
-        form.append('username', data.username);
-        form.append('email', data.email);
-        form.append('first_name', data.first_name);
-        form.append('last_name', data.last_name);
-        form.append('bio', data.bio);
-        form.append('address', data.address);
-        form.append('phone_number', data.phone_number);
-        if (data.avatar && data.avatar.length > 0) {
-            form.append('avatar', data.avatar[0]);
-        }
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
 
+    const handleFileChange = (e) => {
+        setFormData({ ...formData, avatar: e.target.files[0] });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setSuccess('');
+        
+        // Basic client-side validation
+        if (!formData.username.trim()) {
+            setError('Username cannot be empty.');
+            return;
+        }
+        if (formData.username.length > 20) {
+            setError('Username cannot exceed 20 characters.');
+            return;
+        }
+        if (!formData.email.trim()) {
+            setError('Email cannot be empty.');
+            return;
+        }
+        // Add more validations as needed
+
+        const form = new FormData();
+        form.append('username', formData.username);
+        form.append('email', formData.email);
+        form.append('first_name', formData.first_name);
+        form.append('last_name', formData.last_name);
+        form.append('bio', formData.bio);
+        form.append('address', formData.address);
+        form.append('phone_number', formData.phone_number);
+        if (formData.avatar) {
+            form.append('avatar', formData.avatar);
+        }
+        
         try {
+            const authToken = Cookies.get('authToken');
+            if (!authToken) {
+                setError('No auth token found. Please log in.');
+                return;
+            }
+
             const response = await axiosInstance.put('/api/auth/profile/', form, {
                 headers: { 
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Token ${authToken}`
                 }
             });
-            setUser(response.data);
-            toast.success('Profile updated successfully!');
+            
+            setIsEditing(false);
+            setSuccess('Profile updated successfully!');
+            fetchUserProfile(); 
         } catch (err) {
-            toast.error('Failed to update profile. Please try again.');
-            console.error(err);
-        } finally {
-            setLoading(false);
+            if (err.response && err.response.data) {
+                const errorMessages = [];
+                for (const key in err.response.data) {
+                    if (Array.isArray(err.response.data[key])) {
+                        err.response.data[key].forEach(msg => errorMessages.push(msg));
+                    } else {
+                        errorMessages.push(err.response.data[key]);
+                    }
+                }
+                setError(errorMessages.join(' '));
+            } else {
+                setError('Failed to update profile. Please try again.');
+            }
         }
     };
 
-    const handleLogout = () => {
-        Cookies.remove('authToken');
-        toast.info('Logged out successfully.');
-        dispatch(openLoginModal());
-    };
-
-    if (loading && !user) {
-        return (
-            <Container maxWidth="sm" style={{ textAlign: 'center', marginTop: '50px' }}>
-                <CircularProgress />
-            </Container>
-        );
-    }
-
     return (
-        <Container maxWidth="md" style={{ marginTop: '50px' }}>
-            <Paper elevation={3} style={{ padding: '30px' }}>
-                <Typography variant="h4" align="center" gutterBottom>
-                    User Profile
-                </Typography>
-
-                <Grid container spacing={4}>
-                    <Grid item xs={12} sm={4} style={{ textAlign: 'center' }}>
-                        <Avatar
-                            src={avatarPreview}
-                            alt={user?.username}
-                            sx={{ width: 150, height: 150, margin: 'auto' }}
+        <div className="container mt-5 p-4 bg-white rounded shadow-sm">
+            <h2 className="mb-4 text-center">User Profile</h2>
+            
+            {error && <CustomAlert message={error} type="error" />}
+            {success && <CustomAlert message={success} type="success" />}
+            
+            <div className="row">
+                <div className="col-md-4 text-center">
+                    {user?.avatar ? (
+                        <img
+                            src={user.avatar}
+                            alt="User Avatar"
+                            className="rounded-circle img-fluid mb-3"
+                            style={{ width: '200px', height: '200px', objectFit: 'cover' }}
                         />
-                        <Controller
-                            name="avatar"
-                            control={control}
-                            render={({ field }) => (
-                                <Button
-                                    variant="contained"
-                                    component="label"
-                                    startIcon={<PhotoCamera />}
-                                    sx={{ mt: 2 }}
-                                >
-                                    Upload Avatar
+                    ) : (
+                        <div className="avatar-placeholder mb-3">
+                            <FaUser size={100} className="text-muted" />
+                        </div>
+                    )}
+                    {isEditing && (
+                        <div className="mb-3">
+                            <label htmlFor="avatar" className="form-label"><FaUser /> Change Avatar</label>
+                            <input
+                                type="file"
+                                id="avatar"
+                                name="avatar"
+                                onChange={handleFileChange}
+                                className="form-control"
+                                accept="image/*"
+                            />
+                        </div>
+                    )}
+                </div>
+                <div className="col-md-8">
+                    {isEditing ? (
+                        <form onSubmit={handleSubmit}>
+                            <div className="row mb-3">
+                                <div className="col-md-6">
+                                    <label htmlFor="username" className="form-label"><FaUser /> Username</label>
                                     <input
-                                        type="file"
-                                        hidden
-                                        accept="image/*"
-                                        onChange={(e) => {
-                                            field.onChange(e.target.files);
-                                            if (e.target.files.length > 0) {
-                                                setAvatarPreview(URL.createObjectURL(e.target.files[0]));
-                                            }
-                                        }}
-                                    />
-                                </Button>
-                            )}
-                        />
-                        {errors.avatar && (
-                            <Typography color="error" variant="body2">
-                                {errors.avatar.message}
-                            </Typography>
-                        )}
-                    </Grid>
-
-                    <Grid item xs={12} sm={8}>
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                            <Grid container spacing={2}>
-                                {/* Username */}
-                                <Grid item xs={12} sm={6}>
-                                    <Controller
+                                        type="text"
+                                        id="username"
                                         name="username"
-                                        control={control}
-                                        rules={{ 
-                                            required: 'Username is required',
-                                            maxLength: {
-                                                value: 20,
-                                                message: 'Username cannot exceed 20 characters'
-                                            },
-                                            minLength: {
-                                                value: 1,
-                                                message: 'Username cannot be blank'
-                                            }
-                                        }}
-                                        render={({ field }) => (
-                                            <TextField
-                                                {...field}
-                                                label="Username"
-                                                fullWidth
-                                                error={!!errors.username}
-                                                helperText={errors.username ? errors.username.message : ''}
-                                            />
-                                        )}
+                                        value={formData.username}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        required
+                                        maxLength={20}
                                     />
-                                </Grid>
-
-                                {/* Email */}
-                                <Grid item xs={12} sm={6}>
-                                    <Controller
+                                </div>
+                                <div className="col-md-6">
+                                    <label htmlFor="email" className="form-label"><FaEnvelope /> Email</label>
+                                    <input
+                                        type="email"
+                                        id="email"
                                         name="email"
-                                        control={control}
-                                        rules={{ 
-                                            required: 'Email is required',
-                                            pattern: {
-                                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                                message: 'Enter a valid email address'
-                                            }
-                                        }}
-                                        render={({ field }) => (
-                                            <TextField
-                                                {...field}
-                                                label="Email"
-                                                type="email"
-                                                fullWidth
-                                                error={!!errors.email}
-                                                helperText={errors.email ? errors.email.message : ''}
-                                            />
-                                        )}
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        required
                                     />
-                                </Grid>
-
-                                {/* First Name */}
-                                <Grid item xs={12} sm={6}>
-                                    <Controller
+                                </div>
+                            </div>
+                            
+                            <div className="row mb-3">
+                                <div className="col-md-6">
+                                    <label htmlFor="first_name" className="form-label"><FaUser /> First Name</label>
+                                    <input
+                                        type="text"
+                                        id="first_name"
                                         name="first_name"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <TextField
-                                                {...field}
-                                                label="First Name"
-                                                fullWidth
-                                            />
-                                        )}
+                                        value={formData.first_name}
+                                        onChange={handleChange}
+                                        className="form-control"
                                     />
-                                </Grid>
-
-                                {/* Last Name */}
-                                <Grid item xs={12} sm={6}>
-                                    <Controller
+                                </div>
+                                <div className="col-md-6">
+                                    <label htmlFor="last_name" className="form-label"><FaUser /> Last Name</label>
+                                    <input
+                                        type="text"
+                                        id="last_name"
                                         name="last_name"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <TextField
-                                                {...field}
-                                                label="Last Name"
-                                                fullWidth
-                                            />
-                                        )}
+                                        value={formData.last_name}
+                                        onChange={handleChange}
+                                        className="form-control"
                                     />
-                                </Grid>
-
-                                {/* Bio */}
-                                <Grid item xs={12}>
-                                    <Controller
-                                        name="bio"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <TextField
-                                                {...field}
-                                                label="Bio"
-                                                multiline
-                                                rows={4}
-                                                fullWidth
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-
-                                {/* Address */}
-                                <Grid item xs={12}>
-                                    <Controller
+                                </div>
+                            </div>
+                            
+                            <div className="mb-3">
+                                <label htmlFor="bio" className="form-label"><FaInfoCircle /> Bio</label>
+                                <textarea
+                                    id="bio"
+                                    name="bio"
+                                    value={formData.bio}
+                                    onChange={handleChange}
+                                    className="form-control"
+                                    rows="3"
+                                    placeholder="Tell us about yourself..."
+                                ></textarea>
+                            </div>
+                            
+                            <div className="row mb-3">
+                                <div className="col-md-6">
+                                    <label htmlFor="address" className="form-label"><FaMapMarkerAlt /> Address</label>
+                                    <input
+                                        type="text"
+                                        id="address"
                                         name="address"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <TextField
-                                                {...field}
-                                                label="Address"
-                                                fullWidth
-                                            />
-                                        )}
+                                        value={formData.address}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        placeholder="123 Main St, City, Country"
                                     />
-                                </Grid>
-
-                                {/* Phone Number */}
-                                <Grid item xs={12}>
-                                    <Controller
+                                </div>
+                                <div className="col-md-6">
+                                    <label htmlFor="phone_number" className="form-label"><FaPhone /> Phone Number</label>
+                                    <input
+                                        type="text"
+                                        id="phone_number"
                                         name="phone_number"
-                                        control={control}
-                                        rules={{
-                                            pattern: {
-                                                value: /^[0-9+\-() ]+$/,
-                                                message: 'Enter a valid phone number'
-                                            }
-                                        }}
-                                        render={({ field }) => (
-                                            <TextField
-                                                {...field}
-                                                label="Phone Number"
-                                                fullWidth
-                                                error={!!errors.phone_number}
-                                                helperText={errors.phone_number ? errors.phone_number.message : ''}
-                                            />
-                                        )}
+                                        value={formData.phone_number}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        placeholder="+1234567890"
                                     />
-                                </Grid>
-
-                                {/* Buttons */}
-                                <Grid item xs={12} style={{ textAlign: 'right' }}>
-                                    <Button
-                                        variant="outlined"
-                                        color="secondary"
-                                        onClick={handleLogout}
-                                        sx={{ mr: 2 }}
-                                    >
-                                        Logout
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        type="submit"
-                                        disabled={loading}
-                                    >
-                                        {loading ? <CircularProgress size={24} /> : 'Save Changes'}
-                                    </Button>
-                                </Grid>
-                            </Grid>
+                                </div>
+                            </div>
+                            
+                            <div className="d-flex justify-content-end">
+                                <button type="button" onClick={() => setIsEditing(false)} className="btn btn-secondary me-2">
+                                    <FaTimes /> Cancel
+                                </button>
+                                <button type="submit" className="btn btn-primary">
+                                    <FaSave /> Save Changes
+                                </button>
+                            </div>
                         </form>
-                    </Grid>
-                </Grid>
-            </Paper>
-        </Container>
+                    ) : (
+                        <div>
+                            <div className="mb-3">
+                                <h5><FaUser /> Username:</h5>
+                                <p>{user?.username || 'N/A'}</p>
+                            </div>
+                            <div className="mb-3">
+                                <h5><FaEnvelope /> Email:</h5>
+                                <p>{user?.email || 'N/A'}</p>
+                            </div>
+                            <div className="mb-3">
+                                <h5><FaUser /> First Name:</h5>
+                                <p>{user?.first_name || 'N/A'}</p>
+                            </div>
+                            <div className="mb-3">
+                                <h5><FaUser /> Last Name:</h5>
+                                <p>{user?.last_name || 'N/A'}</p>
+                            </div>
+                            <div className="mb-3">
+                                <h5><FaInfoCircle /> Bio:</h5>
+                                <p>{user?.bio || 'N/A'}</p>
+                            </div>
+                            <div className="mb-3">
+                                <h5><FaMapMarkerAlt /> Address:</h5>
+                                <p>{user?.address || 'N/A'}</p>
+                            </div>
+                            <div className="mb-3">
+                                <h5><FaPhone /> Phone Number:</h5>
+                                <p>{user?.phone_number || 'N/A'}</p>
+                            </div>
+                            <button onClick={() => setIsEditing(true)} className="btn btn-primary mt-3">
+                                <FaEdit /> Edit Profile
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 };
 
