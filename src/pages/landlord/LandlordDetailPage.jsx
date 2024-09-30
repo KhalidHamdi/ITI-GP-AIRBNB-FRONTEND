@@ -6,6 +6,7 @@ import PropertyList from "../../components/property/propertyList";
 
 const LandlordDetailPage = () => {
   const { username } = useParams();
+  console.log(username);
   const [landlord, setLandlord] = useState(null);
   const [userId, setUserId] = useState(null);
   const [landlordId, setLandlordId] = useState(null);

@@ -17,26 +17,21 @@ function ConversationDetail() {
 
   // Set WebSocket URL
   useEffect(() => {
-    // console.log("landlordId:", landlordId);
-    // console.log("conversationId:", conversationId);
-
     if (conversationId) {
       const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
-      // console.log("WebSocket URL:", wsUrl);
       setSocketUrl(wsUrl);
     }
   }, [conversationId, landlordId]);
 
   // Get username from local storage on component mount
   useEffect(() => {
-    const storedUserId = localStorage.getItem("userId");
+    const storedUserId = localStorage.getItem("username");
     if (storedUserId) {
-      const fetchedUserName = "User_" + storedUserId.substring(0, 5);
-      setUserName(fetchedUserName);
+      setUserName(storedUserId);
     }
   }, []);
 
-  // Fetch conversation data when the component mounts or conversationId changes
+  // Fetch conversation messages
   useEffect(() => {
     const fetchConversation = async () => {
       try {
@@ -67,16 +62,28 @@ function ConversationDetail() {
     shouldReconnect: (closeEvent) => true, // Will attempt to reconnect on close
   });
 
-  // Handle sending a message
+  // Updated handleSendMessage function
   const handleSendMessage = () => {
-    if (landlordId) {
+    let sentToId = landlordId;
+
+    if (!sentToId && messages.length > 0) {
+      const lastMessageWithSentTo = messages.find(
+        (message) => message.sent_to && message.sent_to.id
+      );
+
+      if (lastMessageWithSentTo) {
+        sentToId = lastMessageWithSentTo.sent_to.id;
+      }
+    }
+
+    if (sentToId) {
       if (readyState === ReadyState.OPEN) {
         const messageData = {
           event: "chat_message",
           data: {
             body: newMessage,
             name: userName || "Anonymous",
-            sent_to_id: landlordId,
+            sent_to_id: sentToId,
             conversation_id: conversationId,
           },
         };
@@ -87,7 +94,9 @@ function ConversationDetail() {
         console.log("WebSocket is not connected. Current state:", readyState);
       }
     } else {
-      console.log("No user selected. Please select a user to send a message.");
+      console.log(
+        "No user selected or available in messages to send a message."
+      );
     }
   };
 

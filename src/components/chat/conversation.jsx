@@ -7,9 +7,8 @@ const Conversation = ({ conversation }) => {
       <div className="conversationBox">
         <p>
           {conversation.users
-            .map((user) => user.username) // Extracting the username from each user object
+            .map((user) => user.username)
             .reduce((prev, curr) => [prev, ", ", curr])}{" "}
-          {/* To add commas between user names */}
         </p>
         <p className="text-airbnb-dark">
           <Link to={`/conversationDetail/${conversation.id}`}>
