@@ -4,7 +4,7 @@ import axiosInstance from "../../axios";
 import { useLocation } from "react-router-dom";
 
 const PropertyList = ({
-  landlord_username = null,
+  landlord_id = null,
   selectedCategory,
   filteredProperties,
 }) => {
@@ -18,8 +18,8 @@ const PropertyList = ({
   const getProperties = async (page = 1) => {
     let url = `/api/properties/?page=${page}`; // Include the page number in the URL
 
-    if (landlord_username) {
-      url += `&landlord_username=${landlord_username}`;
+    if (landlord_id) {
+      url += `&landlord_id=${landlord_id}`;
     }
 
     try {
@@ -40,10 +40,10 @@ const PropertyList = ({
     }
   };
 
-  // Fetch properties when the component mounts or when landlord_username changes
+  // Fetch properties when the component mounts or when landlord_id changes
   useEffect(() => {
     getProperties(currentPage);
-  }, [landlord_username, currentPage]);
+  }, [landlord_id, currentPage]);
 
   // Handle page change
   const handlePageChange = (newPage) => {
@@ -70,33 +70,35 @@ const PropertyList = ({
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="d-flex justify-content-center mt-3" >
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '10px',
-            marginTop:'50px',
-          }}>
-          <button
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
-            className="btn btn-sm btn-outline-primary mx-2"
+        <div className="d-flex justify-content-center mt-3">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "10px",
+              marginTop: "50px",
+            }}
           >
-             &laquo; Prev
-          </button>
+            <button
+              disabled={currentPage === 1}
+              onClick={() => handlePageChange(currentPage - 1)}
+              className="btn btn-sm btn-outline-primary mx-2"
+            >
+              &laquo; Prev
+            </button>
 
-          <span className="mx-2">
-            {currentPage} / {totalPages}
-          </span>
+            <span className="mx-2">
+              {currentPage} / {totalPages}
+            </span>
 
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange(currentPage + 1)}
-            className="btn btn-sm btn-outline-primary mx-2"
-          >
-            Next &raquo;
-          </button>
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => handlePageChange(currentPage + 1)}
+              className="btn btn-sm btn-outline-primary mx-2"
+            >
+              Next &raquo;
+            </button>
           </div>
         </div>
       )}
