@@ -5,12 +5,16 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../axios';
 import { useForm } from 'react-hook-form';
 import CustomButton from '../forms/CustomButton';
-import PasswordInput from '../forms/PasswordInput'; // Import the new component
+import PasswordInput from '../forms/PasswordInput';
+import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { openLoginModal } from '../../redux/modalSlice';
 import './ResetPasswordConfirm.css';
 
 const ResetPasswordConfirm = () => {
     const { uid, token } = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { register, handleSubmit, formState: { errors: formErrors } } = useForm();
     const [message, setMessage] = useState('');
     const [errors, setErrors] = useState([]);
@@ -34,7 +38,13 @@ const ResetPasswordConfirm = () => {
             const response = await axiosInstance.post('/api/auth/password/reset/confirm/', payload);
             setMessage('Your password has been reset successfully.');
             setErrors([]);
-            setTimeout(() => navigate('/login'), 3000);
+            // Show success toast and navigate to home, then open login modal
+            toast.success("Password reset successful! Please log in with your new password.", {
+                onClose: () => {
+                    navigate('/');
+                    dispatch(openLoginModal());
+                },
+            });
         } catch (error) {
             const errorMessages = [];
             if (error.response && error.response.data) {

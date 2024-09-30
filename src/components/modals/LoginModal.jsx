@@ -9,7 +9,8 @@ import CustomButton from '../forms/CustomButton';
 import { handleLogin } from '../../lib/actions';
 import axiosInstance from '../../axios';
 import PasswordResetModal from './PasswordResetModal';
-import PasswordInput from '../forms/PasswordInput'; // Import the new component
+import PasswordInput from '../forms/PasswordInput';
+import { toast } from 'react-toastify'; // Import toast
 
 const LoginModal = () => {
   const navigate = useNavigate();
@@ -39,7 +40,10 @@ const LoginModal = () => {
         const { key, refreshToken, user_id, user } = response.data;
         handleLogin(key, refreshToken, user_id, user.username); 
         close();
-        navigate('/');
+        // Display success toast
+        toast.success("Login successful!", {
+          onClose: () => navigate('/'),
+        });
         console.log("Login successful");
       } else {
         setErrors(['Login failed. Token or User ID not found in response.']);

@@ -7,6 +7,7 @@ import { openLoginModal, openSignupModal } from '../../redux/modalSlice';
 import { handleLogout } from '../../lib/actions';
 import Cookies from 'js-cookie';
 import axiosInstance from '../../axios'; // Ensure axiosInstance is correctly imported
+import { toast } from 'react-toastify'; // Import toast
 
 const UserMenu = ({ airbnbYourHome }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -43,7 +44,9 @@ const UserMenu = ({ airbnbYourHome }) => {
             await handleLogout();
             setIsLoggedIn(false);
             setUser(null);
-            navigate('/');
+            toast.success("see you soon :)!", {
+                onClose: () => navigate('/'),
+              });
         } catch (error) {
             console.error('Logout failed:', error);
         }

@@ -1,6 +1,9 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/home/Home";
+import { ToastContainer } from 'react-toastify'; // Import ToastContainer
+import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
+
 import CategoryPage from "./pages/category/CategoryPage";
 import PropertyDetail from "./pages/property/PropertyDetail";
 import Header from "./components/home/Header";
@@ -31,6 +34,19 @@ function App() {
       <PasswordResetModal />
       <AddProperty />
       <FilterModal />
+
+      <ToastContainer 
+        position="top-right" 
+        autoClose={3000} 
+        hideProgressBar={false} 
+        newestOnTop={false} 
+        closeOnClick 
+        rtl={false} 
+        pauseOnFocusLoss 
+        draggable 
+        pauseOnHover 
+        theme="colored"
+      />
 
       <Routes>
         <Route
