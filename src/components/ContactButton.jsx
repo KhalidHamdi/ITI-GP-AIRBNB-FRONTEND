@@ -8,6 +8,8 @@ const ContactButton = ({ userId, landlordId }) => {
   const navigate = useNavigate();
 
   const startConversation = async () => {
+    console.log("landlordId:", landlordId);
+
     if (userId) {
       try {
         const response = await axiosInstance.get(
@@ -16,7 +18,9 @@ const ContactButton = ({ userId, landlordId }) => {
 
         if (response.data.conversation_id) {
           // Navigate to inbox with the conversation ID
-          navigate(`/inbox/${response.data.conversation_id}`);
+          navigate(`/conversationDetail/${response.data.conversation_id}`, {
+            state: { landlordId },
+          });
         }
       } catch (error) {
         console.error("Failed to start conversation:", error);
