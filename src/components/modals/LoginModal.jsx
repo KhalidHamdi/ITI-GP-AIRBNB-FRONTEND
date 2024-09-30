@@ -9,6 +9,8 @@ import CustomButton from '../forms/CustomButton';
 import { handleLogin } from '../../lib/actions';
 import axiosInstance from '../../axios';
 import PasswordResetModal from './PasswordResetModal';
+import PasswordInput from '../forms/PasswordInput';
+import { toast } from 'react-toastify'; // Import toast
 
 const LoginModal = () => {
   const navigate = useNavigate();
@@ -38,7 +40,10 @@ const LoginModal = () => {
         const { key, refreshToken, user_id, user } = response.data;
         handleLogin(key, refreshToken, user_id, user.username); 
         close();
-        navigate('/');
+        // Display success toast
+        toast.success("Login successful!", {
+          onClose: () => navigate('/'),
+        });
         console.log("Login successful");
       } else {
         setErrors(['Login failed. Token or User ID not found in response.']);
@@ -76,18 +81,14 @@ const LoginModal = () => {
         />
       </div>
 
-      <div className="mb-3">
-        <label htmlFor="loginPassword" className="form-label">Password</label>
-        <input
-          type="password"
-          className="form-control"
-          id="loginPassword"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </div>
+      <PasswordInput
+        id="loginPassword"
+        label="Password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
 
       {errors.length > 0 && (
         <div className="alert alert-danger" role="alert">
