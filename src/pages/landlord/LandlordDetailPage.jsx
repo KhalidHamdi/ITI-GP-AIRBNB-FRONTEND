@@ -5,7 +5,7 @@ import ContactButton from "../../components/ContactButton";
 import PropertyList from "../../components/property/propertyList";
 
 const LandlordDetailPage = () => {
-  const { username } = useParams();
+  const { id } = useParams();
   const [landlord, setLandlord] = useState(null);
   const [userId, setUserId] = useState(null);
   const [landlordId, setLandlordId] = useState(null);
@@ -13,7 +13,7 @@ const LandlordDetailPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const landlordData = await axiosInstance.get(`/api/auth/${username}`);
+        const landlordData = await axiosInstance.get(`/api/auth/${id}`);
         setLandlord(landlordData.data);
         setLandlordId(landlordData.data.id);
         // const currentUserId = sessionStorage.getItem("userId");
@@ -66,7 +66,7 @@ const LandlordDetailPage = () => {
         </aside>
 
         {/* Main Section for Property Listings */}
-        <PropertyList landlord_username={username} />
+        <PropertyList landlord_id={id} />
       </div>
     </div>
   );
