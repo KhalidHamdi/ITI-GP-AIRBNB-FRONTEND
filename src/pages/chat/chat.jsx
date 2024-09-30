@@ -4,6 +4,7 @@ import axiosInstance from "../../axios";
 
 function Chat() {
   const [conversations, setConversations] = useState([]);
+  const currentUserId = localStorage.getItem("userId"); // Assuming user ID is stored in localStorage
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -32,7 +33,11 @@ function Chat() {
       </h2>
       {Array.isArray(conversations) &&
         conversations.map((conversation) => (
-          <Conversation key={conversation.id} conversation={conversation} />
+          <Conversation
+            key={conversation.id}
+            conversation={conversation} // pass a single conversation object
+            currentUserId={currentUserId} // pass the current user ID
+          />
         ))}
     </>
   );

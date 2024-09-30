@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./conversationDetails.css";
@@ -15,29 +15,33 @@ function ConversationDetail() {
   const location = useLocation();
   const { landlordId } = location.state || {};
 
-  // Set WebSocket URL
+  // Create a ref for the message container
+  const messageContainerRef = useRef(null);
+
   useEffect(() => {
     if (conversationId) {
       const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
       setSocketUrl(wsUrl);
     }
-  }, [conversationId, landlordId]);
+  }, [conversationId]);
 
-  // Get username from local storage on component mount
   useEffect(() => {
-    const storedUserId = localStorage.getItem("username");
-    if (storedUserId) {
-      setUserName(storedUserId);
+    const storedUserName = localStorage.getItem("username");
+    if (storedUserName) {
+      setUserName(storedUserName);
     }
   }, []);
 
-  // Fetch conversation messages
   useEffect(() => {
     const fetchConversation = async () => {
       try {
         const response = await axiosInstance.get(`api/chat/${conversationId}`);
-        console.log("Conversation:", response.data);
-        setMessages(response.data.messages);
+        const updatedMessages = response.data.messages.map((message) => ({
+          ...message,
+          isSender: message.created_by.username === userName,
+          name: message.created_by.username || "unknown",
+        }));
+        setMessages(updatedMessages);
       } catch (error) {
         console.error("Error fetching conversation:", error);
       }
@@ -46,26 +50,30 @@ function ConversationDetail() {
     if (conversationId) {
       fetchConversation();
     }
-  }, [conversationId]);
+  }, [conversationId, userName]);
 
-  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+  const { sendMessage, readyState } = useWebSocket(socketUrl, {
     onOpen: () => console.log("Connected to WebSocket"),
     onClose: () => console.log("Disconnected from WebSocket"),
     onMessage: (event) => {
       try {
         const newMessage = JSON.parse(event.data);
+        newMessage.isSender = newMessage.name === userName;
         setMessages((prevMessages) => [...prevMessages, newMessage]);
       } catch (error) {
         console.error("Error parsing message:", error);
       }
     },
-    shouldReconnect: (closeEvent) => true, // Will attempt to reconnect on close
+    shouldReconnect: (closeEvent) => true,
   });
 
-  // Updated handleSendMessage function
   const handleSendMessage = () => {
-    let sentToId = landlordId;
+    if (!userName) {
+      console.log("Username is not set.");
+      return;
+    }
 
+    let sentToId = landlordId;
     if (!sentToId && messages.length > 0) {
       const lastMessageWithSentTo = messages.find(
         (message) => message.sent_to && message.sent_to.id
@@ -87,7 +95,6 @@ function ConversationDetail() {
             conversation_id: conversationId,
           },
         };
-        console.log("Sending message data:", messageData);
         sendMessage(JSON.stringify(messageData));
         setNewMessage("");
       } else {
@@ -99,6 +106,22 @@ function ConversationDetail() {
       );
     }
   };
+
+  // New function to handle key down event
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault(); // Prevent the default behavior of the Enter key
+      handleSendMessage();
+    }
+  };
+
+  // Scroll to the last message whenever messages change
+  useEffect(() => {
+    const container = messageContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight; // Scroll to the bottom
+    }
+  }, [messages]);
 
   return (
     <div className="chat-container">
@@ -114,17 +137,18 @@ function ConversationDetail() {
                 selectedUserId === user.id ? "#d1e7dd" : "transparent",
             }}
           >
-            {user.name}
+            {user.username}
           </div>
         ))}
       </div>
 
-      <div className="message-container">
+      <div
+        className="message-container"
+        ref={messageContainerRef}
+        style={{ overflowY: "auto", maxHeight: "400px" }} // Adjust the height as needed
+      >
         {messages.map((message, index) => (
-          <div
-            key={index}
-            className={message.name === userName ? "sender" : "receiver"}
-          >
+          <div key={index} className={message.isSender ? "sender" : "receiver"}>
             <h4>{message.name}</h4>
             <p>{message.body}</p>
           </div>
@@ -136,6 +160,7 @@ function ConversationDetail() {
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
+          onKeyDown={handleKeyDown} // Attach the key down event
           placeholder="Type your message here..."
           className="chat-input"
         />
