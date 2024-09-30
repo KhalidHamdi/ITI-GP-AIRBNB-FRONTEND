@@ -71,9 +71,9 @@ const Search = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="d-flex w-100 justify-content-center">
+    <form onSubmit={handleSubmit} className="d-flex w-100 justify-content-center ">
       <div
-        className="d-flex rounded-pill border shadow-sm p-4 w-100"
+        className="d-flex rounded-pill border shadow-sm p-3 w-100"
         style={{ maxWidth: "750px", marginBottom: "10px" }}
       >
         <div className="flex-grow-1 border-end pe-3 position-relative">
