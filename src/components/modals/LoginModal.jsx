@@ -1,3 +1,5 @@
+// src/components/modals/LoginModal.js
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from './Modal';
@@ -32,8 +34,9 @@ const LoginModal = () => {
       const response = await axiosInstance.post('/api/auth/login/', loginData);
       console.log(response.data); 
   
-      if (response.data.key && response.data.user_id) {
-        handleLogin(response.data.key, null, response.data.user_id); 
+      if (response.data.key && response.data.user_id && response.data.user) {
+        const { key, refreshToken, user_id, user } = response.data;
+        handleLogin(key, refreshToken, user_id, user.username); 
         close();
         navigate('/');
         console.log("Login successful");
@@ -54,8 +57,6 @@ const LoginModal = () => {
     }
   };
   
-  
-    
   const openResetModal = () => {
     dispatch(openPasswordResetModal());
   };
