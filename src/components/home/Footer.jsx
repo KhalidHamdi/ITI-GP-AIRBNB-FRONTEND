@@ -133,7 +133,7 @@ const Footer = () => {
         <div className="row">
           {/* Cool Stuff */}
           <div className="col-md-3 mb-4">
-            <h5 className="fw-bold">Cool Stuff</h5>
+            <h5 className="fw-bold">Cool Staff</h5>
             <ul className="list-unstyled">
               <li className="mb-2">
                 <a href="https://www.linkedin.com/in/ibrahim1saber/" className="text-dark text-decoration-none">
