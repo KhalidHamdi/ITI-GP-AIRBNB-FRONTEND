@@ -19,6 +19,7 @@ const ReservationSidebar = ({ property, userId }) => {
   const [minDate, setMinDate] = useState(new Date());
   const [bookedDates, setBookedDates] = useState([]);
   const [guests, setGuests] = useState("1");
+  // const [reservationId, setReservationId] = useState("1");
   const guestsRange = Array.from(
     { length: property.guests },
     (_, index) => index + 1
@@ -46,7 +47,17 @@ const ReservationSidebar = ({ property, userId }) => {
           );
           if (response.data.success) {
             console.log("Booking successful");
-            navigate("/payment", { state: { totalPrice, guests } });
+            console.log("Reservation created:", response.data.reservation);
+            let reservationId = response.data.reservation.id;
+            // setReservationId(response.data.reservation.id);
+            console.log(
+              "Reservation Id from ReservationSideBar:",
+              reservationId
+            );
+
+            navigate("/payment", {
+              state: { totalPrice, guests, reservationId },
+            });
           } else {
             console.log(response);
             console.log("Something went wrong...");
@@ -61,6 +72,8 @@ const ReservationSidebar = ({ property, userId }) => {
       console.log("User needs to log in");
     }
   };
+  // console.log("Reservation response", response);
+  // console.log("Reservation created:", response.data.reservation);
 
   const _setDateRange = (selection) => {
     const newStartDate = new Date(selection.startDate);
