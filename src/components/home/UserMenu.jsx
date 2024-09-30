@@ -6,21 +6,50 @@ import { useDispatch } from 'react-redux';
 import { openLoginModal, openSignupModal } from '../../redux/modalSlice';
 import { handleLogout } from '../../lib/actions';
 import Cookies from 'js-cookie';
+import axiosInstance from '../../axios'; // Ensure axiosInstance is correctly imported
+import { toast } from 'react-toastify'; // Import toast
 
 const UserMenu = ({ airbnbYourHome }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [user, setUser] = useState(null); // State to store user data
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
         const authToken = Cookies.get('authToken');
-        setIsLoggedIn(!!authToken); 
+        const loggedIn = !!authToken;
+        setIsLoggedIn(loggedIn);
+
+        if (loggedIn) {
+            fetchUserProfile(authToken);
+        }
     }, []);
 
+    const fetchUserProfile = async (authToken) => {
+        try {
+            const response = await axiosInstance.get('/api/auth/profile/', {
+                headers: {
+                    Authorization: `Bearer ${authToken}`, // Include auth token if required
+                },
+            });
+            setUser(response.data);
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+            // Optionally handle error, e.g., logout the user if token is invalid
+        }
+    };
+
     const logout = async () => {
-        await handleLogout();
-        setIsLoggedIn(false); 
-        navigate('/'); 
+        try {
+            await handleLogout();
+            setIsLoggedIn(false);
+            setUser(null);
+            toast.success("see you soon :)!", {
+                onClose: () => navigate('/'),
+              });
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
     };
 
     return (
@@ -33,7 +62,9 @@ const UserMenu = ({ airbnbYourHome }) => {
                 aria-expanded="false"
             >
                 <Menu />
-                <AvatarComponent />
+                {isLoggedIn && (
+                    <AvatarComponent avatarUrl={user?.avatar} />
+                )}
             </button>
             <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuDropdown">
                 {isLoggedIn ? (

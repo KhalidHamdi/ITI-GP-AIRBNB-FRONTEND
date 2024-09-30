@@ -1,3 +1,5 @@
+// src/components/modals/LoginModal.js
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from './Modal';
@@ -7,6 +9,8 @@ import CustomButton from '../forms/CustomButton';
 import { handleLogin } from '../../lib/actions';
 import axiosInstance from '../../axios';
 import PasswordResetModal from './PasswordResetModal';
+import PasswordInput from '../forms/PasswordInput';
+import { toast } from 'react-toastify'; // Import toast
 
 const LoginModal = () => {
   const navigate = useNavigate();
@@ -32,10 +36,14 @@ const LoginModal = () => {
       const response = await axiosInstance.post('/api/auth/login/', loginData);
       console.log(response.data); 
   
-      if (response.data.key && response.data.user_id) {
-        handleLogin(response.data.key, null, response.data.user_id); 
+      if (response.data.key && response.data.user_id && response.data.user) {
+        const { key, refreshToken, user_id, user } = response.data;
+        handleLogin(key, refreshToken, user_id, user.username); 
         close();
-        navigate('/');
+        // Display success toast
+        toast.success("Login successful!", {
+          onClose: () => navigate('/'),
+        });
         console.log("Login successful");
       } else {
         setErrors(['Login failed. Token or User ID not found in response.']);
@@ -54,8 +62,6 @@ const LoginModal = () => {
     }
   };
   
-  
-    
   const openResetModal = () => {
     dispatch(openPasswordResetModal());
   };
@@ -75,18 +81,14 @@ const LoginModal = () => {
         />
       </div>
 
-      <div className="mb-3">
-        <label htmlFor="loginPassword" className="form-label">Password</label>
-        <input
-          type="password"
-          className="form-control"
-          id="loginPassword"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </div>
+      <PasswordInput
+        id="loginPassword"
+        label="Password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
 
       {errors.length > 0 && (
         <div className="alert alert-danger" role="alert">

@@ -1,3 +1,5 @@
+// src/components/modals/SignupModal.jsx
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from './Modal';
@@ -5,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { closeSignupModal } from '../../redux/modalSlice';
 import CustomButton from '../forms/CustomButton';
 import axiosInstance from '../../axios';
+import PasswordInput from '../forms/PasswordInput'; // Import the new component
 
 const SignupModal = () => {
   const navigate = useNavigate();
@@ -95,31 +98,23 @@ const SignupModal = () => {
         />
       </div>
 
-      <div className="mb-3">
-        <label htmlFor="signupPassword1" className="form-label">Password</label>
-        <input
-          type="password"
-          className="form-control"
-          id="signupPassword1"
-          placeholder="Password"
-          value={password1}
-          onChange={(e) => setPassword1(e.target.value)}
-          required
-        />
-      </div>
+      <PasswordInput
+        id="signupPassword1"
+        label="Password"
+        placeholder="Password"
+        value={password1}
+        onChange={(e) => setPassword1(e.target.value)}
+        required
+      />
 
-      <div className="mb-3">
-        <label htmlFor="signupPassword2" className="form-label">Confirm Password</label>
-        <input
-          type="password"
-          className="form-control"
-          id="signupPassword2"
-          placeholder="Confirm Password"
-          value={password2}
-          onChange={(e) => setPassword2(e.target.value)}
-          required
-        />
-      </div>
+      <PasswordInput
+        id="signupPassword2"
+        label="Confirm Password"
+        placeholder="Confirm Password"
+        value={password2}
+        onChange={(e) => setPassword2(e.target.value)}
+        required
+      />
 
       {errors.length > 0 && (
         <div className="alert alert-danger" role="alert">
