@@ -9,6 +9,7 @@ import CustomButton from '../forms/CustomButton';
 import { handleLogin } from '../../lib/actions';
 import axiosInstance from '../../axios';
 import PasswordResetModal from './PasswordResetModal';
+import PasswordInput from '../forms/PasswordInput'; // Import the new component
 
 const LoginModal = () => {
   const navigate = useNavigate();
@@ -76,18 +77,14 @@ const LoginModal = () => {
         />
       </div>
 
-      <div className="mb-3">
-        <label htmlFor="loginPassword" className="form-label">Password</label>
-        <input
-          type="password"
-          className="form-control"
-          id="loginPassword"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </div>
+      <PasswordInput
+        id="loginPassword"
+        label="Password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
 
       {errors.length > 0 && (
         <div className="alert alert-danger" role="alert">
