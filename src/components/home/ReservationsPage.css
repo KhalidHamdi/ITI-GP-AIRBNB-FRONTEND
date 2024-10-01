@@ -1,9 +1,41 @@
-.custom-btn {
-  background-color: #ff385c; /* Replace with your desired color */
-  color: white; /* Text color */
-  border: none; /* Optional: Remove border */
+.container {
+  max-width: 900px;
 }
 
-.custom-btn:hover {
-  background-color: #f71e46; /* Darker shade for hover effect */
+.no-reservations-message h2 {
+  font-size: 1.75rem;
+}
+
+.no-reservations-message p {
+  color: #6c757d;
+}
+
+.custom-btn {
+  font-size: 0.9rem;
+  padding: 8px 12px;
+}
+
+.img-fluid.hover-zoom {
+  transition: transform 0.3s ease;
+}
+
+.img-fluid.hover-zoom:hover {
+  transform: scale(1.1);
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  font-size: 0.9rem;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  font-size: 0.9rem;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
 }

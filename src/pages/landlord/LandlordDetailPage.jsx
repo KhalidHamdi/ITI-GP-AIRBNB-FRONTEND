@@ -8,7 +8,7 @@ import ConversationDetail from "../../components/chat/conversationDetails";
 import "./landlord.css";
 
 const LandlordDetailPage = () => {
-  const { username } = useParams();
+  const { id } = useParams();
   const [landlord, setLandlord] = useState(null);
   const [userId, setUserId] = useState(null);
   const [landlordId, setLandlordId] = useState(null);
@@ -17,7 +17,7 @@ const LandlordDetailPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const landlordData = await axiosInstance.get(`/api/auth/${username}`);
+        const landlordData = await axiosInstance.get(`/api/auth/${id}`);
         setLandlord(landlordData.data);
         setLandlordId(landlordData.data.id);
         const currentUserId = "3bd4857d-edca-4ab2-b3ac-2c976e5f14f4"; // Replace with actual user ID logic

@@ -1,158 +1,330 @@
+// src/components/userprofile/UserProfile.jsx
+
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../axios'; 
 import Cookies from 'js-cookie';
+import { useForm, Controller } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { openLoginModal } from '../../redux/modalSlice';
 
-const CustomAlert = ({ message, type }) => (
-  <div className={`alert ${type === 'error' ? 'alert-danger' : 'alert-success'} mt-4`} role="alert">
-    {message}
-  </div>
-);
+// Material-UI Components
+import {
+    Container,
+    Typography,
+    Grid,
+    TextField,
+    Button,
+    Avatar,
+    Paper,
+    CircularProgress,
+} from '@mui/material';
+import { PhotoCamera } from '@mui/icons-material';
 
 const UserProfile = () => {
+    const dispatch = useDispatch();
     const [user, setUser] = useState(null);
-    const [formData, setFormData] = useState({ username: '', email: '', avatar: null });
-    const [isEditing, setIsEditing] = useState(false);
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
+    const [avatarPreview, setAvatarPreview] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    const { control, handleSubmit, reset, formState: { errors }, watch } = useForm({
+        defaultValues: {
+            username: '',
+            email: '',
+            first_name: '',
+            last_name: '',
+            bio: '',
+            address: '',
+            phone_number: '',
+            avatar: null,
+        }
+    });
 
     useEffect(() => {
         fetchUserProfile();
     }, []);
 
     const fetchUserProfile = async () => {
+        setLoading(true);
         try {
-            const authToken = Cookies.get('authToken');
-            if (!authToken) {
-                setError('No auth token found. Please log in.');
-                return;
-            }
-
             const response = await axiosInstance.get('/api/auth/profile/');
             setUser(response.data);
-            setFormData({
-                username: response.data.username,
-                email: response.data.email,
+            reset({
+                username: response.data.username || '',
+                email: response.data.email || '',
+                first_name: response.data.first_name || '',
+                last_name: response.data.last_name || '',
+                bio: response.data.bio || '',
+                address: response.data.address || '',
+                phone_number: response.data.phone_number || '',
+                avatar: null,
             });
+            setAvatarPreview(response.data.avatar || null);
         } catch (err) {
-            setError('Failed to fetch user profile. Please try again.');
+            toast.error('Failed to fetch user profile. Please try again.');
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleFileChange = (e) => {
-        setFormData({ ...formData, avatar: e.target.files[0] });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setSuccess('');
-        
+    const onSubmit = async (data) => {
+        setLoading(true);
+        setAvatarPreview(data.avatar ? URL.createObjectURL(data.avatar[0]) : avatarPreview);
         const form = new FormData();
-        form.append('username', formData.username);
-        form.append('email', formData.email);
-        if (formData.avatar) {
-            form.append('avatar', formData.avatar);
+        form.append('username', data.username);
+        form.append('email', data.email);
+        form.append('first_name', data.first_name);
+        form.append('last_name', data.last_name);
+        form.append('bio', data.bio);
+        form.append('address', data.address);
+        form.append('phone_number', data.phone_number);
+        if (data.avatar && data.avatar.length > 0) {
+            form.append('avatar', data.avatar[0]);
         }
-        
-        try {
-            const authToken = Cookies.get('authToken');
-            if (!authToken) {
-                setError('No auth token found. Please log in.');
-                return;
-            }
 
+        try {
             const response = await axiosInstance.put('/api/auth/profile/', form, {
                 headers: { 
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            
-            setIsEditing(false);
-            setSuccess('Profile updated successfully!');
-            fetchUserProfile(); 
+            setUser(response.data);
+            toast.success('Profile updated successfully!');
         } catch (err) {
-            setError('Failed to update profile. Please try again.');
+            toast.error('Failed to update profile. Please try again.');
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
     };
 
+    const handleLogout = () => {
+        Cookies.remove('authToken');
+        toast.info('Logged out successfully.');
+        dispatch(openLoginModal());
+    };
+
+    if (loading && !user) {
+        return (
+            <Container maxWidth="sm" style={{ textAlign: 'center', marginTop: '50px' }}>
+                <CircularProgress />
+            </Container>
+        );
+    }
+
     return (
-        <div className="container mt-5 p-4 bg-light rounded shadow-sm">
-            <h2 className="mb-4 text-center">User Profile</h2>
-            
-            {error && <CustomAlert message={error} type="error" />}
-            {success && <CustomAlert message={success} type="success" />}
-            
-            {isEditing ? (
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                        <label htmlFor="username" className="form-label">Username</label>
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            value={formData.username}
-                            onChange={handleChange}
-                            className="form-control"
-                            required
+        <Container maxWidth="md" style={{ marginTop: '50px' }}>
+            <Paper elevation={3} style={{ padding: '30px' }}>
+                <Typography variant="h4" align="center" gutterBottom>
+                    User Profile
+                </Typography>
+
+                <Grid container spacing={4}>
+                    <Grid item xs={12} sm={4} style={{ textAlign: 'center' }}>
+                        <Avatar
+                            src={avatarPreview}
+                            alt={user?.username}
+                            sx={{ width: 150, height: 150, margin: 'auto' }}
                         />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="email" className="form-label">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="form-control"
-                            required
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="avatar" className="form-label">Avatar</label>
-                        <input
-                            type="file"
-                            id="avatar"
+                        <Controller
                             name="avatar"
-                            onChange={handleFileChange}
-                            className="form-control"
+                            control={control}
+                            render={({ field }) => (
+                                <Button
+                                    variant="contained"
+                                    component="label"
+                                    startIcon={<PhotoCamera />}
+                                    sx={{ mt: 2 }}
+                                >
+                                    Upload Avatar
+                                    <input
+                                        type="file"
+                                        hidden
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            field.onChange(e.target.files);
+                                            if (e.target.files.length > 0) {
+                                                setAvatarPreview(URL.createObjectURL(e.target.files[0]));
+                                            }
+                                        }}
+                                    />
+                                </Button>
+                            )}
                         />
-                    </div>
-                    <div className="d-flex justify-content-end">
-                        <button type="button" onClick={() => setIsEditing(false)} className="btn btn-secondary me-2">
-                            Cancel
-                        </button>
-                        <button type="submit" className="btn btn-primary">
-                            Save Changes
-                        </button>
-                    </div>
-                </form>
-            ) : (
-                <div>
-                    <p><strong>Username:</strong> {user?.username}</p>
-                    <p><strong>Email:</strong> {user?.email}</p>
-                    {user?.avatar && (
-                        <div className="mb-3">
-                            <p><strong>Avatar:</strong></p>
-                            <img
-                                src={user.avatar}
-                                alt="User Avatar"
-                                className="rounded-circle"
-                                style={{ width: '120px', height: '120px', objectFit: 'cover' }}
-                            />
-                        </div>
-                    )}
-                    <button onClick={() => setIsEditing(true)} className="btn btn-primary mt-3">
-                        Edit Profile
-                    </button>
-                </div>
-            )}
-        </div>
+                        {errors.avatar && (
+                            <Typography color="error" variant="body2">
+                                {errors.avatar.message}
+                            </Typography>
+                        )}
+                    </Grid>
+
+                    <Grid item xs={12} sm={8}>
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <Grid container spacing={2}>
+                                {/* Username */}
+                                <Grid item xs={12} sm={6}>
+                                    <Controller
+                                        name="username"
+                                        control={control}
+                                        rules={{ 
+                                            required: 'Username is required',
+                                            maxLength: {
+                                                value: 20,
+                                                message: 'Username cannot exceed 20 characters'
+                                            },
+                                            minLength: {
+                                                value: 1,
+                                                message: 'Username cannot be blank'
+                                            }
+                                        }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Username"
+                                                fullWidth
+                                                error={!!errors.username}
+                                                helperText={errors.username ? errors.username.message : ''}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                {/* Email */}
+                                <Grid item xs={12} sm={6}>
+                                    <Controller
+                                        name="email"
+                                        control={control}
+                                        rules={{ 
+                                            required: 'Email is required',
+                                            pattern: {
+                                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                                message: 'Enter a valid email address'
+                                            }
+                                        }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Email"
+                                                type="email"
+                                                fullWidth
+                                                error={!!errors.email}
+                                                helperText={errors.email ? errors.email.message : ''}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                {/* First Name */}
+                                <Grid item xs={12} sm={6}>
+                                    <Controller
+                                        name="first_name"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="First Name"
+                                                fullWidth
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                {/* Last Name */}
+                                <Grid item xs={12} sm={6}>
+                                    <Controller
+                                        name="last_name"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Last Name"
+                                                fullWidth
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                {/* Bio */}
+                                <Grid item xs={12}>
+                                    <Controller
+                                        name="bio"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Bio"
+                                                multiline
+                                                rows={4}
+                                                fullWidth
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                {/* Address */}
+                                <Grid item xs={12}>
+                                    <Controller
+                                        name="address"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Address"
+                                                fullWidth
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                {/* Phone Number */}
+                                <Grid item xs={12}>
+                                    <Controller
+                                        name="phone_number"
+                                        control={control}
+                                        rules={{
+                                            pattern: {
+                                                value: /^[0-9+\-() ]+$/,
+                                                message: 'Enter a valid phone number'
+                                            }
+                                        }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Phone Number"
+                                                fullWidth
+                                                error={!!errors.phone_number}
+                                                helperText={errors.phone_number ? errors.phone_number.message : ''}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                {/* Buttons */}
+                                <Grid item xs={12} style={{ textAlign: 'right' }}>
+                                    <Button
+                                        variant="outlined"
+                                        color="secondary"
+                                        onClick={handleLogout}
+                                        sx={{ mr: 2 }}
+                                    >
+                                        Logout
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        type="submit"
+                                        disabled={loading}
+                                    >
+                                        {loading ? <CircularProgress size={24} /> : 'Save Changes'}
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </form>
+                    </Grid>
+                </Grid>
+            </Paper>
+        </Container>
     );
 };
 

@@ -4,9 +4,10 @@ import axiosInstance from "../../axios";
 import { useLocation } from "react-router-dom";
 
 const PropertyList = ({
-  landlord_username = null,
+  landlord_id = null,
   selectedCategory,
   filteredProperties,
+  updateSelectedCategory,
 }) => {
   const [properties, setProperties] = useState([]);
   const [error, setError] = useState(null);
@@ -18,8 +19,8 @@ const PropertyList = ({
   const getProperties = async (page = 1) => {
     let url = `/api/properties/?page=${page}`; // Include the page number in the URL
 
-    if (landlord_username) {
-      url += `&landlord_username=${landlord_username}`;
+    if (landlord_id) {
+      url += `&landlord_id=${landlord_id}`;
     }
 
     try {
@@ -40,11 +41,18 @@ const PropertyList = ({
     }
   };
 
-  // Fetch properties when the component mounts or when landlord_username changes
+  // Fetch properties when the component mounts or when landlord_id changes
   useEffect(() => {
     getProperties(currentPage);
-  }, [landlord_username, currentPage]);
-
+    console.log("the page rerenderd");
+  }, [
+    landlord_id,
+    currentPage,
+    filteredProperties,
+    selectedCategory,
+    updateSelectedCategory,
+    location.state?.properties,
+  ]);
   // Handle page change
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -53,6 +61,7 @@ const PropertyList = ({
     }
   };
 
+  console.log("from property list the filter is:" + filteredProperties);
   // Check for errors
   if (error) {
     return <div>Error: {error}</div>;
@@ -61,42 +70,50 @@ const PropertyList = ({
   return (
     <div className="container my-4">
       <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-        {properties.map((property) => (
-          <div key={property.id} className="col">
-            <PropertyListItem property={property} />
+        {properties.length > 0 ? (
+          properties.map((property) => (
+            <div key={property.id} className="col">
+              <PropertyListItem property={property} />
+            </div>
+          ))
+        ) : (
+          <div className="col">
+            <p>No Properties.</p>
           </div>
-        ))}
+        )}
       </div>
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="d-flex justify-content-center mt-3" >
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '10px',
-            marginTop:'50px',
-          }}>
-          <button
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
-            className="btn btn-sm btn-outline-primary mx-2"
+        <div className="d-flex justify-content-center mt-3">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "10px",
+              marginTop: "50px",
+            }}
           >
-             &laquo; Prev
-          </button>
+            <button
+              disabled={currentPage === 1}
+              onClick={() => handlePageChange(currentPage - 1)}
+              className="btn btn-sm btn-outline-primary mx-2"
+            >
+              &laquo; Prev
+            </button>
 
-          <span className="mx-2">
-            {currentPage} / {totalPages}
-          </span>
+            <span className="mx-2">
+              {currentPage} / {totalPages}
+            </span>
 
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange(currentPage + 1)}
-            className="btn btn-sm btn-outline-primary mx-2"
-          >
-            Next &raquo;
-          </button>
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => handlePageChange(currentPage + 1)}
+              className="btn btn-sm btn-outline-primary mx-2"
+            >
+              Next &raquo;
+            </button>
           </div>
         </div>
       )}
