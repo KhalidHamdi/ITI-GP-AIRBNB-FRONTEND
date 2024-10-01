@@ -48,6 +48,7 @@ const ReservationSidebar = ({ property, userId }) => {
             formData
           );
           if (response.data.success) {
+            toast.success("Booking successful :)");
             console.log("Booking successful");
             console.log("Reservation created:", response.data.reservation);
             let reservationId = response.data.reservation.id;
