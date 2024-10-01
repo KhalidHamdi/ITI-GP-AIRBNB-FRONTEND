@@ -3,16 +3,12 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
 import ContactButton from "../../components/ContactButton";
 import PropertyList from "../../components/property/propertyList";
-import Modal from "react-modal";
-import ConversationDetail from "../../components/chat/conversationDetails";
-import "./landlord.css";
 
 const LandlordDetailPage = () => {
   const { id } = useParams();
   const [landlord, setLandlord] = useState(null);
   const [userId, setUserId] = useState(null);
   const [landlordId, setLandlordId] = useState(null);
-  const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,7 +16,8 @@ const LandlordDetailPage = () => {
         const landlordData = await axiosInstance.get(`/api/auth/${id}`);
         setLandlord(landlordData.data);
         setLandlordId(landlordData.data.id);
-        const currentUserId = "3bd4857d-edca-4ab2-b3ac-2c976e5f14f4"; // Replace with actual user ID logic
+        // const currentUserId = sessionStorage.getItem("userId");
+        const currentUserId = "3bd4857d-edca-4ab2-b3ac-2c976e5f14f4";
         setUserId(currentUserId);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -28,19 +25,15 @@ const LandlordDetailPage = () => {
     };
 
     fetchData();
-  }, [username]);
+  }, []);
+
+  console.log("Landlord data", landlord);
+  console.log("User id", userId);
+  console.log("Landlord id", landlordId);
 
   if (!landlord) {
     return <div>Loading...</div>;
   }
-
-  const openChatModal = () => {
-    setIsChatOpen(true); // Open chat modal
-  };
-
-  const closeChatModal = () => {
-    setIsChatOpen(false); // Close chat modal
-  };
 
   return (
     <div className="container py-4">
@@ -67,36 +60,13 @@ const LandlordDetailPage = () => {
             <h1 className="mt-3 h4">{landlord.username}</h1>
 
             {userId !== landlordId && (
-              <ContactButton
-                userId={userId}
-                landlordId={landlordId}
-                onClick={openChatModal}
-              />
+              <ContactButton userId={userId} landlordId={landlordId} />
             )}
           </div>
         </aside>
 
         {/* Main Section for Property Listings */}
-        <PropertyList landlord_username={username} />
-
-        {/* Modal for Chat */}
-        <Modal
-          isOpen={isChatOpen}
-          onRequestClose={closeChatModal}
-          contentLabel="Chat Modal"
-          className="chat-modal"
-        >
-          <button onClick={closeChatModal} className="close-button">
-            X
-          </button>
-          <div className="header">Chat with {landlord.username}</div>
-          <div className="modal-content">
-            <ConversationDetail
-              conversationId={landlordId}
-              onClose={closeChatModal}
-            />
-          </div>
-        </Modal>
+        <PropertyList landlord_id={id} />
       </div>
     </div>
   );
