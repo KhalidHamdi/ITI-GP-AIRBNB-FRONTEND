@@ -1,19 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./conversationDetails.css";
 import axiosInstance from "../../axios";
 
-function ConversationDetail() {
-  const { id: conversationId } = useParams();
+function ConversationDetail({ conversationId, landlordId }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [socketUrl, setSocketUrl] = useState(null);
   const [userName, setUserName] = useState("Anonymous");
   const [users, setUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
-  const location = useLocation();
-  const { landlordId } = location.state || {};
 
   // Create a ref for the message container
   const messageContainerRef = useRef(null);
@@ -47,11 +43,11 @@ function ConversationDetail() {
       }
     };
 
+    // Re-fetch the conversation when navigating to the page
     if (conversationId) {
       fetchConversation();
     }
   }, [conversationId, userName]);
-
   const { sendMessage, readyState } = useWebSocket(socketUrl, {
     onOpen: () => console.log("Connected to WebSocket"),
     onClose: () => console.log("Disconnected from WebSocket"),
@@ -110,16 +106,15 @@ function ConversationDetail() {
   // New function to handle key down event
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-      event.preventDefault(); // Prevent the default behavior of the Enter key
+      event.preventDefault();
       handleSendMessage();
     }
   };
 
-  // Scroll to the last message whenever messages change
   useEffect(() => {
     const container = messageContainerRef.current;
     if (container) {
-      container.scrollTop = container.scrollHeight; // Scroll to the bottom
+      container.scrollTop = container.scrollHeight;
     }
   }, [messages]);
 
@@ -145,7 +140,7 @@ function ConversationDetail() {
       <div
         className="message-container"
         ref={messageContainerRef}
-        style={{ overflowY: "auto", maxHeight: "400px" }} // Adjust the height as needed
+        style={{ overflowY: "auto", maxHeight: "400px" }}
       >
         {messages.map((message, index) => (
           <div key={index} className={message.isSender ? "sender" : "receiver"}>
@@ -160,7 +155,7 @@ function ConversationDetail() {
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={handleKeyDown} // Attach the key down event
+          onKeyDown={handleKeyDown}
           placeholder="Type your message here..."
           className="chat-input"
         />

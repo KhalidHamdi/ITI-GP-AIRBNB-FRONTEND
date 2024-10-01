@@ -1,14 +1,15 @@
 import Conversation from "../../components/chat/conversation";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../../axios";
 
 function Chat() {
   const [conversations, setConversations] = useState([]);
+  const currentUserId = localStorage.getItem("userId");
 
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/chat");
+        const response = await axiosInstance.get("api/chat");
         console.log("API Response Data:", response.data);
         setConversations(response.data);
       } catch (error) {
@@ -18,6 +19,11 @@ function Chat() {
 
     fetchConversations();
   }, []);
+
+  // Filter conversations to find those that include the current user
+  const userConversations = conversations.filter((conversation) =>
+    conversation.users.some((user) => user.id === currentUserId)
+  );
 
   return (
     <>
@@ -30,10 +36,29 @@ function Chat() {
       >
         Inbox
       </h2>
-      {Array.isArray(conversations) &&
-        conversations.map((conversation) => (
-          <Conversation key={conversation.id} conversation={conversation} />
-        ))}
+
+      {userConversations.length === 0 ? (
+        <div
+          className="no-chats"
+          style={{
+            textAlign: "center",
+            color: "#930c0c",
+            fontSize: "18px",
+            fontWeight: "normal",
+            margin: "20px 0",
+          }}
+        >
+          <p>No conversations yet</p>
+        </div>
+      ) : (
+        userConversations.map((conversation) => (
+          <Conversation
+            key={conversation.id}
+            conversation={conversation}
+            currentUserId={currentUserId}
+          />
+        ))
+      )}
     </>
   );
 }
