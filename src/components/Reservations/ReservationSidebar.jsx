@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Calendar from "./Calendar";
 import { toast } from "react-toastify";
 import { openLoginModal } from "../../redux/modalSlice";
+import { useDispatch } from "react-redux";
 
 const initialDateRange = {
   startDate: new Date(),
@@ -28,10 +29,11 @@ const ReservationSidebar = ({ property, userId }) => {
   );
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const loggedInUserId = localStorage.getItem("userId");
-  
+
   const performBooking = async () => {
-    if (userId) {
+    if (loggedInUserId) {
       if (dateRange.startDate && dateRange.endDate) {
         const formData = new FormData();
         formData.append("guests", guests);
@@ -64,6 +66,7 @@ const ReservationSidebar = ({ property, userId }) => {
             });
           } else {
             // Display success toast
+            dispatch(openLoginModal());
             toast.error("You should Login first");
             console.log("Response from Reservation", response);
             console.log("Something went wrong...");
@@ -75,6 +78,7 @@ const ReservationSidebar = ({ property, userId }) => {
       }
     } else {
       //TODO ya Basmala Handle login modal or notification here
+      dispatch(openLoginModal());
       console.log("User needs to log in");
     }
   };

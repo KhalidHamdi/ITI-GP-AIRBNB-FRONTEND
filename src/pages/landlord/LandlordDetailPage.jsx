@@ -1,8 +1,11 @@
+// src/pages/LandlordDetailPage.jsx
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
 import ContactButton from "../../components/ContactButton";
 import PropertyList from "../../components/property/propertyList";
+import EditProperty from "../../components/property/EditProperty"; // Import the EditProperty component
 
 const LandlordDetailPage = () => {
   const { id } = useParams();
@@ -13,7 +16,7 @@ const LandlordDetailPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const landlordData = await axiosInstance.get(`/api/auth/${id}`);
+        const landlordData = await axiosInstance.get(`/api/auth/${id}/`);
         setLandlord(landlordData.data);
         setLandlordId(landlordData.data.id);
         const currentUserId = localStorage.getItem("userId");
@@ -28,11 +31,7 @@ const LandlordDetailPage = () => {
     };
 
     fetchData();
-  }, []);
-
-  console.log("Landlord data", landlord);
-  console.log("User id", userId);
-  console.log("Landlord id", landlordId);
+  }, [id]);
 
   if (!landlord) {
     return <div>Loading...</div>;
@@ -70,7 +69,13 @@ const LandlordDetailPage = () => {
         </aside>
 
         {/* Main Section for Property Listings */}
-        <PropertyList landlord_id={id} />
+        <div className="col-md-9">
+          <h2 className="mb-4">Your Properties</h2>
+          <PropertyList landlord_id={id} isLandlordPage={true} />
+        </div>
+
+        {/* Include the EditProperty modal */}
+        <EditProperty />
       </div>
       <div className="advertising" style={{
           marginTop: "10px",
