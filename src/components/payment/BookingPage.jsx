@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import axiosInstance from "../../axios";
+import { toast } from "react-toastify";
 
 const BookingPage = () => {
   const location = useLocation();
@@ -55,7 +56,7 @@ const BookingPage = () => {
           `api/payments/reservation/${reservationId}/initiate-payment/`
         );
         const iframeUrl = response.data.iframe_url;
-
+        toast.success("Booking successful :)");
         // Step 3: Redirect to Paymob iframe
         window.location.href = iframeUrl;
       } catch (error) {

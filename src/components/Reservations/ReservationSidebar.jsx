@@ -28,7 +28,8 @@ const ReservationSidebar = ({ property, userId }) => {
   );
 
   const navigate = useNavigate();
-
+  const loggedInUserId = localStorage.getItem("userId");
+  
   const performBooking = async () => {
     if (userId) {
       if (dateRange.startDate && dateRange.endDate) {
@@ -48,7 +49,7 @@ const ReservationSidebar = ({ property, userId }) => {
             formData
           );
           if (response.data.success) {
-            toast.success("Booking successful :)");
+            // toast.success("Booking successful :)");
             console.log("Booking successful");
             console.log("Reservation created:", response.data.reservation);
             let reservationId = response.data.reservation.id;
@@ -175,14 +176,16 @@ const ReservationSidebar = ({ property, userId }) => {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={performBooking}
-              className="btn btn-primary w-100 mb-3"
-              style={{ backgroundColor: "#FF385C", borderColor: "#FF385C" }}
-            >
-              Book
-            </button>
+            {loggedInUserId !== property.landlord.id && (
+              <button
+                type="button"
+                onClick={performBooking}
+                className="btn btn-primary w-100 mb-3"
+                style={{ backgroundColor: "#FF385C", borderColor: "#FF385C" }}
+              >
+                Book
+              </button>
+            )}
             <p className="text-center mb-4">You won't be charged yet</p>
 
             <div className="d-flex justify-content-between mb-2">
