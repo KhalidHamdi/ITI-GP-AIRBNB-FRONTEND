@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import PropertyListItem from "./PropertyListItem";
 import axiosInstance from "../../axios";
 import { useLocation } from "react-router-dom";
-// import useFavorites from './useFavorites';
 
 const PropertyList = ({
   landlord_id = null,
@@ -41,6 +40,7 @@ const PropertyList = ({
         setTotalPages(Math.ceil(response.data.count / 12)); // Assuming 12 per page
       }
     } catch (error) {
+      console.error("Fetch Properties Error:", error);
       setError("Failed to fetch properties.");
     }
   };
@@ -48,6 +48,7 @@ const PropertyList = ({
   useEffect(() => {
     getProperties(currentPage);
     console.log("The page rerendered");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     landlord_id,
     currentPage,
@@ -65,10 +66,17 @@ const PropertyList = ({
     }
   };
 
+  // Handle deletion of a property
+  const handleDelete = (deletedPropertyId) => {
+    setProperties((prevProperties) =>
+      prevProperties.filter((property) => property.id !== deletedPropertyId)
+    );
+  };
+
   console.log("From PropertyList, the filter is:", filteredProperties);
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div className="alert alert-danger">Error: {error}</div>;
   }
 
   return (
@@ -77,7 +85,11 @@ const PropertyList = ({
         {properties.length > 0 ? (
           properties.map((property) => (
             <div key={property.id} className="col">
-              <PropertyListItem property={property} isLandlordPage={isLandlordPage} />
+              <PropertyListItem
+                property={property}
+                isLandlordPage={isLandlordPage}
+                onDelete={handleDelete} // Pass the onDelete callback
+              />
             </div>
           ))
         ) : (

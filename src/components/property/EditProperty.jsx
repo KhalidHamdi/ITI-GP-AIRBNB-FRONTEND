@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Categories from './categories'; // Ensure correct casing and path
+import Categories from './categories'; // Updated to PascalCase
 import axiosInstance from "../../axios";
 import { closeEditPropertyModal } from '../../redux/modalSlice';
 import { useNavigate } from 'react-router-dom';
@@ -86,6 +86,22 @@ const EditProperty = () => {
             setCurrentStep(1); // Reset to first step when editing a new property
             setErrors([]);
             setSuccessMessage('');
+
+            // Log the updated state
+            console.log("Form state updated:", {
+                dataCategory: property.category || '',
+                dataTitle: property.title || '',
+                dataDescription: property.description || '',
+                dataPrice: property.price_per_night || '',
+                dataBedrooms: property.bedrooms || '',
+                dataBathrooms: property.bathrooms || '',
+                dataGuests: property.guests || '',
+                dataCountry: selectedCountryObj
+                    ? { value: selectedCountryObj.cca2, label: selectedCountryObj.name.common }
+                    : null,
+                dataCity: property.city || '',
+                dataAddress: property.address || '',
+            });
         }
     }, [property]);
 
@@ -159,9 +175,9 @@ const EditProperty = () => {
     const CustomButton = ({ label, className, onClick }) => {
         return (
             <button
+                type="button" // Ensures button does not submit the form
                 onClick={onClick}
                 className={`btn ${className}`}
-                type="button"
             >
                 {label}
             </button>
@@ -192,6 +208,7 @@ const EditProperty = () => {
                                 <Categories dataCategory={dataCategory} setCategory={setCategoryHandler} />
                                 <div className="d-flex justify-content-end mt-1">
                                     <button
+                                        type="button" // Prevents form submission
                                         className="btn btn-danger text-white rounded-pill px-4 py-2"
                                         onClick={() => setCurrentStep(2)}
                                     >
