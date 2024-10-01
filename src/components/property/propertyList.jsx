@@ -7,6 +7,7 @@ const PropertyList = ({
   landlord_id = null,
   selectedCategory,
   filteredProperties,
+  updateSelectedCategory,
 }) => {
   const [properties, setProperties] = useState([]);
   const [error, setError] = useState(null);
@@ -43,8 +44,15 @@ const PropertyList = ({
   // Fetch properties when the component mounts or when landlord_id changes
   useEffect(() => {
     getProperties(currentPage);
-  }, [landlord_id, currentPage]);
-
+    console.log("the page rerenderd");
+  }, [
+    landlord_id,
+    currentPage,
+    filteredProperties,
+    selectedCategory,
+    updateSelectedCategory,
+    location.state?.properties,
+  ]);
   // Handle page change
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -53,6 +61,7 @@ const PropertyList = ({
     }
   };
 
+  console.log("from property list the filter is:" + filteredProperties);
   // Check for errors
   if (error) {
     return <div>Error: {error}</div>;
@@ -61,11 +70,17 @@ const PropertyList = ({
   return (
     <div className="container my-4">
       <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-        {properties.map((property) => (
-          <div key={property.id} className="col">
-            <PropertyListItem property={property} />
+        {properties.length > 0 ? (
+          properties.map((property) => (
+            <div key={property.id} className="col">
+              <PropertyListItem property={property} />
+            </div>
+          ))
+        ) : (
+          <div className="col">
+            <p>No Properties.</p>
           </div>
-        ))}
+        )}
       </div>
 
       {/* Pagination Controls */}

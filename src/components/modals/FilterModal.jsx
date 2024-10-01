@@ -33,14 +33,14 @@ const FilterModal = () => {
         },
       });
 
-      console.log("Filtered properties:", response.data.data);
+      console.log("Filtered properties:", response.data.results);
 
       // Close the filter modal
       dispatch(closeFilterModal());
 
       navigate("/", {
         state: {
-          properties: response.data.data,
+          properties: response.data.results,
         },
       });
     } catch (error) {
