@@ -6,7 +6,16 @@ import "./Categories.css";
 import Filters from "./Filters";
 
 const Categories = ({ dataCategory, updateSelectedCategory }) => {
-  const categories = categoryData.categoryBar.categories;
+  const categories = [
+    {
+      imageUrl:
+        "https://cdn-icons-png.flaticon.com/512/126/126467.png",
+      title: "All",
+      value: "all",
+    },
+    ...categoryData.categoryBar.categories, // Keep existing categories
+  ];
+
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
@@ -43,9 +52,10 @@ const Categories = ({ dataCategory, updateSelectedCategory }) => {
 
   // Handle category click to update state and URL
   const handleCategoryClick = (categoryTitle) => {
-    const categorySlug = categoryTitle.toLowerCase().replace(/\s+/g, "-");
+    const categorySlug =
+      categoryTitle === "All" ? "" : categoryTitle.toLowerCase().replace(/\s+/g, "-");
     setSelectedCategory(categorySlug); // Update local state
-    navigate(`/category/${categorySlug}`); // Update URL
+    navigate(categorySlug ? `/category/${categorySlug}` : "/"); // Navigate to home or category
 
     // Call the updateSelectedCategory function
     if (typeof updateSelectedCategory === "function") {
