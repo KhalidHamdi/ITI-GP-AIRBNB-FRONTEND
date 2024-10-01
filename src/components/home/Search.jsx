@@ -49,7 +49,7 @@ const Search = () => {
     try {
       // Fetch properties based on selected city and guests
       const response = await axiosInstance.get("/api/properties/", {
-        params: {
+        params: { 
           country: city,
           guests,
         },

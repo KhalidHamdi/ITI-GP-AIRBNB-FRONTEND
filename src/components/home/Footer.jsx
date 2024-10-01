@@ -131,7 +131,7 @@ const Footer = () => {
     <footer className="bg-white text-dark py-5">
       <div className="container">
         <div className="row">
-          {/* Cool Stuff */}
+          {/* Cool Staff */}
           <div className="col-md-3 mb-4">
             <h5 className="fw-bold">Cool Staff</h5>
             <ul className="list-unstyled">
@@ -146,17 +146,17 @@ const Footer = () => {
                 </a>
               </li>
               <li className="mb-2">
-                <a href="https://www.linkedin.com/in/basmalasalem/" className="text-dark text-decoration-none">
+                <a href="https://www.linkedin.com/in/basmala-salem/" className="text-dark text-decoration-none">
                   Basmala Salem
                 </a>
               </li>
               <li className="mb-2">
-                <a href="https://www.linkedin.com/in/davidemad/" className="text-dark text-decoration-none">
+                <a href="https://www.linkedin.com/in/davidemad10/" className="text-dark text-decoration-none">
                   David Emad
                 </a>
               </li>
               <li className="mb-2">
-                <a href="https://www.linkedin.com/in/michaelemad/" className="text-dark text-decoration-none">
+                <a href="https://www.linkedin.com/in/michael-emad-7a9a25277/" className="text-dark text-decoration-none">
                   Michael Emad
                 </a>
               </li>
