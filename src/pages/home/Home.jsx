@@ -13,7 +13,10 @@ const Home = () => {
     <div className="home">
       {/* <AdComponent/> */}
       <Categories />
-      <PropertyList />
+      <PropertyList 
+        landlord_id={null} // or appropriate value
+        isLandlordPage={false} // Explicitly set to false
+      />
     </div>
   );
 };

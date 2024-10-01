@@ -1,8 +1,11 @@
+// src/pages/LandlordDetailPage.jsx
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
 import ContactButton from "../../components/ContactButton";
 import PropertyList from "../../components/property/propertyList";
+import EditProperty from "../../components/property/EditProperty"; // Import the EditProperty component
 
 const LandlordDetailPage = () => {
   const { id } = useParams();
@@ -28,7 +31,7 @@ const LandlordDetailPage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [id]);
 
   console.log("Landlord data", landlord);
   console.log("User id", userId);
@@ -69,7 +72,10 @@ const LandlordDetailPage = () => {
         </aside>
 
         {/* Main Section for Property Listings */}
-        <PropertyList landlord_id={id} />
+        <PropertyList landlord_id={id} isLandlordPage={true} /> {/* Pass isLandlordPage=true */}
+
+        {/* Include the EditProperty modal */}
+        <EditProperty />
       </div>
     </div>
   );

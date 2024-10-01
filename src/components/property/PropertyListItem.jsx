@@ -1,5 +1,10 @@
-import React, { useState, useEffect, useCallback } from "react";
+// PropertyListItem.jsx
+
+import React from "react";
+import { useDispatch } from "react-redux";
+import { openEditPropertyModal } from '../../redux/modalSlice';
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "../../axios";
 import Cookies from "js-cookie";
 
@@ -48,7 +53,8 @@ const useFavorites = (propertyId) => {
     return { isFavorite, loading, toggleFavorite };
 };
 
-const PropertyListItem = ({ property, onFavoriteToggle }) => {
+const PropertyListItem = ({ property, isLandlordPage }) => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isFavorite, loading, toggleFavorite } = useFavorites(property.id);
 
@@ -56,8 +62,13 @@ const PropertyListItem = ({ property, onFavoriteToggle }) => {
         navigate(`/properties/${property.id}`);
     };
 
+    const handleEditClick = (e) => {
+        e.stopPropagation(); // Prevent triggering the card click
+        dispatch(openEditPropertyModal(property));
+    };
+
     return (
-        <div className="card h-100 border-0 shadow-sm" onClick={handleCardClick}>
+        <div className="card h-100 border-0 shadow-sm" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
             <div className="position-relative">
                 <img
                     src={property.image_url}
@@ -71,11 +82,9 @@ const PropertyListItem = ({ property, onFavoriteToggle }) => {
                         e.preventDefault();
                         e.stopPropagation();
                         toggleFavorite();
-                        if (onFavoriteToggle) {
-                            onFavoriteToggle(property.id, !isFavorite);
-                        }
                     }}
                     disabled={loading}
+                    aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
                 >
                     {loading ? (
                         <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -83,6 +92,15 @@ const PropertyListItem = ({ property, onFavoriteToggle }) => {
                         <i className={`bi ${isFavorite ? "bi-heart-fill" : "bi-heart"}`}></i>
                     )}
                 </button>
+                {isLandlordPage && (
+                    <button
+                        className="btn btn-secondary btn-sm position-absolute top-0 start-0 m-2 rounded-pill"
+                        onClick={handleEditClick}
+                        aria-label="Edit Property"
+                    >
+                        Edit
+                    </button>
+                )}
             </div>
             <div className="card-body p-3">
                 <h5 className="card-title mb-1">{property.title}</h5>

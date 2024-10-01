@@ -1,23 +1,27 @@
+// src/components/property/PropertyList.jsx
+
 import React, { useEffect, useState } from "react";
 import PropertyListItem from "./PropertyListItem";
 import axiosInstance from "../../axios";
 import { useLocation } from "react-router-dom";
+// import useFavorites from './useFavorites';
 
 const PropertyList = ({
   landlord_id = null,
   selectedCategory,
   filteredProperties,
   updateSelectedCategory,
+  isLandlordPage = false, // Default to false
 }) => {
   const [properties, setProperties] = useState([]);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1); // Tracks current page
-  const [totalPages, setTotalPages] = useState(1); // Tracks total number of pages
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const location = useLocation();
 
   // Fetch properties with pagination
   const getProperties = async (page = 1) => {
-    let url = `/api/properties/?page=${page}`; // Include the page number in the URL
+    let url = `/api/properties/?page=${page}`;
 
     if (landlord_id) {
       url += `&landlord_id=${landlord_id}`;
@@ -26,25 +30,24 @@ const PropertyList = ({
     try {
       if (filteredProperties || location.state?.properties) {
         setProperties(filteredProperties || location.state.properties);
-        setTotalPages(1); // No need for pagination if filtered properties are shown
+        setTotalPages(1); // No pagination needed
       } else {
         const response = await axiosInstance.get(
           selectedCategory
             ? `/api/properties/?category=${selectedCategory}&page=${page}`
             : url
         );
-        setProperties(response.data.results); // Set the properties for the current page
-        setTotalPages(Math.ceil(response.data.count / 10)); // Calculate total pages
+        setProperties(response.data.results);
+        setTotalPages(Math.ceil(response.data.count / 12)); // Assuming 12 per page
       }
     } catch (error) {
       setError("Failed to fetch properties.");
     }
   };
 
-  // Fetch properties when the component mounts or when landlord_id changes
   useEffect(() => {
     getProperties(currentPage);
-    console.log("the page rerenderd");
+    console.log("The page rerendered");
   }, [
     landlord_id,
     currentPage,
@@ -53,16 +56,17 @@ const PropertyList = ({
     updateSelectedCategory,
     location.state?.properties,
   ]);
+
   // Handle page change
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
-      getProperties(newPage); // Fetch properties for the new page
+      getProperties(newPage);
     }
   };
 
-  console.log("from property list the filter is:" + filteredProperties);
-  // Check for errors
+  console.log("From PropertyList, the filter is:", filteredProperties);
+
   if (error) {
     return <div>Error: {error}</div>;
   }
@@ -73,7 +77,7 @@ const PropertyList = ({
         {properties.length > 0 ? (
           properties.map((property) => (
             <div key={property.id} className="col">
-              <PropertyListItem property={property} />
+              <PropertyListItem property={property} isLandlordPage={isLandlordPage} />
             </div>
           ))
         ) : (
