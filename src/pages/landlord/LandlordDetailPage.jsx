@@ -16,9 +16,12 @@ const LandlordDetailPage = () => {
         const landlordData = await axiosInstance.get(`/api/auth/${id}`);
         setLandlord(landlordData.data);
         setLandlordId(landlordData.data.id);
-        // const currentUserId = sessionStorage.getItem("userId");
-        const currentUserId = "3bd4857d-edca-4ab2-b3ac-2c976e5f14f4";
-        setUserId(currentUserId);
+        const currentUserId = localStorage.getItem("userId");
+        if (currentUserId) {
+          setUserId(currentUserId);
+        } else {
+          console.error("No userId found in localStorage");
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
