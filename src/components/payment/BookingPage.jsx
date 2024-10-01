@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import axiosInstance from "../../axios";
 
@@ -69,23 +69,23 @@ const BookingPage = () => {
     }
   };
 
-  // After successful Paymob payment (redirect), handle the redirection to home
   useEffect(() => {
-    // Check if payment was successful from the webhook response
     const checkPaymentStatus = async () => {
       try {
-        const response = await axiosInstance.post(
-          "api/payments/status-webhook/"
-        );
+        const response = await axiosInstance.get(`/api/payments/redirect/`);
+        console.log("Payment response", response);
         if (response.data.success && response.data.redirect_url) {
-          // Redirect to the home page after successful payment
           window.location.href = response.data.redirect_url;
         }
       } catch (error) {
-        console.error("Error handling payment status:", error);
+        console.error("Error checking payment status:", error);
       }
     };
-    checkPaymentStatus();
+
+    // Poll the payment status every few seconds
+    const intervalId = setInterval(checkPaymentStatus, 5000);
+
+    return () => clearInterval(intervalId); // Clean up the interval when the component is unmounted
   }, []);
 
   return (

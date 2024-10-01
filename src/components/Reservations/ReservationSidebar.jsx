@@ -4,6 +4,8 @@ import axiosInstance from "../../axios";
 import { differenceInDays, eachDayOfInterval, format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import Calendar from "./Calendar";
+import { toast } from "react-toastify";
+import { openLoginModal } from "../../redux/modalSlice";
 
 const initialDateRange = {
   startDate: new Date(),
@@ -59,7 +61,9 @@ const ReservationSidebar = ({ property, userId }) => {
               state: { totalPrice, guests, reservationId },
             });
           } else {
-            console.log(response);
+            // Display success toast
+            toast.error("You should Login first");
+            console.log("Response from Reservation", response);
             console.log("Something went wrong...");
           }
         } catch (error) {
