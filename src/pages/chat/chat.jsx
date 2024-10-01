@@ -4,7 +4,7 @@ import axiosInstance from "../../axios";
 
 function Chat() {
   const [conversations, setConversations] = useState([]);
-  const currentUserId = localStorage.getItem("userId"); // Assuming user ID is stored in localStorage
+  const currentUserId = localStorage.getItem("userId");
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -20,6 +20,11 @@ function Chat() {
     fetchConversations();
   }, []);
 
+  // Filter conversations to find those that include the current user
+  const userConversations = conversations.filter((conversation) =>
+    conversation.users.some((user) => user.id === currentUserId)
+  );
+
   return (
     <>
       <h2
@@ -31,14 +36,29 @@ function Chat() {
       >
         Inbox
       </h2>
-      {Array.isArray(conversations) &&
-        conversations.map((conversation) => (
+
+      {userConversations.length === 0 ? (
+        <div
+          className="no-chats"
+          style={{
+            textAlign: "center",
+            color: "#930c0c",
+            fontSize: "18px",
+            fontWeight: "normal",
+            margin: "20px 0",
+          }}
+        >
+          <p>No conversations yet</p>
+        </div>
+      ) : (
+        userConversations.map((conversation) => (
           <Conversation
             key={conversation.id}
-            conversation={conversation} // pass a single conversation object
-            currentUserId={currentUserId} // pass the current user ID
+            conversation={conversation}
+            currentUserId={currentUserId}
           />
-        ))}
+        ))
+      )}
     </>
   );
 }

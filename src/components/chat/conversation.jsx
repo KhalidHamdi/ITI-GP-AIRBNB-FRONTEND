@@ -2,6 +2,7 @@ import "./chat.css";
 import { Link } from "react-router-dom";
 
 const Conversation = ({ conversation, currentUserId }) => {
+  console.log("conversation", conversation);
   const isCurrentUserPartOfConversation = conversation.users.some(
     (user) => user.id === currentUserId
   );
@@ -11,15 +12,13 @@ const Conversation = ({ conversation, currentUserId }) => {
   }
 
   return (
-    <div className="conversations">
+    <div className="conversation-container">
       <div className="conversation" key={conversation.id}>
         <div className="conversationBox">
-          <p>
-            {conversation.users
-              .map((user) => user.username)
-              .reduce((prev, curr) => [prev, ", ", curr])}
-          </p>
-          <p className="text-airbnb-dark">
+          <h3 className="conversation-title">
+            {conversation.users[0].username}{" "}
+          </h3>
+          <p className="conversation-link">
             <Link to={`/conversationDetail/${conversation.id}`}>
               Go to conversation
             </Link>

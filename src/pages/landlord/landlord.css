@@ -1,0 +1,27 @@
+.chat-modal {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 350px;
+  max-height: 500px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.close-button {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+.modal-content {
+  flex: 1;
+  overflow-y: auto;
+}
