@@ -3,6 +3,7 @@ import { useParams, useLocation } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./conversationDetails.css";
 import axiosInstance from "../../axios";
+import { ToastContainer, toast } from "react-toastify";
 
 function ConversationDetail() {
   const { id: conversationId } = useParams();
@@ -15,7 +16,6 @@ function ConversationDetail() {
   const location = useLocation();
   const { landlordId } = location.state || {};
 
-  // Create a ref for the message container
   const messageContainerRef = useRef(null);
 
   useEffect(() => {
@@ -60,6 +60,19 @@ function ConversationDetail() {
         const newMessage = JSON.parse(event.data);
         newMessage.isSender = newMessage.name === userName;
         setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+        // Show toast notification for new messages
+        if (!newMessage.isSender) {
+          toast(`New message from ${newMessage.name}: ${newMessage.body}`, {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
       } catch (error) {
         console.error("Error parsing message:", error);
       }
@@ -107,15 +120,13 @@ function ConversationDetail() {
     }
   };
 
-  // New function to handle key down event
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-      event.preventDefault(); // Prevent the default behavior of the Enter key
+      event.preventDefault();
       handleSendMessage();
     }
   };
 
-  // Scroll to the last message whenever messages change
   useEffect(() => {
     const container = messageContainerRef.current;
     if (container) {
@@ -160,7 +171,7 @@ function ConversationDetail() {
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={handleKeyDown} // Attach the key down event
+          onKeyDown={handleKeyDown}
           placeholder="Type your message here..."
           className="chat-input"
         />
@@ -168,6 +179,7 @@ function ConversationDetail() {
           Send
         </button>
       </div>
+      <ToastContainer />
     </div>
   );
 }

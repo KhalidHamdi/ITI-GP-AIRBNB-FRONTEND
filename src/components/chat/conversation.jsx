@@ -16,7 +16,7 @@ const Conversation = ({ conversation, currentUserId }) => {
       <div className="conversation" key={conversation.id}>
         <div className="conversationBox">
           <h3 className="conversation-title">
-            {conversation.users[0].username}{" "}
+            {conversation.users[1].username}{" "}
           </h3>
           <p className="conversation-link">
             <Link to={`/conversationDetail/${conversation.id}`}>
