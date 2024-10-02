@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import LoginModal from "./modals/LoginModal";
 import ChatModal from "../pages/landlord/chatmodel";
 import axiosInstance from "../axios";
+import { openLoginModal } from "../redux/modalSlice";
+import { useDispatch } from "react-redux";
 
 const ContactButton = ({ userId, landlordId }) => {
   const [isChatOpen, setIsChatOpen] = useState(false); // State to manage chat modal
   const [conversationId, setConversationId] = useState(null); // State to store conversation ID
   const loginModal = LoginModal();
+  const dispatch = useDispatch();
 
   const startConversation = async () => {
     if (userId) {
@@ -23,7 +26,7 @@ const ContactButton = ({ userId, landlordId }) => {
         console.error("Failed to start conversation:", error);
       }
     } else {
-      loginModal.open();
+      dispatch(openLoginModal());
     }
   };
 
