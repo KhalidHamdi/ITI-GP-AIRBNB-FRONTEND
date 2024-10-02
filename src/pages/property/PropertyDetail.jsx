@@ -1,3 +1,5 @@
+// src/pages/PropertyDetail.js
+
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axiosInstance from "../../axios";
@@ -73,20 +75,20 @@ const PropertyDetail = () => {
     fetchData();
     fetchReviews();
     checkAuthStatus();
-  }, [id, isAuthenticated]);
+  }, [id]);
 
   useEffect(() => {
     if (currentUser && reviews.length > 0) {
       const userReview = reviews.find(
         (review) =>
-          review.user && review.user.toString() === currentUser.id.toString()
+          review.user && review.user.id.toString() === currentUser.id.toString()
       );
       setHasReviewed(!!userReview);
     }
   }, [currentUser, reviews]);
 
   const handleReviewAdded = (newReview) => {
-    setReviews([...reviews, newReview]);
+    setReviews([newReview, ...reviews]);
     setHasReviewed(true);
   };
 
@@ -147,10 +149,9 @@ const PropertyDetail = () => {
   if (!property)
     return <div className="text-center mt-5">Property not found</div>;
 
-  console.log(property.landlord);
-
   return (
     <div className="container mt-4" style={{ maxWidth: "1100px" }}>
+      {/* Property Details and Image */}
       <div className="row">
         <div className="col-12">
           <h1 className="mb-3 fw-bold" style={{ fontSize: "26px" }}>
@@ -179,13 +180,14 @@ const PropertyDetail = () => {
                 className="btn btn-link text-dark"
                 onClick={toggleFavorite}
               >
-                <i className={`bi-heart${isFavorite ? "-fill" : ""}`}> Fav </i>
+                <i className={`bi bi-heart${isFavorite ? "-fill" : ""}`}></i>
               </button>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Property Image */}
       <div className="row mt-4">
         <div className="col-12">
           <div
@@ -205,6 +207,7 @@ const PropertyDetail = () => {
         </div>
       </div>
 
+      {/* Property Description and Reservation Sidebar */}
       <div className="row mt-4">
         <div className="col-lg-7">
           <div className="d-flex justify-content-between align-items-center pb-4 border-bottom">
@@ -233,6 +236,7 @@ const PropertyDetail = () => {
         <ReservationSidebar property={property} userId={id} />
       </div>
 
+      {/* Reviews Section */}
       <hr className="my-5" />
 
       <ReviewList reviews={reviews} />
@@ -251,6 +255,7 @@ const PropertyDetail = () => {
         </p>
       )}
 
+      {/* Map Section */}
       <hr className="my-5" />
 
       <div className="row mb-5">
@@ -268,7 +273,7 @@ const PropertyDetail = () => {
             >
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               />
               <Marker position={position}>
                 <Popup>
@@ -282,6 +287,7 @@ const PropertyDetail = () => {
         </div>
       </div>
 
+      {/* Additional Information */}
       <hr className="my-5" />
 
       <div className="row mb-5">
