@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Calendar from "./Calendar";
 import { toast } from "react-toastify";
 import { openLoginModal } from "../../redux/modalSlice";
+import { useDispatch } from "react-redux";
 
 const initialDateRange = {
   startDate: new Date(),
@@ -28,9 +29,11 @@ const ReservationSidebar = ({ property, userId }) => {
   );
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const loggedInUserId = localStorage.getItem("userId");
 
   const performBooking = async () => {
-    if (userId) {
+    if (loggedInUserId) {
       if (dateRange.startDate && dateRange.endDate) {
         const formData = new FormData();
         formData.append("guests", guests);
@@ -48,7 +51,7 @@ const ReservationSidebar = ({ property, userId }) => {
             formData
           );
           if (response.data.success) {
-            toast.success("Booking successful :)");
+            // toast.success("Booking successful :)");
             console.log("Booking successful");
             console.log("Reservation created:", response.data.reservation);
             let reservationId = response.data.reservation.id;
@@ -63,6 +66,7 @@ const ReservationSidebar = ({ property, userId }) => {
             });
           } else {
             // Display success toast
+            dispatch(openLoginModal());
             toast.error("You should Login first");
             console.log("Response from Reservation", response);
             console.log("Something went wrong...");
@@ -74,6 +78,7 @@ const ReservationSidebar = ({ property, userId }) => {
       }
     } else {
       //TODO ya Basmala Handle login modal or notification here
+      dispatch(openLoginModal());
       console.log("User needs to log in");
     }
   };
@@ -175,14 +180,16 @@ const ReservationSidebar = ({ property, userId }) => {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={performBooking}
-              className="btn btn-primary w-100 mb-3"
-              style={{ backgroundColor: "#FF385C", borderColor: "#FF385C" }}
-            >
-              Book
-            </button>
+            {loggedInUserId !== property.landlord.id && (
+              <button
+                type="button"
+                onClick={performBooking}
+                className="btn btn-primary w-100 mb-3"
+                style={{ backgroundColor: "#FF385C", borderColor: "#FF385C" }}
+              >
+                Book
+              </button>
+            )}
             <p className="text-center mb-4">You won't be charged yet</p>
 
             <div className="d-flex justify-content-between mb-2">

@@ -6,19 +6,19 @@ import Modal from './Modal';
 import { useSelector, useDispatch } from 'react-redux';
 import { closeLoginModal, openPasswordResetModal } from '../../redux/modalSlice';
 import CustomButton from '../forms/CustomButton';
-import { handleLogin } from '../../lib/actions';
-import axiosInstance from '../../axios';
+import { login } from '../../redux/authSlice'; // Import login thunk
 import PasswordResetModal from './PasswordResetModal';
 import PasswordInput from '../forms/PasswordInput';
 import { toast } from 'react-toastify'; // Import toast
+import PropTypes from 'prop-types';
 
 const LoginModal = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isOpen = useSelector((state) => state.modal.loginModalOpen);
+  const authState = useSelector((state) => state.auth);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState([]);
 
   const close = () => {
     dispatch(closeLoginModal());
@@ -26,40 +26,27 @@ const LoginModal = () => {
 
   const submitLogin = async (e) => {
     e.preventDefault();
-  
-    const loginData = {
-      email,
-      password,
-    };
-  
-    try {
-      const response = await axiosInstance.post('/api/auth/login/', loginData);
-      console.log(response.data); 
-  
-      if (response.data.key && response.data.user_id && response.data.user) {
-        const { key, refreshToken, user_id, user } = response.data;
-        handleLogin(key, refreshToken, user_id, user.username); 
+
+    // Dispatch the login thunk
+    dispatch(login({ email, password }))
+      .unwrap()
+      .then(() => {
         close();
-        // Display success toast
         toast.success("Login successful!", {
           onClose: () => navigate('/'),
         });
-        console.log("Login successful");
-      } else {
-        setErrors(['Login failed. Token or User ID not found in response.']);
-      }
-    } catch (error) {
-      console.error("Login error:", error.response?.data);
-      if (error.response?.data?.non_field_errors) {
-        setErrors(error.response.data.non_field_errors);
-      } else if (error.response?.data) {
-        const fieldErrors = Object.entries(error.response.data)
-          .map(([field, messages]) => `${field}: ${messages.join(', ')}`);
-        setErrors(fieldErrors);
-      } else {
-        setErrors(['Login failed. Please check your credentials and try again.']);
-      }
-    }
+      })
+      .catch((error) => {
+        console.error("Login error:", error);
+        if (error.non_field_errors) {
+          toast.error(error.non_field_errors.join(', '));
+        } else {
+          const fieldErrors = Object.entries(error)
+            .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+            .join(' | ');
+          toast.error(fieldErrors || 'Login failed. Please try again.');
+        }
+      });
   };
   
   const openResetModal = () => {
@@ -90,11 +77,12 @@ const LoginModal = () => {
         required
       />
 
-      {errors.length > 0 && (
+      {/* Optionally, display errors here */}
+      {authState.error && (
         <div className="alert alert-danger" role="alert">
-          {errors.map((error, index) => (
-            <div key={`error_${index}`}>{error}</div>
-          ))}
+          {Array.isArray(authState.error.non_field_errors)
+            ? authState.error.non_field_errors.join(', ')
+            : 'Login failed. Please check your credentials and try again.'}
         </div>
       )}
 
@@ -114,6 +102,10 @@ const LoginModal = () => {
       <PasswordResetModal /> 
     </>
   );
+};
+
+LoginModal.propTypes = {
+  // Define propTypes if any props are passed to LoginModal
 };
 
 export default LoginModal;
