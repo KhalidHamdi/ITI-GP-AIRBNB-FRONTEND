@@ -14,6 +14,7 @@ const UserMenu = ({ airbnbYourHome }) => {
     const [user, setUser] = useState(null); // State to store user data
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [landlordId, setLandlordId] = useState(null);
 
     useEffect(() => {
         const authToken = Cookies.get('authToken');
@@ -23,6 +24,11 @@ const UserMenu = ({ airbnbYourHome }) => {
         if (loggedIn) {
             fetchUserProfile(authToken);
         }
+        const storedLandlordId = localStorage.getItem("userId"); // Assuming userId is the landlord ID
+        if (storedLandlordId) {
+            setLandlordId(storedLandlordId);
+        }
+
     }, []);
 
     const fetchUserProfile = async (authToken) => {
@@ -46,7 +52,7 @@ const UserMenu = ({ airbnbYourHome }) => {
             setUser(null);
             toast.success("see you soon :)!", {
                 onClose: () => navigate('/'),
-              });
+            });
         } catch (error) {
             console.error('Logout failed:', error);
         }
@@ -83,6 +89,15 @@ const UserMenu = ({ airbnbYourHome }) => {
                             <Link to="/MyReservations" className="dropdown-item">
                                 My Reservations
                             </Link>
+                        </li>
+                        <li>
+                            {landlordId ? (
+                                <Link to={`/landlord/${landlordId}`} className="dropdown-item">
+                                    My Properties
+                                </Link>
+                            ) : (
+                                <span>Loading...</span>
+                            )}
                         </li>
                         <li>
                             <Link to="/my-favorites" className="dropdown-item">
