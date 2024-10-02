@@ -45,15 +45,6 @@
   box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* .chat-input-container input::placeholder {
-  color: #ffcccc;
-} */
-
-input:focus {
-  outline: none;
-  box-shadow: 0 0 4px #ff385c;
-}
-
 button {
   background: #ff385c; /* Strong red for buttons */
   color: white;
@@ -64,12 +55,12 @@ button {
   transition: transform 0.3s ease-in-out;
 }
 
-button:hover {
+.send-button:hover {
   transform: scale(1.05);
-  background: #ff4d4d; /* Lighter red on hover */
+  background: #dd3f3f;
 }
 
-button:focus {
+.send-button:focus {
   outline: none;
-  box-shadow: 0 0 6px #ff4d4d; /* Red shadow for focus */
+  box-shadow: 0 0 6px #ff4d4d;
 }
