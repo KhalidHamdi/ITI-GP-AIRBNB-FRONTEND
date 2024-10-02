@@ -60,10 +60,16 @@ const ReservationSidebar = ({ property, userId }) => {
               "Reservation Id from ReservationSideBar:",
               reservationId
             );
-
-            navigate("/payment", {
-              state: { totalPrice, guests, reservationId },
+            toast.info("Your reservation has been placed, but it will not be confirmed until payment is received. Please complete your payment within two days, or the reservation will be automatically canceled.", {
+              position: "top-center",
+              autoClose: 8000,
             });
+
+            setTimeout(() => {
+              navigate("/payment", {
+                state: { totalPrice, guests, reservationId },
+              });
+            }, 8000);
           } else {
             // Display success toast
             dispatch(openLoginModal());
