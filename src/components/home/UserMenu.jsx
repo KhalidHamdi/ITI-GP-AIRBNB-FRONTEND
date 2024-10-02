@@ -18,13 +18,6 @@ const UserMenu = ({ airbnbYourHome }) => {
 
   const handleLogout = async () => {
     try {
-      // Optionally, call backend logout endpoint to invalidate tokens
-      // await axiosInstance.post('/api/auth/logout/', {}, {
-      //   headers: {
-      //     Authorization: `Bearer ${Cookies.get('authToken')}`,
-      //   },
-      // });
-
       // Dispatch the logout thunk to clear auth state
       await dispatch(performLogout()).unwrap();
 
