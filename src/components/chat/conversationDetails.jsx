@@ -110,7 +110,7 @@ function ConversationDetail() {
   // New function to handle key down event
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-      event.preventDefault(); // Prevent the default behavior of the Enter key
+      event.preventDefault();
       handleSendMessage();
     }
   };
@@ -124,49 +124,50 @@ function ConversationDetail() {
   }, [messages]);
 
   return (
-    <div className="chat-container">
-      <div className="user-list">
-        {users.map((user) => (
-          <div
-            key={user.id}
-            onClick={() => setSelectedUserId(user.id)}
-            style={{
-              cursor: "pointer",
-              padding: "5px",
-              backgroundColor:
-                selectedUserId === user.id ? "#d1e7dd" : "transparent",
-            }}
-          >
-            {user.username}
-          </div>
-        ))}
-      </div>
+    <div className="chat-container card">
+      <div className="card-bodyy">
+        <div className="user-list">
+          {users.map((user) => (
+            <div
+              key={user.id}
+              onClick={() => setSelectedUserId(user.id)}
+              style={{
+                cursor: "pointer",
+                padding: "5px",
+                backgroundColor:
+                  selectedUserId === user.id ? "#d1e7dd" : "transparent",
+              }}
+            >
+              {user.username}
+            </div>
+          ))}
+        </div>
 
-      <div
-        className="message-container"
-        ref={messageContainerRef}
-        style={{ overflowY: "auto", maxHeight: "400px" }} // Adjust the height as needed
-      >
-        {messages.map((message, index) => (
-          <div key={index} className={message.isSender ? "sender" : "receiver"}>
-            <h4>{message.name}</h4>
-            <p>{message.body}</p>
-          </div>
-        ))}
-      </div>
+        <div className="message-container" ref={messageContainerRef}>
+          {messages.map((message, index) => (
+            <div
+              key={index}
+              className={message.isSender ? "sender" : "receiver"}
+            >
+              <h4>{message.name}</h4>
+              <p>{message.body}</p>
+            </div>
+          ))}
+        </div>
 
-      <div className="chat-input-container">
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={handleKeyDown} // Attach the key down event
-          placeholder="Type your message here..."
-          className="chat-input"
-        />
-        <button className="send-button" onClick={handleSendMessage}>
-          Send
-        </button>
+        <div className="chat-input-container">
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Type your message here..."
+            className="chat-input"
+          />
+          <button className="send-button" onClick={handleSendMessage}>
+            Send
+          </button>
+        </div>
       </div>
     </div>
   );

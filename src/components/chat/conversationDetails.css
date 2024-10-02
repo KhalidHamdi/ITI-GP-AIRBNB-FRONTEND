@@ -1,12 +1,21 @@
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: 500px;
+  height: 100vh;
   border: 1px solid #ccc;
   border-radius: 10px;
   overflow: hidden;
+  background: linear-gradient(to bottom left, #79c7c5 40%, #f9fbff 100%);
+  font-family: "Lato", sans-serif;
+  margin: 0;
+  padding: 0;
 }
-
+.card-bodyy {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0;
+}
 .message-container {
   flex: 1;
   overflow-y: auto;
@@ -17,31 +26,32 @@
 .sender,
 .receiver {
   display: flex;
-  flex-direction: column; /* Ensures name is above message */
+  flex-direction: column;
   max-width: 60%;
   margin-bottom: 15px;
   padding: 10px;
   border-radius: 15px;
   word-wrap: break-word;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .sender {
-  align-self: flex-end; /* Align sender to the right */
+  align-self: flex-end;
   background-color: #007bff;
   color: white;
-  margin-left: auto; /* Pushes the sender's messages to the right */
+  margin-left: auto;
 }
 
 .receiver {
-  align-self: flex-start; /* Align receiver to the left */
+  align-self: flex-start;
   background-color: #e0e0e0;
   color: black;
-  margin-right: auto; /* Pushes the receiver's messages to the left */
+  margin-right: auto;
 }
 
 .sender h4,
 .receiver h4 {
-  margin: 0 0 5px; /* Space between name and message */
+  margin: 0 0 5px;
   font-weight: bold;
 }
 
@@ -67,34 +77,38 @@
   border-radius: 20px;
   outline: none;
   margin-right: 10px;
+  background-color: #ffffff;
+  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .send-button {
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #79c7c5;
   color: white;
   border: none;
   border-radius: 20px;
   cursor: pointer;
+  transition: transform 0.3s ease-in-out;
 }
 
 .send-button:hover {
-  background-color: #0056b3;
+  transform: scale(1.05);
+  background-color: #65b0b1;
 }
 
 .loading-message {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%; /* Full height of the chat container */
-  background-color: #f9f9f9; /* Light background */
-  color: #007bff; /* Primary color */
-  font-size: 18px; /* Increased font size */
-  font-weight: bold; /* Bold text */
+  height: 100%;
+  background-color: #f9f9f9;
+  color: #007bff;
+  font-size: 18px;
+  font-weight: bold;
   text-align: center;
-  border-radius: 10px; /* Rounded corners */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  animation: fadeIn 0.5s ease-in; /* Fade-in animation */
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-in;
 }
 
 /* Fade-in animation */
