@@ -1,3 +1,6 @@
+@import url("https://fonts.googleapis.com/css?family=Lato:400,700");
+
+/* Chat container with clean red and white theme */
 .chat-container {
   display: flex;
   flex-direction: column;
@@ -5,21 +8,24 @@
   border: 1px solid #ccc;
   border-radius: 10px;
   overflow: hidden;
-  background: linear-gradient(to bottom left, #79c7c5 40%, #f9fbff 100%);
+  background-color: #ffffff; /* Clean white background */
   font-family: "Lato", sans-serif;
   margin: 0;
   padding: 0;
 }
+
 .card-bodyy {
   display: flex;
   flex-direction: column;
   height: 100%;
   padding: 0;
 }
+
 .message-container {
   flex: 1;
   overflow-y: auto;
   padding: 10px;
+  background-color: #f9f9f9; /* Light background for messages */
 }
 
 /* Message styles for both sender and receiver */
@@ -37,14 +43,14 @@
 
 .sender {
   align-self: flex-end;
-  background-color: #007bff;
+  background-color: #c44545; /* Red for sender messages */
   color: white;
   margin-left: auto;
 }
 
 .receiver {
   align-self: flex-start;
-  background-color: #e0e0e0;
+  background-color: #f0efef;
   color: black;
   margin-right: auto;
 }
@@ -61,12 +67,12 @@
   line-height: 1.5;
 }
 
-/* Chat input styling */
+/* Chat input container */
 .chat-input-container {
   display: flex;
   padding: 10px;
   border-top: 1px solid #ccc;
-  background-color: #f9f9f9;
+  background-color: #ffffff; /* White background for input */
 }
 
 .chat-input {
@@ -77,13 +83,13 @@
   border-radius: 20px;
   outline: none;
   margin-right: 10px;
-  background-color: #ffffff;
+  background-color: #f9f9f9; /* Subtle light background for input */
   box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .send-button {
   padding: 10px 20px;
-  background-color: #79c7c5;
+  background-color: #c44545;
   color: white;
   border: none;
   border-radius: 20px;
@@ -93,16 +99,17 @@
 
 .send-button:hover {
   transform: scale(1.05);
-  background-color: #65b0b1;
+  background-color: #ff4d4d;
 }
 
+/* Loading message */
 .loading-message {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-color: #f9f9f9;
-  color: #007bff;
+  background-color: #ffffff;
+  color: #b22222; /* Red color for loading text */
   font-size: 18px;
   font-weight: bold;
   text-align: center;
@@ -124,7 +131,7 @@
 /* Loading spinner */
 .spinner {
   border: 4px solid #f3f3f3; /* Light gray */
-  border-top: 4px solid #007bff; /* Primary color */
+  border-top: 4px solid #b22222; /* Red for spinner */
   border-radius: 50%;
   width: 24px; /* Spinner size */
   height: 24px; /* Spinner size */

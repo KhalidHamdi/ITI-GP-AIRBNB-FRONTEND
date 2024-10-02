@@ -13,16 +13,17 @@
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(to bottom left, #79c7c5 40%, #f9fbff 100%);
+  background: linear-gradient(to bottom left, #c44545 40%, #f08080 100%);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   font-family: "Lato", sans-serif;
   overflow: hidden;
+  z-index: 200;
 }
 
 .name {
   font-size: 0.9em;
   font-weight: 700;
-  color: #777777;
+  color: #ffffff;
   letter-spacing: 1px;
 }
 
@@ -31,7 +32,7 @@
   border: none;
   font-size: 20px;
   cursor: pointer;
-  color: #777777;
+  color: #ffffff;
 }
 
 .chat-input input {
@@ -40,20 +41,21 @@
   border: none;
   border-radius: 5px;
   margin-right: 10px;
-  background-color: #ffffff;
+  background-color: #ffe6e6;
   box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.chat-input-container input::placeholder {
-  color: #a1e2d9;
-}
+/* .chat-input-container input::placeholder {
+  color: #ffcccc;
+} */
 
 input:focus {
   outline: none;
+  box-shadow: 0 0 4px #ff385c;
 }
 
 button {
-  background: #79c7c5;
+  background: #ff385c; /* Strong red for buttons */
   color: white;
   border: none;
   padding: 10px 15px;
@@ -64,4 +66,10 @@ button {
 
 button:hover {
   transform: scale(1.05);
+  background: #ff4d4d; /* Lighter red on hover */
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 6px #ff4d4d; /* Red shadow for focus */
 }
