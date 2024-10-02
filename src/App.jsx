@@ -57,8 +57,6 @@ function App() {
         <Route path="/properties/:id" element={<PropertyDetail />} />
         <Route path="/properties" element={<PropertyContainer />} />{" "}
         {/* New route */}
-        <Route path="/properties" element={<PropertyContainer />} />{" "}
-        {/* New route */}
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/chat" element={<Chat />} />
         <Route
