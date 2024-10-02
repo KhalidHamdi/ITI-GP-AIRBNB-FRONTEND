@@ -5,17 +5,24 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../axios';
 import { useForm } from 'react-hook-form';
 import CustomButton from '../forms/CustomButton';
+import PasswordInput from '../forms/PasswordInput';
+import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { openLoginModal } from '../../redux/modalSlice';
 import './ResetPasswordConfirm.css';
 
 const ResetPasswordConfirm = () => {
     const { uid, token } = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { register, handleSubmit, formState: { errors: formErrors } } = useForm();
     const [message, setMessage] = useState('');
     const [errors, setErrors] = useState([]);
+    const [password1, setPassword1] = useState('');
+    const [password2, setPassword2] = useState('');
 
     const onSubmit = async (data) => {
-        if (data.password1 !== data.password2) {
+        if (password1 !== password2) {
             setErrors(['Passwords do not match.']);
             return;
         }
@@ -23,15 +30,21 @@ const ResetPasswordConfirm = () => {
         const payload = {
             uid: uid,
             token: token,
-            new_password1: data.password1,
-            new_password2: data.password2,
+            new_password1: password1,
+            new_password2: password2,
         };
 
         try {
             const response = await axiosInstance.post('/api/auth/password/reset/confirm/', payload);
             setMessage('Your password has been reset successfully.');
             setErrors([]);
-            setTimeout(() => navigate('/login'), 3000);
+            // Show success toast and navigate to home, then open login modal
+            toast.success("Password reset successful! Please log in with your new password.", {
+                onClose: () => {
+                    navigate('/');
+                    dispatch(openLoginModal());
+                },
+            });
         } catch (error) {
             const errorMessages = [];
             if (error.response && error.response.data) {
@@ -70,29 +83,23 @@ const ResetPasswordConfirm = () => {
             )}
 
             <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="mb-3">
-                    <label htmlFor="password1" className="form-label">New Password</label>
-                    <input
-                        type="password"
-                        className="form-control"
-                        id="password1"
-                        placeholder="Enter new password"
-                        {...register('password1', { required: true })}
-                    />
-                    {formErrors.password1 && <span className="text-danger">This field is required</span>}
-                </div>
+                <PasswordInput
+                    id="password1"
+                    label="New Password"
+                    placeholder="Enter new password"
+                    value={password1}
+                    onChange={(e) => setPassword1(e.target.value)}
+                    required
+                />
 
-                <div className="mb-3">
-                    <label htmlFor="password2" className="form-label">Confirm New Password</label>
-                    <input
-                        type="password"
-                        className="form-control"
-                        id="password2"
-                        placeholder="Confirm new password"
-                        {...register('password2', { required: true })}
-                    />
-                    {formErrors.password2 && <span className="text-danger">This field is required</span>}
-                </div>
+                <PasswordInput
+                    id="password2"
+                    label="Confirm New Password"
+                    placeholder="Confirm new password"
+                    value={password2}
+                    onChange={(e) => setPassword2(e.target.value)}
+                    required
+                />
 
                 <CustomButton label="Reset Password" type="submit" />
             </form>

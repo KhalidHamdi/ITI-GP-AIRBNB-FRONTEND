@@ -19,7 +19,6 @@ const PropertyContainer = () => {
 
   const updateSelectedCategory = (category) => {
     setSelectedCategory(category);
-    // Reset filtered properties when selecting a new category
     setFilteredProperties(null);
   };
 
@@ -31,6 +30,7 @@ const PropertyContainer = () => {
       />
       <PropertyList 
         selectedCategory={selectedCategory} 
+        updateSelectedCategory={updateSelectedCategory}
         filteredProperties={filteredProperties} 
       />
     </div>

@@ -49,18 +49,18 @@ const Search = () => {
     try {
       // Fetch properties based on selected city and guests
       const response = await axiosInstance.get("/api/properties/", {
-        params: {
+        params: { 
           country: city,
           guests,
         },
       });
 
-      console.log("Filtered properties:", response.data.data);
+      console.log("searched properties:", response.data.results);
 
       // Navigate to home with properties in state
       navigate("/", {
         state: {
-          properties: response.data.data,
+          properties: response.data.results,
           city,   // Include the selected city in the state
           guests, // Include the number of guests in the state
         },

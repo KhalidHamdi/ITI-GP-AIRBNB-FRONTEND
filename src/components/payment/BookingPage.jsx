@@ -1,16 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import axiosInstance from "../../axios";
+import { toast } from "react-toastify";
 
 const BookingPage = () => {
   const location = useLocation();
-  const { totalPrice } = location.state || { totalPrice: 0, guests: 0 };
-  const { guests } = location.state || { guests: 0 };
-
+  const { totalPrice, reservationId, guests } = location.state || {
+    totalPrice: 0,
+    reservationId: null,
+    guests: 1,
+  };
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false); // To handle button disable and loading states
 
   const validateForm = () => {
     const newErrors = {};
@@ -30,15 +35,59 @@ const BookingPage = () => {
     return newErrors;
   };
 
-  const handlePay = () => {
+  const handlePay = async () => {
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length === 0) {
-      // Here you would eventually redirect or trigger Paymob Iframe
-      console.log("Redirecting to Paymob...");
+      try {
+        setLoading(true);
+        // Step 1: Save form data
+        await axiosInstance.post(
+          `api/payments/reservation/${reservationId}/update-details/`,
+          {
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            phone: phone,
+          }
+        );
+
+        // Step 2: Initiate payment and get iframe URL
+        const response = await axiosInstance.post(
+          `api/payments/reservation/${reservationId}/initiate-payment/`
+        );
+        const iframeUrl = response.data.iframe_url;
+        toast.success("Booking successful :)");
+        // Step 3: Redirect to Paymob iframe
+        window.location.href = iframeUrl;
+      } catch (error) {
+        console.error("Error processing payment:", error);
+        // Handle the error if needed
+      } finally {
+        setLoading(false);
+      }
     } else {
       setErrors(validationErrors);
     }
   };
+
+  useEffect(() => {
+    const checkPaymentStatus = async () => {
+      try {
+        const response = await axiosInstance.get(`/api/payments/redirect/`);
+        console.log("Payment response", response);
+        if (response.data.success && response.data.redirect_url) {
+          window.location.href = response.data.redirect_url;
+        }
+      } catch (error) {
+        console.error("Error checking payment status:", error);
+      }
+    };
+
+    // Poll the payment status every few seconds
+    const intervalId = setInterval(checkPaymentStatus, 5000);
+
+    return () => clearInterval(intervalId); // Clean up the interval when the component is unmounted
+  }, []);
 
   return (
     <div className="container mt-4 mb-4">
@@ -48,20 +97,6 @@ const BookingPage = () => {
           <div className="card shadow-sm">
             <div className="card-body">
               <h5 className="card-title">Your Booking Details</h5>
-
-              {/* <div className="d-flex justify-content-between mb-2">
-                <span>
-                  ${pricePerNight} x {nights} nights
-                </span>
-                <span>${(pricePerNight * nights).toFixed(2)}</span>
-              </div>
-
-              <div className="d-flex justify-content-between mb-2">
-                <span>Booking Fee</span>
-                <span>${fee}</span>
-              </div>
-
-              <hr /> */}
 
               <div className="d-flex justify-content-between mb-2">
                 <span>Guests</span>
@@ -166,8 +201,9 @@ const BookingPage = () => {
                   className="btn btn-primary w-100"
                   style={{ backgroundColor: "#FF385C", borderColor: "#FF385C" }}
                   onClick={handlePay}
+                  disabled={loading}
                 >
-                  PAY
+                  {loading ? "Processing..." : "PAY"}
                 </button>
               </form>
             </div>

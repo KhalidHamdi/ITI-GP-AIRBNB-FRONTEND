@@ -1,6 +1,14 @@
-import React from "react";
+// src/App.jsx
+
+import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { fetchUserProfile } from './redux/authSlice'; // Import the fetchUserProfile thunk
 import Home from "./pages/home/Home";
+import { ToastContainer } from "react-toastify"; // Import ToastContainer
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
+import Cookies from 'js-cookie'; // Import js-cookie
+
 import CategoryPage from "./pages/category/CategoryPage";
 import PropertyDetail from "./pages/property/PropertyDetail";
 import Header from "./components/home/Header";
@@ -16,15 +24,21 @@ import ResetPasswordConfirm from "./components/modals/ResetPasswordConfirm";
 import LandlordDetailPage from "./pages/landlord/LandlordDetailPage";
 import BookingPage from "./components/payment/BookingPage";
 import FilterModal from "./components/modals/FilterModal";
-import PropertyContainer from "./pages/category/CategoryPage";
+import PropertyContainer from "./pages/category/CategoryPage"; // Import PropertyContainer
 import UserProfile from "./components/userprofile/UserProfile";
 import MyFavoritesPage from "./components/home/MyFavoritesPage";
-import Modal from "react-modal";
-
-// Set app element for accessibility
-Modal.setAppElement("#root");
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // On app load, check for existing auth tokens and fetch user profile
+    const token = Cookies.get('authToken');
+    if (token) {
+      dispatch(fetchUserProfile());
+    }
+  }, [dispatch]);
+
   return (
     <div className="app">
       <Header />
@@ -33,6 +47,19 @@ function App() {
       <PasswordResetModal />
       <AddProperty />
       <FilterModal />
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
 
       <Routes>
         <Route
@@ -43,8 +70,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/" element={<Home />} />
         <Route path="/properties/:id" element={<PropertyDetail />} />
-        <Route path="/properties" element={<PropertyContainer />} />{" "}
-        {/* New route */}
+        <Route path="/properties" element={<PropertyContainer />} /> {/* Single route */}
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/chat" element={<Chat />} />
         <Route
@@ -52,7 +78,7 @@ function App() {
           element={<ConversationDetail />}
         />
         <Route path="/MyReservations" element={<MyReservationsPage />} />
-        <Route path="/landlord/:username" element={<LandlordDetailPage />} />
+        <Route path="/landlord/:id" element={<LandlordDetailPage />} />
         <Route path="/payment" element={<BookingPage />} />
         <Route path="/my-favorites" element={<MyFavoritesPage />} />
       </Routes>
