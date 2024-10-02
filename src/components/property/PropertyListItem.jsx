@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { openEditPropertyModal } from '../../redux/modalSlice';
+import { openAddAdsModal }  from '../../redux/modalSlice';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from "../../axios";
 import Cookies from "js-cookie";
@@ -75,6 +76,12 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
         setShowConfirm(true);
     };
 
+    const handlePromoteClick = (e) => {
+        e.stopPropagation();
+        dispatch(openAddAdsModal(property)); 
+        console.log('promote clicked!');
+    };
+
     const handleConfirmDelete = async () => {
         setShowConfirm(false);
         try {
@@ -126,38 +133,45 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
                             <i className={`bi ${isFavorite ? "bi-heart-fill" : "bi-heart"}`}></i>
                         )}
                     </button>
-                    {/* Edit Button */}
-                    {isLandlordPage && (
-                        <button
-                            className="btn btn-secondary btn-sm rounded-pill"
-                            onClick={handleEditClick}
-                            aria-label="Edit Property"
-                            style={{
-                                position: 'absolute',
-                                top: '10px',
-                                left: '10px',
-                                zIndex: 1
-                            }}
-                        >
-                            Edit
-                        </button>
-                    )}
-                    {/* Delete Button */}
-                    {isLandlordPage && (
-                        <button
-                            className="btn btn-danger btn-sm rounded-pill"
-                            onClick={handleDeleteClick}
-                            aria-label="Delete Property"
-                            style={{
-                                position: 'absolute',
-                                top: '40px',
-                                left: '10px',
-                                zIndex: 1
-                            }}
-                        >
-                            Delete
-                        </button>
-                    )}
+ {/* Action Buttons */}
+{isLandlordPage && (
+  <div
+    className="d-flex flex-column"
+    style={{
+      position: 'absolute',
+      top: '10px',
+      left: '10px',
+      zIndex: 1,
+    }}
+  >
+    {/* Edit Button */}
+    <button
+      className="btn btn-secondary btn-sm rounded-pill mb-2"
+      onClick={handleEditClick}
+      aria-label="Edit Property"
+    >
+      Edit
+    </button>
+
+    {/* Delete Button */}
+    <button
+      className="btn btn-danger btn-sm rounded-pill mb-2"
+      onClick={handleDeleteClick}
+      aria-label="Delete Property"
+    >
+      Delete
+    </button>
+
+    {/* Promote Button */}
+    <button
+      className="btn btn-success btn-sm rounded-pill"
+      onClick={handlePromoteClick}
+    >
+      Promote
+    </button>
+  </div>
+)}
+
                 </div>
                 <div className="card-body p-3">
                     <h5 className="card-title mb-1">{property.title}</h5>
