@@ -48,7 +48,7 @@ const LoginModal = () => {
         }
       });
   };
-  
+
   const openResetModal = () => {
     dispatch(openPasswordResetModal());
   };
@@ -99,7 +99,7 @@ const LoginModal = () => {
   return (
     <>
       <Modal isOpen={isOpen} close={close} label="Log in" content={content} />
-      <PasswordResetModal /> 
+      <PasswordResetModal />
     </>
   );
 };
