@@ -1,64 +1,52 @@
-import React, { useState, useEffect } from "react";
+// src/components/reviews/ReviewForm.js
+
+import React, { useState } from "react";
 import axiosInstance from "../../axios";
 import Cookies from 'js-cookie';
 
 const ReviewForm = ({ propertyId, onReviewAdded }) => {
   const [newReview, setNewReview] = useState({ rating: "", comment: "" });
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const authToken = Cookies.get('authToken');
-    setIsLoggedIn(!!authToken);
-  }, []);
   const submitReview = async (event) => {
     event.preventDefault();
     setError("");
-    
-    if (!isLoggedIn) {
-      setError("You must be logged in to submit a review.");
-      return;
-    }
-  
+
     try {
+      const authToken = Cookies.get('authToken');
+      if (!authToken) {
+        setError("You must be logged in to submit a review.");
+        return;
+      }
+
       const { rating, comment } = newReview;
-      
-      if (rating < 1 || rating > 5) {
+      const parsedRating = parseInt(rating);
+
+      if (parsedRating < 1 || parsedRating > 5) {
         throw new Error("Rating must be between 1 and 5");
       }
-  
-      console.log('Submitting review data:', { propertyId, comment, rating });  // Log the review data
-  
+
       const response = await axiosInstance.post(
         `/api/properties/${propertyId}/reviews/create/`,
-        { comment, rating: parseInt(rating) }  // Ensure rating is an integer
+        { comment, rating: parsedRating },
+        { headers: { 'Authorization': `Bearer ${authToken}` } }
       );
-  
+
       if (response.status === 201 || response.status === 200) {
         onReviewAdded(response.data);
         setNewReview({ rating: "", comment: "" });
-        console.log('Review submitted successfully:', response.data);
       }
-  
+
     } catch (error) {
       if (error.response) {
         setError(error.response.data.error || "An error occurred while submitting the review.");
-        console.log('Error response:', error.response);  // Log the full error response
       } else if (error.request) {
         setError("Network error. Please try again.");
-        console.log('Network error:', error.request);  // Log the request that errored
       } else {
         setError(error.message);
       }
-      console.error('Error submitting review:', error);
     }
   };
-  
-
-
-  if (!isLoggedIn) {
-    return <p>Please log in to submit a review.</p>;
-  }
 
   return (
     <form onSubmit={submitReview} className="mb-4">
