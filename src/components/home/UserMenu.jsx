@@ -15,6 +15,7 @@ const UserMenu = ({ airbnbYourHome }) => {
   const navigate = useNavigate();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const user = useSelector((state) => state.auth.user);
+  console.log("USER from MENU ..................", user);
 
   const handleLogout = async () => {
     try {
@@ -63,8 +64,8 @@ const UserMenu = ({ airbnbYourHome }) => {
               </Link>
             </li>
             <li>
-              {landlordId ? (
-                <Link to={`/landlord/${user}`} className="dropdown-item">
+              {user ? (
+                <Link to={`/landlord/${user.id}`} className="dropdown-item">
                   My Properties
                 </Link>
               ) : (
