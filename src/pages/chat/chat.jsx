@@ -86,17 +86,31 @@ function Chat() {
 
     // WebSocket setup - make sure to replace 'room_name' with actual conversation ID
     const socket = new WebSocket(
-      `ws://localhost:8000/ws/058ee31f-546a-4811-a7e0-edbdf7981066/`
+      `ws://localhost:8000/ws/06d21566-15f0-4a03-912d-de491c079819/`
     );
 
     socket.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      // Assuming your message object has senderId, receiverId, and text properties
-      if (message.receiverId === currentUserId) {
-        toast(`New message from ${message.sender}: ${message.text}`);
+      const messageData = JSON.parse(event.data);
+      const message = messageData.data;
+
+      // Extract user IDs from the conversation object
+      const userIds = conversation.users.map((user) => user.id);
+
+      // Check if the current user ID is in the user IDs array
+      if (userIds.includes(currentUserId)) {
+        // Show toast notification only if the message is sent to the current user
+        if (message.sent_to_id === currentUserId) {
+          toast(`New message from ${message.name}: ${message.body}`, {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        }
       }
     };
-
     socket.onopen = () => {
       console.log("WebSocket connection established");
     };

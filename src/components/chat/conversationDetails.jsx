@@ -57,7 +57,13 @@ function ConversationDetail() {
     onClose: () => console.log("Disconnected from WebSocket"),
     onMessage: (event) => {
       try {
-        const newMessage = JSON.parse(event.data);
+        const messageData = JSON.parse(event.data);
+        console.log(messageData);
+        const newMessage = {
+          body: messageData.body, // or messageData.data.body if wrapped
+          name: messageData.name, // or messageData.data.name if wrapped
+        };
+
         newMessage.isSender = newMessage.name === userName;
         setMessages((prevMessages) => [...prevMessages, newMessage]);
 
@@ -70,7 +76,6 @@ function ConversationDetail() {
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
-            progress: undefined,
           });
         }
       } catch (error) {
@@ -110,6 +115,7 @@ function ConversationDetail() {
         };
         sendMessage(JSON.stringify(messageData));
         setNewMessage("");
+        console.log("messageData:", messageData);
       } else {
         console.log("WebSocket is not connected. Current state:", readyState);
       }
