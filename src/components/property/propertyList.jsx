@@ -1,5 +1,3 @@
-// src/components/property/PropertyList.jsx
-
 import React, { useEffect, useState } from "react";
 import PropertyListItem from "./PropertyListItem";
 import axiosInstance from "../../axios";
@@ -16,10 +14,12 @@ const PropertyList = ({
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false); // Loading state
   const location = useLocation();
 
   // Fetch properties with pagination
   const getProperties = async (page = 1) => {
+    setLoading(true); // Start loading
     let url = `/api/properties/?page=${page}`;
 
     if (landlord_id) {
@@ -42,6 +42,8 @@ const PropertyList = ({
     } catch (error) {
       console.error("Fetch Properties Error:", error);
       setError("Failed to fetch properties.");
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -81,57 +83,68 @@ const PropertyList = ({
 
   return (
     <div className="container my-4">
-      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-        {properties.length > 0 ? (
-          properties.map((property) => (
-            <div key={property.id} className="col">
-              <PropertyListItem
-                property={property}
-                isLandlordPage={isLandlordPage}
-                onDelete={handleDelete} // Pass the onDelete callback
-              />
-            </div>
-          ))
-        ) : (
-          <div className="col">
-            <p>No Properties.</p>
-          </div>
-        )}
-      </div>
-
-      {/* Pagination Controls */}
-      {totalPages > 1 && (
-        <div className="d-flex justify-content-center mt-3">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "10px",
-              marginTop: "50px",
-            }}
-          >
-            <button
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-              className="btn btn-sm btn-outline-primary mx-2"
-            >
-              &laquo; Prev
-            </button>
-
-            <span className="mx-2">
-              {currentPage} / {totalPages}
-            </span>
-
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-              className="btn btn-sm btn-outline-primary mx-2"
-            >
-              Next &raquo;
-            </button>
+      {/* Display loading indicator while fetching */}
+      {loading ? (
+        <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
           </div>
         </div>
+      ) : (
+        <>
+          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {properties.length > 0 ? (
+              properties.map((property) => (
+                <div key={property.id} className="col">
+                  <PropertyListItem
+                    property={property}
+                    isLandlordPage={isLandlordPage}
+                    onDelete={handleDelete} // Pass the onDelete callback
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="col">
+                <p>No Properties.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="d-flex justify-content-center mt-3">
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "10px",
+                  marginTop: "50px",
+                }}
+              >
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className="btn btn-sm btn-outline-primary mx-2"
+                >
+                  &laquo; Prev
+                </button>
+
+                <span className="mx-2">
+                  {currentPage} / {totalPages}
+                </span>
+
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className="btn btn-sm btn-outline-primary mx-2"
+                >
+                  Next &raquo;
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

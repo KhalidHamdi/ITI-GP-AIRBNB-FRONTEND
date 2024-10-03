@@ -1,8 +1,11 @@
+// AddAdsModal.jsx
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { closeAddAdsModal } from "../../redux/modalSlice";
 import Modal from "./Modal";
+import axiosInstance from "../../axios";
 
 const AddAdsModal = () => {
   const navigate = useNavigate();
@@ -16,9 +19,29 @@ const AddAdsModal = () => {
     dispatch(closeAddAdsModal());
   };
 
+  const initiatePayment = async (propertyId, cost) => {
+    try {
+      const response = await axiosInstance.post(`api/payments/property-ad/${propertyId}/initiate-payment/`, {
+        cost: cost,
+      });
+
+      if (response.data.success) {
+        // Redirect to the iframe URL for payment
+        window.location.href = response.data.iframe_url;
+      } else {
+        console.error(response.data.error);
+      }
+    } catch (error) {
+      console.error('Payment initiation failed', error);
+    }
+  };
   const handleYes = () => {
     if (property) {
-      navigate(`/promote-property/${property.id}`); // Use the property ID in the route if needed
+      const propertyId = property.id;
+      const totalCost = Number((property.price_per_night * 0.1).toFixed(2)); // Ensure it's a number
+
+      initiatePayment(propertyId, totalCost);
+
     }
   };
 
@@ -46,7 +69,7 @@ const AddAdsModal = () => {
           >
             it will cost you: {(property.price_per_night * 0.1).toFixed(2)} $
           </h5>
-          <p style={{ marginBottom: "30px" , color:'grey'}}>10% of the total price</p>
+          <p style={{ marginBottom: "30px", color: 'grey' }}>10% of the total price</p>
         </>
       )}
       {canPromote ? (

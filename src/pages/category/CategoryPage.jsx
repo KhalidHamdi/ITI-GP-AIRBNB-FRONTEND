@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Categories from '../../components/home/Categories'; 
 import PropertyList from '../../components/property/propertyList';
 import { useLocation } from 'react-router-dom';
-import AdsPropertiesList from '../../components/home/adsPropertiesList';
+// import AdsPropertiesList from '../../components/home/adsPropertiesList';
 
 const PropertyContainer = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -29,7 +29,7 @@ const PropertyContainer = () => {
         dataCategory={selectedCategory} 
         updateSelectedCategory={updateSelectedCategory} 
       />
-      <AdsPropertiesList />
+      {/* <AdsPropertiesList /> */}
       <hr />
       <PropertyList 
         selectedCategory={selectedCategory} 

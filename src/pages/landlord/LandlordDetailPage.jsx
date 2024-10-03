@@ -77,16 +77,6 @@ const LandlordDetailPage = () => {
         {/* Include the EditProperty modal */}
         <EditProperty />
       </div>
-      <div className="advertising" style={{
-          marginTop: "10px",
-          marginBottom: "20px",
-      }}>
-        <hr />
-        <h4 style={{
-          textAlign: 'center'
-        }}>advertise  your property</h4>
-        <button className="btn btn-primary w-80 py-2" onClick={{}}>ads Your Property here</button>
-      </div>
     </div>
   );
 };
