@@ -21,7 +21,7 @@ function ConversationDetail() {
   useEffect(() => {
     if (conversationId) {
       const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
-      // const wsUrl = ws://itnb.up.railway.app/ws/${conversationId}/;
+      // const wsUrl = `ws://itnb.up.railway.app/ws/${conversationId}/`;
       setSocketUrl(wsUrl);
       console.log(wsUrl);
     }
@@ -112,6 +112,7 @@ function ConversationDetail() {
   // New function to handle key down event
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
+      event.preventDefault();
       event.preventDefault();
       handleSendMessage();
     }
