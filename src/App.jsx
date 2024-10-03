@@ -2,12 +2,12 @@
 
 import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import { useDispatch } from 'react-redux';
-import { fetchUserProfile } from './redux/authSlice'; // Import the fetchUserProfile thunk
+import { useDispatch } from "react-redux";
+import { fetchUserProfile } from "./redux/authSlice"; // Import the fetchUserProfile thunk
 import Home from "./pages/home/Home";
 import { ToastContainer } from "react-toastify"; // Import ToastContainer
 import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
-import Cookies from 'js-cookie'; // Import js-cookie
+import Cookies from "js-cookie"; // Import js-cookie
 
 import CategoryPage from "./pages/category/CategoryPage";
 import PropertyDetail from "./pages/property/PropertyDetail";
@@ -33,7 +33,7 @@ function App() {
 
   useEffect(() => {
     // On app load, check for existing auth tokens and fetch user profile
-    const token = Cookies.get('authToken');
+    const token = Cookies.get("authToken");
     if (token) {
       dispatch(fetchUserProfile());
     }
@@ -70,7 +70,8 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/" element={<Home />} />
         <Route path="/properties/:id" element={<PropertyDetail />} />
-        <Route path="/properties" element={<PropertyContainer />} /> {/* Single route */}
+        <Route path="/properties" element={<PropertyContainer />} />{" "}
+        {/* Single route */}
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/chat" element={<Chat />} />
         <Route
