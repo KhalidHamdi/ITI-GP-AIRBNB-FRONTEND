@@ -21,6 +21,7 @@ function ConversationDetail() {
   useEffect(() => {
     if (conversationId) {
       const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
+      // const wsUrl = ws://itnb.up.railway.app/ws/${conversationId}/;
       setSocketUrl(wsUrl);
       console.log(wsUrl);
     }
@@ -96,7 +97,7 @@ function ConversationDetail() {
             conversation_id: conversationId,
           },
         };
-        sendMessage(JSON.stringify(messageData));
+        sendMessage(JSON.stringify(messageData)); // Send the message
         setNewMessage("");
       } else {
         console.log("WebSocket is not connected. Current state:", readyState);
