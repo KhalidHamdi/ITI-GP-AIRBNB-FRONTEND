@@ -14,12 +14,12 @@ const PropertyList = ({
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false); // Loading state
+  const [loading, setLoading] = useState(false);
   const location = useLocation();
 
   // Fetch properties with pagination
   const getProperties = async (page = 1) => {
-    setLoading(true); // Start loading
+    setLoading(true);
     let url = `/api/properties/?page=${page}`;
 
     if (landlord_id) {
@@ -29,7 +29,7 @@ const PropertyList = ({
     try {
       if (filteredProperties || location.state?.properties) {
         setProperties(filteredProperties || location.state.properties);
-        setTotalPages(1); // No pagination needed
+        setTotalPages(1); // No pagination needed when filtered
       } else {
         const response = await axiosInstance.get(
           selectedCategory
@@ -37,19 +37,18 @@ const PropertyList = ({
             : url
         );
         setProperties(response.data.results);
-        setTotalPages(Math.ceil(response.data.count / 12)); // Assuming 12 per page
+        setTotalPages(Math.ceil(response.data.count / 12)); // Assuming 12 properties per page
       }
     } catch (error) {
       console.error("Fetch Properties Error:", error);
       setError("Failed to fetch properties.");
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     getProperties(currentPage);
-    console.log("The page rerendered");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     landlord_id,
@@ -75,39 +74,36 @@ const PropertyList = ({
     );
   };
 
-  console.log("From PropertyList, the filter is:", filteredProperties);
-
   if (error) {
     return <div className="alert alert-danger">Error: {error}</div>;
   }
 
   return (
     <div className="container my-4">
-      {/* Display loading indicator while fetching */}
+      {/* Loading Indicator */}
       {loading ? (
-        <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ height: "300px" }}
+        >
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
       ) : (
         <>
+          {/* Properties List */}
           <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-            {properties.length > 0 ? (
+            {properties.length > 0 &&
               properties.map((property) => (
                 <div key={property.id} className="col">
                   <PropertyListItem
                     property={property}
                     isLandlordPage={isLandlordPage}
-                    onDelete={handleDelete} // Pass the onDelete callback
+                    onDelete={handleDelete}
                   />
                 </div>
-              ))
-            ) : (
-              <div className="col">
-                <p>No Properties.</p>
-              </div>
-            )}
+              ))}
           </div>
 
           {/* Pagination Controls */}

@@ -74,8 +74,8 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
     }
   }, []);
 
-  console.log("landlordId: ", landlordId);
-  console.log("userId: ", userId);
+//   console.log("landlordId: ", landlordId);
+//   console.log("userId: ", userId);
 
   const handleCardClick = () => {
     navigate(`/properties/${property.id}/`); // Ensure this route exists
@@ -175,7 +175,7 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
           <div className="card-footer d-flex flex-column align-items-start p-2">
             <>
               <button
-                className="btn btn-secondary mb-1 rounded-pill"
+                className="btn btn btn-outline-secondary mb-1 rounded-pill"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleEditClick(e);
@@ -194,7 +194,7 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
               </button>
 
               <button
-                className="btn btn-danger btn-block mb-1 rounded-pill"
+                className="btn btn btn-outline-danger btn-block mb-1 rounded-pill"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleDeleteClick(e);
@@ -213,7 +213,7 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
               </button>
 
               <button
-                className="btn btn-success btn-block rounded-pill"
+                className="btn btn btn-outline-primary btn-block rounded-pill"
                 onClick={handlePromoteClick}
                 style={{
                   padding: "0px 12px",

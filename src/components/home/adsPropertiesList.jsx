@@ -14,6 +14,7 @@ const AdsPropertiesList = () => {
       setError("Failed to fetch advertised properties.");
     }
   };
+    
 
   useEffect(() => {
     fetchAdvertisedProperties(); // Fetch advertised properties on component mount
@@ -22,6 +23,7 @@ const AdsPropertiesList = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
+  console.log("this is adv pro  " + advertisedProperties);
 
   return (
     <div className="container my-4">
