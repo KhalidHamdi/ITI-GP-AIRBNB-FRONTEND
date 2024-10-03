@@ -20,7 +20,7 @@ function ConversationDetail() {
 
   useEffect(() => {
     if (conversationId) {
-      const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
+      const wsUrl = `wss://itnb.up.railway.app/ws/${conversationId}/`;
       setSocketUrl(wsUrl);
     }
   }, [conversationId]);
