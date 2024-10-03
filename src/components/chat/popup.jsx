@@ -17,6 +17,7 @@ function ConversationDetail({ conversationId, landlordId }) {
 
   useEffect(() => {
     if (conversationId) {
+      // const wsUrl = `wss://itnb.up.railway.app/ws/${conversationId}/`;
       const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
       setSocketUrl(wsUrl);
     }
