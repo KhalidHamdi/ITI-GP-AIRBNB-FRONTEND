@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const axiosInstance = axios.create({
-  baseURL: "https://itnb.up.railway.app/",
+  baseURL: "http://localhost:8000/",
   headers: {
     "Content-Type": "multipart/form-data",
   },
