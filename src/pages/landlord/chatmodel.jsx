@@ -27,7 +27,7 @@
 import React from "react";
 import Modal from "react-modal";
 import ConversationDetail from "../../components/chat/popup";
-import "./Landlord.css";
+import "./landlord.css";
 
 const ChatModal = ({ conversationId, landlordId, onClose }) => {
   return (
