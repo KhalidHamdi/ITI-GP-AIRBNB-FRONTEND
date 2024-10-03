@@ -6,6 +6,7 @@ import axiosInstance from "../../axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import notificationSound from "../../assets/sound/chatnotification.wav";
+import { useNotification } from "../chat/NotificationContext";
 
 function ConversationDetail() {
   const { id: conversationId } = useParams();
@@ -17,6 +18,7 @@ function ConversationDetail() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const location = useLocation();
   const { landlordId } = location.state || {};
+  const { addNotification } = useNotification();
 
   // Create a ref for the message container
   const messageContainerRef = useRef(null);
@@ -75,16 +77,9 @@ function ConversationDetail() {
           // Update the message list
           setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-          // Play the notification sound if it's a new message from someone else
+          // Notify all components through context
           if (newMessageData.name !== userName) {
-            const audio = new Audio(notificationSound);
-            audio
-              .play()
-              .catch((error) => console.error("Audio playback error:", error));
-            toast.info(`${newMessageData.name}: ${newMessageData.body}`, {
-              position: "top-right",
-              autoClose: 5000,
-            });
+            addNotification(`${newMessageData.name}: ${newMessageData.body}`);
           }
         }
       } catch (error) {

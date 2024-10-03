@@ -27,6 +27,8 @@ import FilterModal from "./components/modals/FilterModal";
 import PropertyContainer from "./pages/category/CategoryPage"; // Import PropertyContainer
 import UserProfile from "./components/userprofile/UserProfile";
 import MyFavoritesPage from "./components/home/MyFavoritesPage";
+import { NotificationProvider } from "./components/chat/NotificationContext";
+import NotificationDisplay from "./components/chat/NotificationDisplay";
 
 function App() {
   const dispatch = useDispatch();
@@ -41,49 +43,52 @@ function App() {
 
   return (
     <div className="app">
-      <Header />
-      <LoginModal />
-      <SignupModal />
-      <PasswordResetModal />
-      <AddProperty />
-      <FilterModal />
+      <NotificationProvider>
+        <NotificationDisplay />
+        <Header />
+        <LoginModal />
+        <SignupModal />
+        <PasswordResetModal />
+        <AddProperty />
+        <FilterModal />
 
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
 
-      <Routes>
-        <Route
-          path="/reset-password/:uid/:token/"
-          element={<ResetPasswordConfirm />}
-        />
-        <Route path="/profile" element={<UserProfile />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/properties/:id" element={<PropertyDetail />} />
-        <Route path="/properties" element={<PropertyContainer />} />{" "}
-        {/* Single route */}
-        <Route path="/category/:slug" element={<CategoryPage />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route
-          path="/conversationDetail/:id"
-          element={<ConversationDetail />}
-        />
-        <Route path="/MyReservations" element={<MyReservationsPage />} />
-        <Route path="/landlord/:id" element={<LandlordDetailPage />} />
-        <Route path="/payment" element={<BookingPage />} />
-        <Route path="/my-favorites" element={<MyFavoritesPage />} />
-      </Routes>
-      <Footer />
+        <Routes>
+          <Route
+            path="/reset-password/:uid/:token/"
+            element={<ResetPasswordConfirm />}
+          />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/properties/:id" element={<PropertyDetail />} />
+          <Route path="/properties" element={<PropertyContainer />} />{" "}
+          {/* Single route */}
+          <Route path="/category/:slug" element={<CategoryPage />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route
+            path="/conversationDetail/:id"
+            element={<ConversationDetail />}
+          />
+          <Route path="/MyReservations" element={<MyReservationsPage />} />
+          <Route path="/landlord/:id" element={<LandlordDetailPage />} />
+          <Route path="/payment" element={<BookingPage />} />
+          <Route path="/my-favorites" element={<MyFavoritesPage />} />
+        </Routes>
+        <Footer />
+      </NotificationProvider>
     </div>
   );
 }
