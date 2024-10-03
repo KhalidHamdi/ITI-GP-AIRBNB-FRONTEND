@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./conversationDetails.css";
 import axiosInstance from "../../axios";
+import "../../pages/landlord/landlord.css";
 
 function ConversationDetail({ conversationId, landlordId }) {
   const [messages, setMessages] = useState([]);

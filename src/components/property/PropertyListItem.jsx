@@ -61,6 +61,19 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
     const navigate = useNavigate();
     const { isFavorite, loading, toggleFavorite } = useFavorites(property.id);
     const [showConfirm, setShowConfirm] = useState(false); // For Confirmation Modal
+    const [userId, setUserId] = useState(null); // Initialize userId state
+    const landlordId = property.landlord
+
+    // Fetch userId from localStorage when component mounts
+    useEffect(() => {
+        const storedUserId = localStorage.getItem("userId");
+        if (storedUserId) {
+            setUserId(storedUserId); // Assuming userId is stored as a string, convert it to a number
+        }
+    }, []);
+
+    console.log("landlordId: ", landlordId);
+    console.log("userId: ", userId);
 
     const handleCardClick = () => {
         navigate(`/properties/${property.id}/`); // Ensure this route exists
@@ -133,52 +146,50 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
                             <i className={`bi ${isFavorite ? "bi-heart-fill" : "bi-heart"}`}></i>
                         )}
                     </button>
- {/* Action Buttons */}
-{isLandlordPage && (
-  <div
-    className="d-flex flex-column"
-    style={{
-      position: 'absolute',
-      top: '10px',
-      left: '10px',
-      zIndex: 1,
-    }}
-  >
-    {/* Edit Button */}
-    <button
-      className="btn btn-secondary btn-sm rounded-pill mb-2"
-      onClick={handleEditClick}
-      aria-label="Edit Property"
-    >
-      Edit
-    </button>
-
-    {/* Delete Button */}
-    <button
-      className="btn btn-danger btn-sm rounded-pill mb-2"
-      onClick={handleDeleteClick}
-      aria-label="Delete Property"
-    >
-      Delete
-    </button>
-
-    {/* Promote Button */}
-    <button
-      className="btn btn-success btn-sm rounded-pill"
-      onClick={handlePromoteClick}
-    >
-      Promote
-    </button>
-  </div>
-)}
-
                 </div>
+
                 <div className="card-body p-3">
                     <h5 className="card-title mb-1">{property.title}</h5>
                     <p className="card-text text-muted small mb-2">{property.location}</p>
                     <p className="card-text">
                         <strong>${property.price_per_night}</strong> <span className="text-muted">/ night</span>
                     </p>
+                </div>
+
+                {/* Footer section for Edit and Delete buttons */}
+                <div className="card-footer d-flex justify-content-between">
+                    {isLandlordPage && landlordId === userId && (
+                        <>
+                            <button
+                                className="btn btn-secondary btn-sm"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEditClick(e);
+                                }}
+                                aria-label="Edit Property"
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                className="btn btn-danger btn-sm"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteClick(e);
+                                }}
+                                aria-label="Delete Property"
+                            >
+                                Delete
+                            </button>
+
+                            <button
+                                className="btn btn-success btn-sm rounded-pill"
+                                onClick={handlePromoteClick}
+                            >
+                                Promote
+                            </button>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -192,6 +203,7 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
                 />
             )}
         </>
+
     );
 
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import PropertyListItem from "./PropertyListItem"; // Assuming this is the component that renders a single property item
+import PropertyListItem from "../property/PropertyListItem"; // Assuming this is the component that renders a single property item
 import axiosInstance from "../../axios"; // Adjust the path if necessary
 
 const AdsPropertiesList = () => {
