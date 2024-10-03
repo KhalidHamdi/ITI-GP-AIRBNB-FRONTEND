@@ -129,6 +129,7 @@ import React from 'react';
 const Footer = () => {
   return (
     <footer className="bg-white text-dark py-5">
+      <hr />
       <div className="container">
         <div className="row">
           {/* Cool Staff */}
@@ -136,27 +137,27 @@ const Footer = () => {
             <h5 className="fw-bold">Cool Staff</h5>
             <ul className="list-unstyled">
               <li className="mb-2">
-                <a href="https://www.linkedin.com/in/ibrahim1saber/" className="text-dark text-decoration-none">
+                <a href="https://www.linkedin.com/in/ibrahim1saber/" target="_blank"  className="text-dark text-decoration-none">
                   Ibrahim Saber
                 </a>
               </li>
               <li className="mb-2">
-                <a href="https://www.linkedin.com/in/khalidhamdii/" className="text-dark text-decoration-none">
+                <a href="https://www.linkedin.com/in/khalidhamdii/" target="_blank"  className="text-dark text-decoration-none">
                   Khaled Hamdy
                 </a>
               </li>
               <li className="mb-2">
-                <a href="https://www.linkedin.com/in/basmala-salem/" className="text-dark text-decoration-none">
+                <a href="https://www.linkedin.com/in/basmala-salem/" target="_blank"  className="text-dark text-decoration-none">
                   Basmala Salem
                 </a>
               </li>
               <li className="mb-2">
-                <a href="https://www.linkedin.com/in/davidemad10/" className="text-dark text-decoration-none">
+                <a href="https://www.linkedin.com/in/davidemad10/" target="_blank" className="text-dark text-decoration-none">
                   David Emad
                 </a>
               </li>
               <li className="mb-2">
-                <a href="https://www.linkedin.com/in/michael-emad-7a9a25277/" className="text-dark text-decoration-none">
+                <a href="https://www.linkedin.com/in/michael-emad-7a9a25277/" target="_blank" className="text-dark text-decoration-none">
                   Michael Emad
                 </a>
               </li>

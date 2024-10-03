@@ -28,6 +28,7 @@ const PropertyContainer = () => {
         dataCategory={selectedCategory} 
         updateSelectedCategory={updateSelectedCategory} 
       />
+
       <PropertyList 
         selectedCategory={selectedCategory} 
         updateSelectedCategory={updateSelectedCategory}
