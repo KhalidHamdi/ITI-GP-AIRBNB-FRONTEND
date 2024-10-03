@@ -3,7 +3,6 @@ import { useParams, useLocation } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./conversationDetails.css";
 import axiosInstance from "../../axios";
-import { ToastContainer, toast } from "react-toastify";
 
 function ConversationDetail() {
   const { id: conversationId } = useParams();
@@ -16,12 +15,14 @@ function ConversationDetail() {
   const location = useLocation();
   const { landlordId } = location.state || {};
 
+  // Create a ref for the message container
   const messageContainerRef = useRef(null);
 
   useEffect(() => {
     if (conversationId) {
       const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
       setSocketUrl(wsUrl);
+      console.log(wsUrl);
     }
   }, [conversationId]);
 
@@ -57,27 +58,9 @@ function ConversationDetail() {
     onClose: () => console.log("Disconnected from WebSocket"),
     onMessage: (event) => {
       try {
-        const messageData = JSON.parse(event.data);
-        console.log(messageData);
-        const newMessage = {
-          body: messageData.body, // or messageData.data.body if wrapped
-          name: messageData.name, // or messageData.data.name if wrapped
-        };
-
+        const newMessage = JSON.parse(event.data);
         newMessage.isSender = newMessage.name === userName;
         setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-        // Show toast notification for new messages
-        if (!newMessage.isSender) {
-          toast(`New message from ${newMessage.name}: ${newMessage.body}`, {
-            position: toast.POSITION.TOP_RIGHT,
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
-        }
       } catch (error) {
         console.error("Error parsing message:", error);
       }
@@ -115,7 +98,6 @@ function ConversationDetail() {
         };
         sendMessage(JSON.stringify(messageData));
         setNewMessage("");
-        console.log("messageData:", messageData);
       } else {
         console.log("WebSocket is not connected. Current state:", readyState);
       }
@@ -126,6 +108,7 @@ function ConversationDetail() {
     }
   };
 
+  // New function to handle key down event
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -133,6 +116,7 @@ function ConversationDetail() {
     }
   };
 
+  // Scroll to the last message whenever messages change
   useEffect(() => {
     const container = messageContainerRef.current;
     if (container) {
@@ -141,51 +125,51 @@ function ConversationDetail() {
   }, [messages]);
 
   return (
-    <div className="chat-container">
-      <div className="user-list">
-        {users.map((user) => (
-          <div
-            key={user.id}
-            onClick={() => setSelectedUserId(user.id)}
-            style={{
-              cursor: "pointer",
-              padding: "5px",
-              backgroundColor:
-                selectedUserId === user.id ? "#d1e7dd" : "transparent",
-            }}
-          >
-            {user.username}
-          </div>
-        ))}
-      </div>
+    <div className="chat-container card">
+      <div className="card-bodyy">
+        <div className="user-list">
+          {users.map((user) => (
+            <div
+              key={user.id}
+              onClick={() => setSelectedUserId(user.id)}
+              style={{
+                cursor: "pointer",
+                padding: "5px",
+                backgroundColor:
+                  selectedUserId === user.id ? "#d1e7dd" : "transparent",
+              }}
+            >
+              {user.username}
+            </div>
+          ))}
+        </div>
 
-      <div
-        className="message-container"
-        ref={messageContainerRef}
-        style={{ overflowY: "auto", maxHeight: "400px" }} // Adjust the height as needed
-      >
-        {messages.map((message, index) => (
-          <div key={index} className={message.isSender ? "sender" : "receiver"}>
-            <h4>{message.name}</h4>
-            <p>{message.body}</p>
-          </div>
-        ))}
-      </div>
+        <div className="message-container" ref={messageContainerRef}>
+          {messages.map((message, index) => (
+            <div
+              key={index}
+              className={message.isSender ? "sender" : "receiver"}
+            >
+              <h4>{message.name}</h4>
+              <p>{message.body}</p>
+            </div>
+          ))}
+        </div>
 
-      <div className="chat-input-container">
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Type your message here..."
-          className="chat-input"
-        />
-        <button className="send-button" onClick={handleSendMessage}>
-          Send
-        </button>
+        <div className="chat-input-container">
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Type your message here..."
+            className="chat-input"
+          />
+          <button className="send-button" onClick={handleSendMessage}>
+            Send
+          </button>
+        </div>
       </div>
-      <ToastContainer />
     </div>
   );
 }
