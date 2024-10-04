@@ -64,9 +64,9 @@ const ChatModal = ({ conversationId, landlordId, onClose }) => {
     if (
       modalRef.current &&
       !modalRef.current.contains(event.target) &&
-      !event.target.closest(".conversation-detail") // Prevent collapse when clicking inside the conversation detail
+      !event.target.closest(".conversation-detail")
     ) {
-      setIsCollapsed(true); // Collapse the chat when clicking outside
+      setIsCollapsed(true);
     }
   };
 

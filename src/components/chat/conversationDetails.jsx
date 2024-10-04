@@ -47,6 +47,10 @@ function ConversationDetail() {
         ...message,
         isSender: message.created_by.username === userName,
         name: message.created_by.username || "unknown",
+        time: new Date(message.created_at).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       }));
       setMessages((prevMessages) =>
         page === 1 ? updatedMessages : [...updatedMessages, ...prevMessages]
@@ -91,15 +95,18 @@ function ConversationDetail() {
     onMessage: (event) => {
       try {
         const newMessageData = JSON.parse(event.data);
-
         // Handle regular message
         if (newMessageData.type === "message") {
           const newMessage = {
             body: newMessageData.body,
             name: newMessageData.name,
             isSender: newMessageData.name === userName,
+            time: new Date(newMessageData.created_at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
           };
-
+          const formattedTime = new Date(newMessage.time).toLocaleTimeString();
           // Update the message list
           setMessages((prevMessages) => [...prevMessages, newMessage]);
 
@@ -141,6 +148,7 @@ function ConversationDetail() {
 
     if (sentToId) {
       if (readyState === ReadyState.OPEN) {
+        const now = new Date();
         const messageData = {
           event: "chat_message",
           data: {
@@ -205,8 +213,11 @@ function ConversationDetail() {
               key={index}
               className={message.isSender ? "sender" : "receiver"}
             >
-              <h4>{message.name}</h4>
+              <h5>{message.name}</h5>
               <p>{message.body}</p>
+              <div className="message-content">
+                <span className="message-time">{message.time}</span>
+              </div>
             </div>
           ))}
         </div>

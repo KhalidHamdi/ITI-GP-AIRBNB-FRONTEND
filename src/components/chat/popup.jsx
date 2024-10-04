@@ -41,6 +41,10 @@ function ConversationDetail({ conversationId, landlordId }) {
           ...message,
           isSender: message.created_by.username === userName,
           name: message.created_by.username || "unknown",
+          time: new Date(message.created_at).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
         }));
         setMessages(updatedMessages);
       } catch (error) {
@@ -66,8 +70,12 @@ function ConversationDetail({ conversationId, landlordId }) {
             body: newMessageData.body,
             name: newMessageData.name,
             isSender: newMessageData.name === userName,
+            time: new Date(newMessageData.created_at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
           };
-
+          const formattedTime = new Date(newMessage.time).toLocaleTimeString();
           // Update the message list
           setMessages((prevMessages) => [...prevMessages, newMessage]);
 
@@ -173,6 +181,9 @@ function ConversationDetail({ conversationId, landlordId }) {
           <div key={index} className={message.isSender ? "sender" : "receiver"}>
             <h4>{message.name}</h4>
             <p>{message.body}</p>
+            <div className="message-content">
+              <span className="message-time">{message.time}</span>
+            </div>
           </div>
         ))}
       </div>
