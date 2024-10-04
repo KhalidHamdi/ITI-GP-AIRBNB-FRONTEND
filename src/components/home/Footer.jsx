@@ -128,130 +128,127 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-white text-dark py-5">
-      <hr />
+    <footer className="footer py-5" style={{
+      backgroundColor: 'var(--bg-color)',
+      color: 'var(--text-color)'
+    }}>
+      <hr style={{ borderColor: 'var(--border-color)' }} />
       <div className="container">
         <div className="row">
-          {/* Cool Staff */}
           <div className="col-md-3 mb-4">
             <h5 className="fw-bold">Cool Staff</h5>
             <ul className="list-unstyled">
               <li className="mb-2">
-                <a href="https://www.linkedin.com/in/ibrahim1saber/" target="_blank"  className="text-dark text-decoration-none">
+                <a href="https://www.linkedin.com/in/ibrahim1saber/" target="_blank" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>
                   Ibrahim Saber
                 </a>
               </li>
               <li className="mb-2">
-                <a href="https://www.linkedin.com/in/khalidhamdii/" target="_blank"  className="text-dark text-decoration-none">
+                <a href="https://www.linkedin.com/in/khalidhamdii/" target="_blank" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>
                   Khaled Hamdy
                 </a>
               </li>
               <li className="mb-2">
-                <a href="https://www.linkedin.com/in/basmala-salem/" target="_blank"  className="text-dark text-decoration-none">
+                <a href="https://www.linkedin.com/in/basmala-salem/" target="_blank" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>
                   Basmala Salem
                 </a>
               </li>
               <li className="mb-2">
-                <a href="https://www.linkedin.com/in/davidemad10/" target="_blank" className="text-dark text-decoration-none">
+                <a href="https://www.linkedin.com/in/davidemad10/" target="_blank" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>
                   David Emad
                 </a>
               </li>
               <li className="mb-2">
-                <a href="https://www.linkedin.com/in/michael-emad-7a9a25277/" target="_blank" className="text-dark text-decoration-none">
+                <a href="https://www.linkedin.com/in/michael-emad-7a9a25277/" target="_blank" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>
                   Michael Emad
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Pages */}
           <div className="col-md-3 mb-4">
             <h5 className="fw-bold">Pages</h5>
             <ul className="list-unstyled">
               <li className="mb-2">
-                <a href="/" className="text-dark text-decoration-none">Home</a>
+                <a href="/" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Home</a>
               </li>
               <li className="mb-2">
-                <a href="/MyReservations" className="text-dark text-decoration-none">Your Reservations</a>
+                <a href="/MyReservations" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Your Reservations</a>
               </li>
               <li className="mb-2">
-                <a href="/my-favorites" className="text-dark text-decoration-none">Your Favorites</a>
+                <a href="/my-favorites" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Your Favorites</a>
               </li>
             </ul>
           </div>
 
-          {/* About */}
           <div className="col-md-3 mb-4">
             <h5 className="fw-bold">About</h5>
             <ul className="list-unstyled">
               <li className="mb-2">
-                <a href="#" className="text-dark text-decoration-none">Team</a>
+                <a href="#" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Team</a>
               </li>
               <li className="mb-2">
-                <a href="#" className="text-dark text-decoration-none">Locations</a>
+                <a href="#" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Locations</a>
               </li>
               <li className="mb-2">
-                <a href="#" className="text-dark text-decoration-none">Privacy</a>
+                <a href="#" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Privacy</a>
               </li>
               <li className="mb-2">
-                <a href="#" className="text-dark text-decoration-none">Terms</a>
+                <a href="#" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Terms</a>
               </li>
             </ul>
           </div>
 
-          {/* Help */}
           <div className="col-md-3 mb-4">
             <h5 className="fw-bold">Help</h5>
             <ul className="list-unstyled">
               <li className="mb-2">
-                <a href="/" className="text-dark text-decoration-none">Support</a>
+                <a href="/" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Support</a>
               </li>
               <li className="mb-2">
-                <a href="/" className="text-dark text-decoration-none">Help Center</a>
+                <a href="/" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Help Center</a>
               </li>
               <li className="mb-2">
-                <a href="/" className="text-dark text-decoration-none">Contact Us</a>
+                <a href="/" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Contact Us</a>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Stay Connected */}
         <div className="row mt-4">
           <div className="col-12 mb-4">
             <h5 className="fw-bold">Stay Connected</h5>
             <div>
-              <a href="#" className="me-3 text-dark text-decoration-none">
+              <a href="#" className="me-3 text-decoration-none" style={{ color: 'var(--text-color)' }}>
                 <i className="fab fa-facebook-f fa-lg"></i>
               </a>
-              <a href="#" className="me-3 text-dark text-decoration-none">
+              <a href="#" className="me-3 text-decoration-none" style={{ color: 'var(--text-color)' }}>
                 <i className="fab fa-twitter fa-lg"></i>
               </a>
-              <a href="#" className="me-3 text-dark text-decoration-none">
+              <a href="#" className="me-3 text-decoration-none" style={{ color: 'var(--text-color)' }}>
                 <i className="fab fa-google-plus-g fa-lg"></i>
               </a>
-              <a href="#" className="text-dark text-decoration-none">
+              <a href="#" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>
                 <i className="fab fa-linkedin-in fa-lg"></i>
               </a>
             </div>
           </div>
         </div>
 
-        {/* Lower Footer */}
-        <div className="row border-top border-secondary pt-4">
+        <div className="row border-top pt-4" style={{ borderColor: 'var(--border-color)' }}>
           <div className="col-md-3 mb-3">
             <strong>ITI Graduation Project</strong>
           </div>
           <div className="col-md-3 mb-3">
             <h6 className="fw-bold">Address</h6>
-            <address className="mb-0 text-muted">
+            <address className="mb-0" style={{ color: 'var(--text-muted)' }}>
               Building 4, Knowledge City<br />
               New Administrative Capital, Cairo, Egypt
             </address>
           </div>
           <div className="col-md-3 mb-3">
             <h6 className="fw-bold">About Us</h6>
-            <p className="mb-0 text-muted">
+            <p className="mb-0" style={{ color: 'var(--text-muted)' }}>
               This project was created by 5 students from the <strong>Institute of Information Technology</strong>.
             </p>
           </div>
@@ -260,9 +257,8 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Copyright */}
         <div className="row mt-4">
-          <div className="col-12 text-center text-muted">
+          <div className="col-12 text-center" style={{ color: 'var(--text-muted)' }}>
             &copy; {new Date().getFullYear()} ITI-GP-Airbnb. All rights reserved.
           </div>
         </div>

@@ -7,6 +7,7 @@ import Calendar from "./Calendar";
 import { toast } from "react-toastify";
 import { openLoginModal } from "../../redux/modalSlice";
 import { useDispatch } from "react-redux";
+import { useTheme } from "@mui/material/styles"; 
 
 const initialDateRange = {
   startDate: new Date(),
@@ -15,6 +16,7 @@ const initialDateRange = {
 };
 
 const ReservationSidebar = ({ property, userId }) => {
+  const theme = useTheme(); 
   const [fee, setFee] = useState(0);
   const [nights, setNights] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -22,7 +24,6 @@ const ReservationSidebar = ({ property, userId }) => {
   const [minDate, setMinDate] = useState(new Date());
   const [bookedDates, setBookedDates] = useState([]);
   const [guests, setGuests] = useState("1");
-  // const [reservationId, setReservationId] = useState("1");
   const guestsRange = Array.from(
     { length: property.guests },
     (_, index) => index + 1
@@ -51,19 +52,11 @@ const ReservationSidebar = ({ property, userId }) => {
             formData
           );
           if (response.data.success) {
-            // toast.success("Booking successful :)");
-            console.log("Booking successful");
-            console.log("Reservation created:", response.data.reservation);
             let reservationId = response.data.reservation.id;
-            // setReservationId(response.data.reservation.id);
-            console.log(
-              "Reservation Id from ReservationSideBar:",
-              reservationId
+            toast.info(
+              "Your reservation has been placed, but it will not be confirmed until payment is received.",
+              { position: "top-center", autoClose: 8000 }
             );
-            toast.info("Your reservation has been placed, but it will not be confirmed until payment is received. Please complete your payment within two days, or the reservation will be automatically canceled.", {
-              position: "top-center",
-              autoClose: 8000,
-            });
 
             setTimeout(() => {
               navigate("/payment", {
@@ -71,25 +64,17 @@ const ReservationSidebar = ({ property, userId }) => {
               });
             }, 8000);
           } else {
-            // Display success toast
             dispatch(openLoginModal());
             toast.error("You should Login first");
-            console.log("Response from Reservation", response);
-            console.log("Something went wrong...");
           }
         } catch (error) {
-          console.log("UserId: ", userId);
           console.error("Error during booking:", error);
         }
       }
     } else {
-      //TODO ya Basmala Handle login modal or notification here
       dispatch(openLoginModal());
-      console.log("User needs to log in");
     }
   };
-  // console.log("Reservation response", response);
-  // console.log("Reservation created:", response.data.reservation);
 
   const _setDateRange = (selection) => {
     const newStartDate = new Date(selection.startDate);
@@ -149,26 +134,57 @@ const ReservationSidebar = ({ property, userId }) => {
     <div className="col-lg-5">
       <div
         className="card shadow-sm sticky-top"
-        style={{ top: "20px", borderRadius: "12px" }}
+        style={{
+          top: "20px",
+          borderRadius: "12px",
+          backgroundColor: theme.palette.background.default, 
+          color: theme.palette.text.primary, 
+        }}
       >
         <div className="card-body">
           <h4 className="card-title mb-4">
-            <span className="fw-bold" style={{ fontSize: "22px" }}>
+            <span
+              className="fw-bold"
+              style={{
+                fontSize: "22px",
+                color: theme.palette.text.primary,
+              }}
+            >
               ${property.price_per_night}
             </span>
-            <small className="text-muted fw-normal"> per night</small>
+            <small
+              className="text-muted fw-normal"
+              style={{ color: theme.palette.text.secondary }}
+            >
+              {" "}
+              per night
+            </small>
           </h4>
 
           <form>
-            <div className="border rounded mb-3">
+            <div
+              className="border rounded mb-3"
+              style={{
+                borderColor: theme.palette.divider, 
+              }}
+            >
               <Calendar
                 value={dateRange}
                 bookedDates={bookedDates}
                 onChange={(value) => _setDateRange(value.selection)}
               />
 
-              <div className="border-top p-2">
-                <label htmlFor="guests" className="form-label small fw-bold">
+              <div
+                className="border-top p-2"
+                style={{
+                  borderColor: theme.palette.divider, 
+                }}
+              >
+                <label
+                  htmlFor="guests"
+                  className="form-label small fw-bold"
+                  style={{ color: theme.palette.text.primary }}
+                >
                   GUESTS
                 </label>
                 <select
@@ -176,6 +192,10 @@ const ReservationSidebar = ({ property, userId }) => {
                   onChange={(e) => setGuests(e.target.value)}
                   className="form-select border-0 p-0"
                   id="guests"
+                  style={{
+                    backgroundColor: theme.palette.background.paper,
+                    color: theme.palette.text.primary,
+                  }}
                 >
                   {guestsRange.map((number) => (
                     <option key={number} value={number}>
@@ -191,12 +211,17 @@ const ReservationSidebar = ({ property, userId }) => {
                 type="button"
                 onClick={performBooking}
                 className="btn btn-primary w-100 mb-3"
-                style={{ backgroundColor: "#FF385C", borderColor: "#FF385C" }}
+                style={{
+                  backgroundColor: theme.palette.primary.main, 
+                  borderColor: theme.palette.primary.main, 
+                }}
               >
                 Book
               </button>
             )}
-            <p className="text-center mb-4">You won't be charged yet</p>
+            <p className="text-center mb-4" style={{ color: theme.palette.text.secondary }}>
+              You won't be charged yet
+            </p>
 
             <div className="d-flex justify-content-between mb-2">
               <span className="text-decoration-underline">
@@ -210,7 +235,7 @@ const ReservationSidebar = ({ property, userId }) => {
               <span>${fee}</span>
             </div>
 
-            <hr />
+            <hr style={{ borderColor: theme.palette.divider }} />
 
             <div className="d-flex justify-content-between fw-bold">
               <span>Total</span>

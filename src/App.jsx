@@ -1,14 +1,11 @@
-// src/App.jsx
-
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { fetchUserProfile } from "./redux/authSlice"; // Import the fetchUserProfile thunk
+import { fetchUserProfile } from "./redux/authSlice";
 import Home from "./pages/home/Home";
-import { ToastContainer } from "react-toastify"; // Import ToastContainer
-import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
-import Cookies from "js-cookie"; // Import js-cookie
-
+import { ToastContainer } from "react-toastify"; 
+import "react-toastify/dist/ReactToastify.css";
+import Cookies from "js-cookie";
 import CategoryPage from "./pages/category/CategoryPage";
 import PropertyDetail from "./pages/property/PropertyDetail";
 import Header from "./components/home/Header";
@@ -24,69 +21,72 @@ import ResetPasswordConfirm from "./components/modals/ResetPasswordConfirm";
 import LandlordDetailPage from "./pages/landlord/LandlordDetailPage";
 import BookingPage from "./components/payment/BookingPage";
 import FilterModal from "./components/modals/FilterModal";
-import PropertyContainer from "./pages/category/CategoryPage"; // Import PropertyContainer
+import PropertyContainer from "./pages/category/CategoryPage";
 import UserProfile from "./components/userprofile/UserProfile";
 import MyFavoritesPage from "./components/home/MyFavoritesPage";
 import AddAdsModal from "./components/modals/AddAdsModal";
 
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import { lightTheme, darkTheme } from "./theme"; 
+
 function App() {
   const dispatch = useDispatch();
+  const [darkMode, setDarkMode] = useState(false); 
 
   useEffect(() => {
-    // On app load, check for existing auth tokens and fetch user profile
     const token = Cookies.get("authToken");
     if (token) {
       dispatch(fetchUserProfile());
     }
   }, [dispatch]);
 
+  const toggleDarkMode = () => {
+    setDarkMode((prevMode) => !prevMode);
+  };
+
   return (
-    <div className="app">
-      <Header />
-      <LoginModal />
-      <SignupModal />
-      <PasswordResetModal />
-      <AddProperty />
-      <FilterModal />
-      <AddAdsModal/>
+    <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+      <CssBaseline />
+      <div className={`app ${darkMode ? "dark-mode" : ""}`}> 
+        <Header toggleDarkMode={toggleDarkMode} darkMode={darkMode} /> 
+        <LoginModal />
+        <SignupModal />
+        <PasswordResetModal />
+        <AddProperty />
+        <FilterModal />
+        <AddAdsModal />
 
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme={darkMode ? "dark" : "colored"}
+        />
 
-      <Routes>
-        <Route
-          path="/reset-password/:uid/:token/"
-          element={<ResetPasswordConfirm />}
-        />
-        <Route path="/profile" element={<UserProfile />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/properties/:id" element={<PropertyDetail />} />
-        <Route path="/properties" element={<PropertyContainer />} />{" "}
-        {/* Single route */}
-        <Route path="/category/:slug" element={<CategoryPage />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route
-          path="/conversationDetail/:id"
-          element={<ConversationDetail />}
-        />
-        <Route path="/MyReservations" element={<MyReservationsPage />} />
-        <Route path="/landlord/:id" element={<LandlordDetailPage />} />
-        <Route path="/payment" element={<BookingPage />} />
-        <Route path="/my-favorites" element={<MyFavoritesPage />} />
-      </Routes>
-      <Footer />
-    </div>
+        <Routes>
+          <Route path="/reset-password/:uid/:token/" element={<ResetPasswordConfirm />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/properties/:id" element={<PropertyDetail />} />
+          <Route path="/properties" element={<PropertyContainer />} />
+          <Route path="/category/:slug" element={<CategoryPage />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/conversationDetail/:id" element={<ConversationDetail />} />
+          <Route path="/MyReservations" element={<MyReservationsPage />} />
+          <Route path="/landlord/:id" element={<LandlordDetailPage />} />
+          <Route path="/payment" element={<BookingPage />} />
+          <Route path="/my-favorites" element={<MyFavoritesPage />} />
+        </Routes>
+        <Footer darkMode={darkMode} />
+      </div>
+    </ThemeProvider>
   );
 }
 
