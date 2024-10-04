@@ -1,11 +1,9 @@
-// src/pages/LandlordDetailPage.jsx
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
 import ContactButton from "../../components/ContactButton";
 import PropertyList from "../../components/property/propertyList";
-import EditProperty from "../../components/property/EditProperty"; // Import the EditProperty component
+import EditProperty from "../../components/property/EditProperty";
 
 const LandlordDetailPage = () => {
   const { id } = useParams();
@@ -40,7 +38,6 @@ const LandlordDetailPage = () => {
   return (
     <div className="container py-4">
       <div className="row">
-        {/* Sidebar for Landlord Info */}
         <aside className="col-md-3 mb-4">
           <div className="card text-center p-4 border-0 shadow-sm">
             <img
@@ -58,19 +55,24 @@ const LandlordDetailPage = () => {
                   "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg";
               }}
             />
-
             <h1 className="mt-3 h4">{landlord.username}</h1>
             <p className="mt-3">{landlord.email}</p>
+            <p><i className="bi bi-shield-check me-2"></i> Identity verified</p>
+            <p><i className="bi bi-award me-2"></i> Superhost</p>
+            <p>Response rate: 100%</p>
+            <p>Response time: within an hour</p>
             {userId !== landlordId && (
               <ContactButton userId={userId} landlordId={landlordId} />
             )}
           </div>
-
         </aside>
 
-        {/* Main Section for Property Listings */}
         <div className="col-md-9">
-          <h2 className="mb-4">Your Properties</h2>
+          <h2 className="mb-4">Properties by {landlord.username}</h2>
+          <p className="mb-4">
+            Hi, I'm {landlord.username}! I love hosting and meeting people from all over the world.
+            I'm passionate about travel, food, and creating memorable experiences for my guests.
+          </p>
           <PropertyList landlord_id={id} isLandlordPage={true} />
         </div>
 
