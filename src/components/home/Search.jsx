@@ -3,18 +3,19 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../axios";
 
 const Search = () => {
-  const navigate = useNavigate(); // For navigation
+  const navigate = useNavigate();
   const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
   const [guests, setGuests] = useState(1);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [useRecommendation, setUseRecommendation] = useState(false);
 
-  // Fetch suggestions when the input value changes
   const fetchSuggestions = async (query) => {
     try {
-      const response = await axiosInstance.get(
-        `/api/properties/`
-      );
+      const response = await axiosInstance.get("/api/properties/search_suggestions/", {
+        params: { query },
+      });
       setSuggestions(response.data);
     } catch (error) {
       console.error("Error fetching suggestions:", error);
@@ -43,26 +44,43 @@ const Search = () => {
     setShowSuggestions(false);
   };
 
+  const handleRecommendationToggle = () => {
+    setUseRecommendation(!useRecommendation);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (guests < 1) {
+      alert("Number of guests must be at least 1.");
+      return;
+    }
 
     try {
-      // Fetch properties based on selected city and guests
-      const response = await axiosInstance.get("/api/properties/", {
-        params: { 
-          country: city,
-          guests,
-        },
-      });
+      let response;
+      const normalizedCity = city.toLowerCase();
 
-      console.log("searched properties:", response.data.results);
+      if (useRecommendation) {
+        response = await axiosInstance.get("/api/properties/search_recommendation/", {
+          params: {
+            user_data: normalizedCity,
+            city: normalizedCity,
+          },
+        });
+      } else {
+        response = await axiosInstance.get("/api/properties/search/", {
+          params: {
+            city: normalizedCity,
+            country: country.toLowerCase(),
+            guests,
+          },
+        });
+      }
 
-      // Navigate to home with properties in state
       navigate("/", {
         state: {
-          properties: response.data.results,
-          city,   // Include the selected city in the state
-          guests, // Include the number of guests in the state
+          properties: response.data.data,
+          city,
+          guests,
         },
       });
     } catch (error) {
@@ -71,11 +89,8 @@ const Search = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="d-flex w-100 justify-content-center ">
-      <div
-        className="d-flex rounded-pill border shadow-sm p-3 w-100"
-        style={{ maxWidth: "750px", marginBottom: "10px" }}
-      >
+    <form onSubmit={handleSubmit} className="d-flex w-100 justify-content-center">
+      <div className="d-flex rounded-pill border shadow-sm p-3 w-100" style={{ maxWidth: "750px", marginBottom: "10px" }}>
         <div className="flex-grow-1 border-end pe-3 position-relative">
           <div className="small fw-medium">Where</div>
           <input
@@ -89,10 +104,7 @@ const Search = () => {
             onFocus={() => setShowSuggestions(true)}
           />
           {showSuggestions && suggestions.length > 0 && (
-            <ul
-              className="list-group position-absolute w-100"
-              style={{ top: "100%", zIndex: 1 }}
-            >
+            <ul className="list-group position-absolute w-100" style={{ top: "100%", zIndex: 1 }}>
               {suggestions.map((suggestion, index) => (
                 <li
                   key={index}
@@ -107,7 +119,6 @@ const Search = () => {
           )}
         </div>
 
-        {/* Guests Input */}
         <div className="ms-3">
           <div className="small fw-medium">Guests</div>
           <input
@@ -121,11 +132,19 @@ const Search = () => {
           />
         </div>
 
-        <button
-          type="submit"
-          className="btn btn-danger rounded-circle ms-2"
-          style={{ width: "36px", height: "36px", padding: "0" }}
-        >
+        <div className="ms-3">
+          <label className="small fw-medium">
+            Use Recommendations
+            <input
+              type="checkbox"
+              className="ms-2"
+              checked={useRecommendation}
+              onChange={handleRecommendationToggle}
+            />
+          </label>
+        </div>
+
+        <button type="submit" className="btn btn-danger rounded-circle ms-2" style={{ width: "36px", height: "36px", padding: "0" }}>
           <i className="bi bi-search"></i>
         </button>
       </div>
