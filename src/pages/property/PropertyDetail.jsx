@@ -8,6 +8,8 @@ import ReviewList from "../../components/reviews/ReviewList";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import ContactButton from "../../components/ContactButton";
+
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -19,13 +21,30 @@ const PropertyDetail = () => {
   const [hasReviewed, setHasReviewed] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [darkMode, setDarkMode] = useState(false); 
+  const [darkMode, setDarkMode] = useState(false);
+  const [showAllPhotos, setShowAllPhotos] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [landlordId, setLandlordId] = useState(null);
 
-  <button onClick={() => setDarkMode(!darkMode)}>
-  Toggle Dark Mode
-</button>
 
 
+  useEffect(() => {
+    const fetchPropertyData = async () => {
+      try {
+        const response = await axiosInstance.get(`/api/properties/${id}/`);
+        setProperty(response.data);
+        setLandlordId(response.data.landlord.id);
+        const currentUserId = localStorage.getItem("userId");
+        if (currentUserId) {
+          setUserId(currentUserId);
+        }
+      } catch (error) {
+        console.error("Error fetching property data:", error);
+      }
+    };
+
+    fetchPropertyData();
+  }, [id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,12 +54,9 @@ const PropertyDetail = () => {
         setLoading(false);
 
         const address = `${response.data.address}, ${response.data.city}, ${response.data.country}`;
-        const openCageResponse = await axiosInstance.get(
-          `/api/properties/geocode/`,
-          {
-            params: { q: address },
-          }
-        );
+        const openCageResponse = await axiosInstance.get(`/api/properties/geocode/`, {
+          params: { q: address },
+        });
 
         if (openCageResponse.data && openCageResponse.data.results.length > 0) {
           const coordinates = openCageResponse.data.results[0].geometry;
@@ -56,9 +72,7 @@ const PropertyDetail = () => {
 
     const fetchReviews = async () => {
       try {
-        const reviewsResponse = await axiosInstance.get(
-          `/api/properties/${id}/reviews/`
-        );
+        const reviewsResponse = await axiosInstance.get(`/api/properties/${id}/reviews/`);
         setReviews(reviewsResponse.data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
@@ -154,9 +168,17 @@ const PropertyDetail = () => {
   if (!property)
     return <div className="text-center mt-5">Property not found</div>;
 
+  const amenities = [
+    { icon: "wifi", name: "Wifi" },
+    { icon: "tv", name: "TV" },
+    { icon: "thermometer-half", name: "Heating" },
+    { icon: "snow", name: "Air conditioning" },
+    { icon: "utensils", name: "Kitchen" },
+    { icon: "car", name: "Free parking" },
+  ];
+
   return (
     <div className={`container mt-4 ${darkMode ? 'dark-mode' : ''}`} style={{ maxWidth: "1100px" }}>
-      {/* Property Details and Image */}
       <div className="row">
         <div className="col-12">
           <h1 className="mb-3 fw-bold" style={{ fontSize: "26px" }}>
@@ -185,34 +207,64 @@ const PropertyDetail = () => {
                 className="btn btn-link text-dark"
                 onClick={toggleFavorite}
               >
-                <i className={`bi bi-heart${isFavorite ? "-fill" : ""}`}></i>
+                <i className={`bi bi-heart${isFavorite ? "-fill" : ""}`}></i> Save
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Property Image */}
       <div className="row mt-4">
         <div className="col-12">
-          <div
-            style={{
-              height: "400px",
-              overflow: "hidden",
-              borderRadius: "12px",
-            }}
-          >
-            <img
-              src={property.image_url}
-              alt={property.title}
-              className="img-fluid w-100 h-100"
-              style={{ objectFit: "cover" }}
-            />
+          <div className="position-relative">
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "2fr 1fr 1fr",
+                gridTemplateRows: "1fr 1fr",
+                gap: "10px",
+                height: "400px",
+                overflow: "hidden",
+                borderRadius: "12px",
+              }}
+            >
+              <img
+                src={property.image_url}
+                alt={property.title}
+                style={{ objectFit: "cover", width: "100%", height: "100%", gridRow: "span 2" }}
+              />
+              <img
+                src="https://via.placeholder.com/300x200"
+                alt="Property"
+                style={{ objectFit: "cover", width: "100%", height: "100%" }}
+              />
+              <img
+                src="https://via.placeholder.com/300x200"
+                alt="Property"
+                style={{ objectFit: "cover", width: "100%", height: "100%" }}
+              />
+              <img
+                src="https://via.placeholder.com/300x200"
+                alt="Property"
+                style={{ objectFit: "cover", width: "100%", height: "100%" }}
+              />
+              <img
+                src="https://via.placeholder.com/300x200"
+                alt="Property"
+                style={{ objectFit: "cover", width: "100%", height: "100%" }}
+              />
+            </div>
+            <button
+              className="btn btn-light position-absolute"
+              style={{ bottom: "20px", right: "20px" }}
+              onClick={() => setShowAllPhotos(true)}
+            >
+              Show all photos
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Property Description and Reservation Sidebar */}
       <div className="row mt-4">
         <div className="col-lg-7">
           <div className="d-flex justify-content-between align-items-center pb-4 border-bottom">
@@ -231,104 +283,261 @@ const PropertyDetail = () => {
                 bathroom{property.bathrooms > 1 ? "s" : ""}
               </p>
             </div>
+            <img
+              src={property.landlord.avatar || "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg"}
+              alt="Host"
+              className="rounded-circle"
+              style={{ width: "64px", height: "64px" }}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg";
+              }}
+            />
+          </div>
+
+
+          <div className="py-4 border-bottom">
+            <h3 className="fs-4 fw-bold mb-4">About this space</h3>
+            <p style={{ whiteSpace: "pre-line" }}>{property.description}</p>
+
           </div>
 
           <div className="py-4 border-bottom">
-            <h3 className="fs-4 fw-bold mb-4">Property Description</h3>
-            <p style={{ whiteSpace: "pre-line" }}>{property.description}</p>
+            <h3 className="fs-4 fw-bold mb-4">Where you'll sleep</h3>
+            <div className="d-flex overflow-auto">
+              {[...Array(property.bedrooms)].map((_, index) => (
+                <div key={index} className="me-3 p-3 border rounded" style={{ minWidth: "200px" }}>
+                  <i className="bi bi-door-closed fs-4 mb-2"></i>
+                  <h4 className="fs-5 mb-1">Bedroom {index + 1}</h4>
+                  <p className="mb-0">1 queen bed</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="py-4 border-bottom">
+            <h3 className="fs-4 fw-bold mb-4">What this place offers</h3>
+            <div className="row">
+              {amenities.map((amenity, index) => (
+                <div key={index} className="col-6 mb-3">
+                  <i className={`bi bi-${amenity.icon} me-2`}></i>
+                  {amenity.name}
+                </div>
+              ))}
+            </div>
+
           </div>
         </div>
         <ReservationSidebar property={property} userId={id} darkMode={darkMode} />
-        </div>
-
-      {/* Reviews Section */}
-      <hr className="my-5" />
-
-      <ReviewList reviews={reviews} />
-
-      <hr className="my-5" />
-
-      {isAuthenticated ? (
-        hasReviewed ? (
-          <p>Thank you for your review!</p>
-        ) : (
-          <ReviewForm propertyId={id} onReviewAdded={handleReviewAdded} />
-        )
-      ) : (
-        <p>
-          Please <Link to="/login">log in</Link> to submit a review.
-        </p>
-      )}
-
-      {/* Map Section */}
-      <hr className="my-5" />
-
-      <div className="row mb-5">
-        <div className="col-12">
-          <h3 className="fs-4 fw-bold mb-4">Where you'll be</h3>
-          <p>
-            {property.address}, {property.city}, {property.country}
-          </p>
-          {position ? (
-            <MapContainer
-              center={position}
-              zoom={13}
-              scrollWheelZoom={false}
-              style={{ height: "480px", borderRadius: "12px" }}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              />
-              <Marker position={position}>
-                <Popup>
-                  {property.title} <br /> {property.city}, {property.country}
-                </Popup>
-              </Marker>
-            </MapContainer>
-          ) : (
-            <p>Loading map...</p>
-          )}
-        </div>
       </div>
 
-      {/* Additional Information */}
-      <hr className="my-5" />
-
-      <div className="row mb-5">
-        <div className="col-12">
-          <h3 className="fs-4 fw-bold mb-4">Things to know</h3>
-          <div className="row">
-            <div className="col-md-4 mb-4 mb-md-0">
-              <h4 className="fs-6 fw-bold mb-3">House rules</h4>
-              <ul className="list-unstyled">
-                {property.house_rules &&
-                  property.house_rules.map((rule, index) => (
-                    <li key={index}>{rule}</li>
-                  ))}
-              </ul>
+      <div className="mt-5">
+        <h3 className="fs-4 fw-bold mb-4">
+          <i className="bi bi-star-fill me-2" style={{ color: "#FF385C" }}></i>
+          {property.average_rating || "No rating"} · {reviews.length} reviews
+        </h3>
+        <div className="row mb-4">
+          <div className="col-md-6">
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <span>Cleanliness</span>
+              <div className="progress" style={{ width: "60%" }}>
+                <div className="progress-bar" style={{ width: "90%" }}></div>
+              </div>
+              <span>4.5</span>
             </div>
-            <div className="col-md-4 mb-4 mb-md-0">
-              <h4 className="fs-6 fw-bold mb-3">Safety & Property</h4>
-              <ul className="list-unstyled">
-                {property.safety &&
-                  property.safety.map((safetyItem, index) => (
-                    <li key={index}>{safetyItem}</li>
-                  ))}
-              </ul>
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <span>Accuracy</span>
+              <div className="progress" style={{ width: "60%" }}>
+                <div className="progress-bar" style={{ width: "85%" }}></div>
+              </div>
+              <span>4.3</span>
             </div>
-            <div className="col-md-4">
-              <h4 className="fs-6 fw-bold mb-3">Cancellation Policy</h4>
-              <ul className="list-unstyled">
-                {property.cancellation &&
-                  property.cancellation.map((policyItem, index) => (
-                    <li key={index}>{policyItem}</li>
-                  ))}
-              </ul>
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <span>Communication</span>
+              <div className="progress" style={{ width: "60%" }}>
+                <div className="progress-bar" style={{ width: "95%" }}></div>
+              </div>
+              <span>4.8</span>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <span>Location</span>
+              <div className="progress" style={{ width: "60%" }}>
+                <div className="progress-bar" style={{ width: "80%" }}></div>
+              </div>
+              <span>4.0</span>
+            </div>
+            <div className="d-flex justify-content-between align-items-center mb-2">
+            <span>Check-in</span>
+              <div className="progress" style={{ width: "60%" }}>
+                <div className="progress-bar" style={{ width: "100%" }}></div>
+              </div>
+              <span>5.0</span>
+            </div>
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <span>Value</span>
+              <div className="progress" style={{ width: "60%" }}>
+                <div className="progress-bar" style={{ width: "90%" }}></div>
+              </div>
+              <span>4.5</span>
             </div>
           </div>
         </div>
+
+        <ReviewList reviews={reviews.slice(0, 6)} />
+
       </div>
+
+      <div className="mt-5">
+        <h3 className="fs-4 fw-bold mb-4">Add a review</h3>
+        {isAuthenticated ? (
+          hasReviewed ? (
+            <p>Thank you for your review!</p>
+          ) : (
+            <ReviewForm propertyId={id} onReviewAdded={handleReviewAdded} />
+          )
+        ) : (
+          <p>
+            Please <Link to="/login">log in</Link> to submit a review.
+          </p>
+        )}
+      </div>
+
+      <div className="mt-5">
+        <h3 className="fs-4 fw-bold mb-4">Where you'll be</h3>
+        <p>
+          {property.address}, {property.city}, {property.country}
+        </p>
+        {position ? (
+          <MapContainer
+            center={position}
+            zoom={13}
+            scrollWheelZoom={false}
+            style={{ height: "480px", borderRadius: "12px" }}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            />
+            <Marker position={position}>
+              <Popup>
+                {property.title} <br /> {property.city}, {property.country}
+              </Popup>
+            </Marker>
+          </MapContainer>
+        ) : (
+          <p>Loading map...</p>
+        )}
+      </div>
+
+      <div className="mt-5 border-top pt-5">
+        <div className="d-flex align-items-center mb-4">
+          <img
+            src={property.landlord.avatar || "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg"}
+            alt="Host"
+            className="rounded-circle me-3"
+            style={{ width: "64px", height: "64px" }}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg";
+            }}
+          />
+          <div>
+            <h3 className="fs-4 fw-bold mb-1">Hosted by {property.landlord.username}</h3>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6">
+            <p><i className="bi bi-shield-check me-2"></i> Identity verified</p>
+            <p><i className="bi bi-award me-2"></i> Superhost</p>
+          </div>
+          <div className="col-md-6">
+            <p>Response rate: 100%</p>
+            <p>Response time: within an hour</p>
+          </div>
+        </div>
+        <p className="mt-3">
+          Hi, I'm {property.landlord.username}! I love hosting and meeting people from all over the world.
+          I'm passionate about travel, food, and creating memorable experiences for my guests.
+        </p>
+        {userId !== landlordId && (
+          <ContactButton userId={userId} landlordId={landlordId} />
+        )}
+      </div>
+
+      <div className="mt-5 border-top pt-5">
+        <h3 className="fs-4 fw-bold mb-4">Things to know</h3>
+        <div className="row">
+          <div className="col-md-4 mb-4 mb-md-0">
+            <h4 className="fs-6 fw-bold mb-3">House rules</h4>
+            <ul className="list-unstyled">
+              {property.house_rules &&
+                property.house_rules.map((rule, index) => (
+                  <li key={index}><i className="bi bi-check2 me-2"></i>{rule}</li>
+                ))}
+              <li><i className="bi bi-check2 me-2"></i>Check-in: After 3:00 PM</li>
+              <li><i className="bi bi-check2 me-2"></i>Checkout: 11:00 AM</li>
+              <li><i className="bi bi-check2 me-2"></i>No smoking</li>
+              <li><i className="bi bi-check2 me-2"></i>No pets</li>
+            </ul>
+          </div>
+          <div className="col-md-4 mb-4 mb-md-0">
+            <h4 className="fs-6 fw-bold mb-3">Safety & Property</h4>
+            <ul className="list-unstyled">
+              {property.safety &&
+                property.safety.map((safetyItem, index) => (
+                  <li key={index}><i className="bi bi-shield-check me-2"></i>{safetyItem}</li>
+                ))}
+              <li><i className="bi bi-shield-check me-2"></i>Carbon monoxide alarm</li>
+              <li><i className="bi bi-shield-check me-2"></i>Smoke alarm</li>
+              <li><i className="bi bi-shield-check me-2"></i>Security camera/recording device</li>
+            </ul>
+          </div>
+          <div className="col-md-4">
+            <h4 className="fs-6 fw-bold mb-3">Cancellation Policy</h4>
+            <ul className="list-unstyled">
+              {property.cancellation &&
+                property.cancellation.map((policyItem, index) => (
+                  <li key={index}><i className="bi bi-info-circle me-2"></i>{policyItem}</li>
+                ))}
+              <li><i className="bi bi-info-circle me-2"></i>Free cancellation for 48 hours</li>
+              <li><i className="bi bi-info-circle me-2"></i>Review the host's full cancellation policy which applies even if you cancel for illness or disruptions caused by COVID-19.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 border-top pt-5">
+        <h3 className="fs-4 fw-bold mb-4">Support</h3>
+        <p>
+          If you need any assistance during your stay, please don't hesitate to contact us.
+          We're here to help ensure you have a great experience!
+        </p>
+        <button className="btn btn-outline-dark">Contact support</button>
+      </div>
+
+      {showAllPhotos && (
+        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-xl">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">All Photos</h5>
+                <button type="button" className="btn-close" onClick={() => setShowAllPhotos(false)}></button>
+              </div>
+              <div className="modal-body">
+                <div className="row">
+                  {[property.image_url, ...Array(4).fill('https://via.placeholder.com/800x600')].map((img, index) => (
+                    <div key={index} className="col-md-6 mb-3">
+                      <img src={img} alt={`Property ${index + 1}`} className="img-fluid rounded" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
