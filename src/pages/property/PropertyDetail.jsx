@@ -1,5 +1,3 @@
-// src/pages/PropertyDetail.js
-
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axiosInstance from "../../axios";
@@ -21,6 +19,13 @@ const PropertyDetail = () => {
   const [hasReviewed, setHasReviewed] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [darkMode, setDarkMode] = useState(false); 
+
+  <button onClick={() => setDarkMode(!darkMode)}>
+  Toggle Dark Mode
+</button>
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -150,7 +155,7 @@ const PropertyDetail = () => {
     return <div className="text-center mt-5">Property not found</div>;
 
   return (
-    <div className="container mt-4" style={{ maxWidth: "1100px" }}>
+    <div className={`container mt-4 ${darkMode ? 'dark-mode' : ''}`} style={{ maxWidth: "1100px" }}>
       {/* Property Details and Image */}
       <div className="row">
         <div className="col-12">
@@ -233,8 +238,8 @@ const PropertyDetail = () => {
             <p style={{ whiteSpace: "pre-line" }}>{property.description}</p>
           </div>
         </div>
-        <ReservationSidebar property={property} userId={id} />
-      </div>
+        <ReservationSidebar property={property} userId={id} darkMode={darkMode} />
+        </div>
 
       {/* Reviews Section */}
       <hr className="my-5" />
