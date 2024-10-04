@@ -18,15 +18,29 @@
   font-family: "Lato", sans-serif;
   overflow: hidden;
   z-index: 200;
+  transition: height 0.3s ease;
+  width: 400px; /* Example width */
+  border-radius: 8px; /* Example border radius */
 }
-
+.chat-modal.collapsed {
+  height: 50px;
+  overflow: hidden;
+}
+.toggle-button {
+  display: none;
+}
+.chat-modal.collapsed .toggle-button {
+  display: block;
+}
 .name {
   font-size: 0.9em;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: 1px;
 }
-
+.chat-header {
+  cursor: pointer;
+}
 .close-button {
   background: transparent;
   border: none;
