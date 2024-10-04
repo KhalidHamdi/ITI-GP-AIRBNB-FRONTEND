@@ -211,10 +211,7 @@ const ReservationSidebar = ({ property, userId }) => {
                 type="button"
                 onClick={performBooking}
                 className="btn btn-primary w-100 mb-3"
-                style={{
-                  backgroundColor: theme.palette.primary.main, 
-                  borderColor: theme.palette.primary.main, 
-                }}
+                style={{ backgroundColor: "#FF385C", borderColor: "#FF385C" }}
               >
                 Book
               </button>
