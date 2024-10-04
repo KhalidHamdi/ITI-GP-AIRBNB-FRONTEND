@@ -17,9 +17,10 @@ function ConversationDetail() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const location = useLocation();
   const { landlordId } = location.state || {};
-
+  const [currentPage, setCurrentPage] = useState(1);
   // Create a ref for the message container
   const messageContainerRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (conversationId) {
@@ -37,25 +38,52 @@ function ConversationDetail() {
     }
   }, []);
 
+  const fetchConversation = async (page = 1) => {
+    try {
+      const response = await axiosInstance.get(`api/chat/${conversationId}`, {
+        params: { page },
+      });
+      const updatedMessages = response.data.messages.map((message) => ({
+        ...message,
+        isSender: message.created_by.username === userName,
+        name: message.created_by.username || "unknown",
+      }));
+      setMessages((prevMessages) =>
+        page === 1 ? updatedMessages : [...updatedMessages, ...prevMessages]
+      );
+      setCurrentPage(page);
+    } catch (error) {
+      console.error("Error fetching conversation:", error);
+    }
+  };
+  // Call fetchConversation with page 1 initially
   useEffect(() => {
-    const fetchConversation = async () => {
-      try {
-        const response = await axiosInstance.get(`api/chat/${conversationId}`);
-        const updatedMessages = response.data.messages.map((message) => ({
-          ...message,
-          isSender: message.created_by.username === userName,
-          name: message.created_by.username || "unknown",
-        }));
-        setMessages(updatedMessages);
-      } catch (error) {
-        console.error("Error fetching conversation:", error);
-      }
-    };
-
     if (conversationId) {
-      fetchConversation();
+      fetchConversation(1);
     }
   }, [conversationId, userName]);
+
+  const handleScroll = async () => {
+    const container = messageContainerRef.current;
+    if (container.scrollTop === 0 && !isLoading) {
+      setIsLoading(true);
+      await fetchConversation(currentPage + 1);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const container = messageContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [currentPage]);
 
   const { sendMessage, readyState } = useWebSocket(socketUrl, {
     onOpen: () => console.log("Connected to WebSocket"),
