@@ -3,6 +3,9 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./conversationDetails.css";
 import axiosInstance from "../../axios";
 import "../../pages/landlord/landlord.css";
+import notificationSound from "../../assets/sound/chatnotification.wav";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function ConversationDetail({ conversationId, landlordId }) {
   const [messages, setMessages] = useState([]);
@@ -17,6 +20,7 @@ function ConversationDetail({ conversationId, landlordId }) {
 
   useEffect(() => {
     if (conversationId) {
+      // const wsUrl = `wss://itnb.up.railway.app/ws/${conversationId}/`;
       const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
       setSocketUrl(wsUrl);
     }
@@ -54,9 +58,31 @@ function ConversationDetail({ conversationId, landlordId }) {
     onClose: () => console.log("Disconnected from WebSocket"),
     onMessage: (event) => {
       try {
-        const newMessage = JSON.parse(event.data);
-        newMessage.isSender = newMessage.name === userName;
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        const newMessageData = JSON.parse(event.data);
+
+        // Handle regular message
+        if (newMessageData.type === "message") {
+          const newMessage = {
+            body: newMessageData.body,
+            name: newMessageData.name,
+            isSender: newMessageData.name === userName,
+          };
+
+          // Update the message list
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+          // Play the notification sound if it's a new message from someone else
+          if (newMessageData.name !== userName) {
+            const audio = new Audio(notificationSound);
+            audio
+              .play()
+              .catch((error) => console.error("Audio playback error:", error));
+            toast.info(`${newMessageData.name}: ${newMessageData.body}`, {
+              position: "top-right",
+              autoClose: 5000,
+            });
+          }
+        }
       } catch (error) {
         console.error("Error parsing message:", error);
       }
@@ -92,7 +118,7 @@ function ConversationDetail({ conversationId, landlordId }) {
             conversation_id: conversationId,
           },
         };
-        sendMessage(JSON.stringify(messageData));
+        sendMessage(JSON.stringify(messageData)); // Send the message
         setNewMessage("");
       } else {
         console.log("WebSocket is not connected. Current state:", readyState);

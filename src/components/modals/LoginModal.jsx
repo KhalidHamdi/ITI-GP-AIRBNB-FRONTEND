@@ -1,24 +1,27 @@
 // src/components/modals/LoginModal.js
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Modal from './Modal';
-import { useSelector, useDispatch } from 'react-redux';
-import { closeLoginModal, openPasswordResetModal } from '../../redux/modalSlice';
-import CustomButton from '../forms/CustomButton';
-import { login } from '../../redux/authSlice'; // Import login thunk
-import PasswordResetModal from './PasswordResetModal';
-import PasswordInput from '../forms/PasswordInput';
-import { toast } from 'react-toastify'; // Import toast
-import PropTypes from 'prop-types';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Modal from "./Modal";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  closeLoginModal,
+  openPasswordResetModal,
+} from "../../redux/modalSlice";
+import CustomButton from "../forms/CustomButton";
+import { login } from "../../redux/authSlice"; // Import login thunk
+import PasswordResetModal from "./PasswordResetModal";
+import PasswordInput from "../forms/PasswordInput";
+import { toast } from "react-toastify"; // Import toast
+import PropTypes from "prop-types";
 
 const LoginModal = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isOpen = useSelector((state) => state.modal.loginModalOpen);
   const authState = useSelector((state) => state.auth);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const close = () => {
     dispatch(closeLoginModal());
@@ -30,21 +33,23 @@ const LoginModal = () => {
     // Dispatch the login thunk
     dispatch(login({ email, password }))
       .unwrap()
-      .then(() => {
+      .then((user) => {
+        localStorage.setItem("userId", user.user_id);
+        localStorage.setItem("username", user.user.username);
         close();
         toast.success("Login successful!", {
-          onClose: () => navigate('/'),
+          onClose: () => navigate("/"),
         });
       })
       .catch((error) => {
         console.error("Login error:", error);
         if (error.non_field_errors) {
-          toast.error(error.non_field_errors.join(', '));
+          toast.error(error.non_field_errors.join(", "));
         } else {
           const fieldErrors = Object.entries(error)
-            .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
-            .join(' | ');
-          toast.error(fieldErrors || 'Login failed. Please try again.');
+            .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
+            .join(" | ");
+          toast.error(fieldErrors || "Login failed. Please try again.");
         }
       });
   };
@@ -56,7 +61,9 @@ const LoginModal = () => {
   const content = (
     <form onSubmit={submitLogin}>
       <div className="mb-3">
-        <label htmlFor="loginEmail" className="form-label">Email address</label>
+        <label htmlFor="loginEmail" className="form-label">
+          Email address
+        </label>
         <input
           type="email"
           className="form-control"
@@ -81,8 +88,8 @@ const LoginModal = () => {
       {authState.error && (
         <div className="alert alert-danger" role="alert">
           {Array.isArray(authState.error.non_field_errors)
-            ? authState.error.non_field_errors.join(', ')
-            : 'Login failed. Please check your credentials and try again.'}
+            ? authState.error.non_field_errors.join(", ")
+            : "Login failed. Please check your credentials and try again."}
         </div>
       )}
 

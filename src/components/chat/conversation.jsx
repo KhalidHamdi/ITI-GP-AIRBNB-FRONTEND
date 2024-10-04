@@ -21,7 +21,9 @@ const Conversation = ({ conversation, currentUserId }) => {
     <div className="conversation-container">
       <div className="conversation" key={conversation.id}>
         <div className="conversationBox">
-          <h3 className="conversation-title">{receiver.username}</h3>
+          <h3 className="conversation-title">
+            {receiver ? receiver.username : "Unknown User"}{" "}
+          </h3>
           <p className="conversation-link">
             <Link to={`/conversationDetail/${conversation.id}`}>
               Go to conversation

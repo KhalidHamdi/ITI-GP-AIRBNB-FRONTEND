@@ -3,6 +3,9 @@ import { useParams, useLocation } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import "./conversationDetails.css";
 import axiosInstance from "../../axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import notificationSound from "../../assets/sound/chatnotification.wav";
 
 function ConversationDetail() {
   const { id: conversationId } = useParams();
@@ -14,13 +17,15 @@ function ConversationDetail() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const location = useLocation();
   const { landlordId } = location.state || {};
-
+  const [currentPage, setCurrentPage] = useState(1);
   // Create a ref for the message container
   const messageContainerRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (conversationId) {
       const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
+      // const wsUrl = `ws://itnb.up.railway.app/ws/${conversationId}/`;
       setSocketUrl(wsUrl);
       console.log(wsUrl);
     }
@@ -33,34 +38,83 @@ function ConversationDetail() {
     }
   }, []);
 
+  const fetchConversation = async (page = 1) => {
+    try {
+      const response = await axiosInstance.get(`api/chat/${conversationId}`, {
+        params: { page },
+      });
+      const updatedMessages = response.data.messages.map((message) => ({
+        ...message,
+        isSender: message.created_by.username === userName,
+        name: message.created_by.username || "unknown",
+      }));
+      setMessages((prevMessages) =>
+        page === 1 ? updatedMessages : [...updatedMessages, ...prevMessages]
+      );
+      setCurrentPage(page);
+    } catch (error) {
+      console.error("Error fetching conversation:", error);
+    }
+  };
+  // Call fetchConversation with page 1 initially
   useEffect(() => {
-    const fetchConversation = async () => {
-      try {
-        const response = await axiosInstance.get(`api/chat/${conversationId}`);
-        const updatedMessages = response.data.messages.map((message) => ({
-          ...message,
-          isSender: message.created_by.username === userName,
-          name: message.created_by.username || "unknown",
-        }));
-        setMessages(updatedMessages);
-      } catch (error) {
-        console.error("Error fetching conversation:", error);
-      }
-    };
-
     if (conversationId) {
-      fetchConversation();
+      fetchConversation(1);
     }
   }, [conversationId, userName]);
+
+  const handleScroll = async () => {
+    const container = messageContainerRef.current;
+    if (container.scrollTop === 0 && !isLoading) {
+      setIsLoading(true);
+      await fetchConversation(currentPage + 1);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const container = messageContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [currentPage]);
 
   const { sendMessage, readyState } = useWebSocket(socketUrl, {
     onOpen: () => console.log("Connected to WebSocket"),
     onClose: () => console.log("Disconnected from WebSocket"),
     onMessage: (event) => {
       try {
-        const newMessage = JSON.parse(event.data);
-        newMessage.isSender = newMessage.name === userName;
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        const newMessageData = JSON.parse(event.data);
+
+        // Handle regular message
+        if (newMessageData.type === "message") {
+          const newMessage = {
+            body: newMessageData.body,
+            name: newMessageData.name,
+            isSender: newMessageData.name === userName,
+          };
+
+          // Update the message list
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+          // Play the notification sound if it's a new message from someone else
+          if (newMessageData.name !== userName) {
+            const audio = new Audio(notificationSound);
+            audio
+              .play()
+              .catch((error) => console.error("Audio playback error:", error));
+            toast.info(`${newMessageData.name}: ${newMessageData.body}`, {
+              position: "top-right",
+              autoClose: 5000,
+            });
+          }
+        }
       } catch (error) {
         console.error("Error parsing message:", error);
       }
@@ -96,7 +150,7 @@ function ConversationDetail() {
             conversation_id: conversationId,
           },
         };
-        sendMessage(JSON.stringify(messageData));
+        sendMessage(JSON.stringify(messageData)); // Send the message
         setNewMessage("");
       } else {
         console.log("WebSocket is not connected. Current state:", readyState);
@@ -111,6 +165,7 @@ function ConversationDetail() {
   // New function to handle key down event
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
+      event.preventDefault();
       event.preventDefault();
       handleSendMessage();
     }
