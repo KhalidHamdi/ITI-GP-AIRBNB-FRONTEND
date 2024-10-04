@@ -10,6 +10,7 @@ const Search = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [useRecommendation, setUseRecommendation] = useState(false);
+  const [properties, setProperties] = useState([]);
 
   const fetchSuggestions = async (query) => {
     try {
@@ -47,23 +48,22 @@ const Search = () => {
   const handleRecommendationToggle = () => {
     setUseRecommendation(!useRecommendation);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (guests < 1) {
       alert("Number of guests must be at least 1.");
       return;
     }
-
+  
     try {
       let response;
       const normalizedCity = city.toLowerCase();
-
+  
       if (useRecommendation) {
         response = await axiosInstance.get("/api/properties/search_recommendation/", {
           params: {
             user_data: normalizedCity,
-            city: normalizedCity,
+            query: normalizedCity,
           },
         });
       } else {
@@ -75,10 +75,11 @@ const Search = () => {
           },
         });
       }
-
+  
+      setProperties(response.data.data); 
       navigate("/", {
         state: {
-          properties: response.data.data,
+          properties: response.data.data, 
           city,
           guests,
         },
