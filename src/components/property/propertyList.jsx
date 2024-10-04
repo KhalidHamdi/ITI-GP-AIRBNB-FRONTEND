@@ -8,7 +8,7 @@ const PropertyList = ({
   selectedCategory,
   filteredProperties,
   updateSelectedCategory,
-  isLandlordPage = false, // Default to false
+  isLandlordPage = false, 
 }) => {
   const [properties, setProperties] = useState([]);
   const [error, setError] = useState(null);
@@ -17,7 +17,6 @@ const PropertyList = ({
   const [loading, setLoading] = useState(false);
   const location = useLocation();
 
-  // Fetch properties with pagination
   const getProperties = async (page = 1) => {
     setLoading(true);
     let url = `/api/properties/?page=${page}`;
@@ -29,7 +28,7 @@ const PropertyList = ({
     try {
       if (filteredProperties || location.state?.properties) {
         setProperties(filteredProperties || location.state.properties);
-        setTotalPages(1); // No pagination needed when filtered
+        setTotalPages(1); 
       } else {
         const response = await axiosInstance.get(
           selectedCategory
@@ -37,7 +36,7 @@ const PropertyList = ({
             : url
         );
         setProperties(response.data.results);
-        setTotalPages(Math.ceil(response.data.count / 12)); // Assuming 12 properties per page
+        setTotalPages(Math.ceil(response.data.count / 12)); 
       }
     } catch (error) {
       console.error("Fetch Properties Error:", error);
@@ -59,7 +58,6 @@ const PropertyList = ({
     location.state?.properties,
   ]);
 
-  // Handle page change
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
@@ -67,7 +65,6 @@ const PropertyList = ({
     }
   };
 
-  // Handle deletion of a property
   const handleDelete = (deletedPropertyId) => {
     setProperties((prevProperties) =>
       prevProperties.filter((property) => property.id !== deletedPropertyId)
@@ -80,7 +77,6 @@ const PropertyList = ({
 
   return (
     <div className="container my-4">
-      {/* Loading Indicator */}
       {loading ? (
         <div
           className="d-flex justify-content-center align-items-center"
@@ -92,7 +88,6 @@ const PropertyList = ({
         </div>
       ) : (
         <>
-          {/* Properties List */}
           <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             {properties.length > 0 &&
               properties.map((property) => (
@@ -106,7 +101,6 @@ const PropertyList = ({
               ))}
           </div>
 
-          {/* Pagination Controls */}
           {totalPages > 1 && (
             <div className="d-flex justify-content-center mt-3">
               <div
@@ -126,8 +120,8 @@ const PropertyList = ({
                   &laquo; Prev
                 </button>
 
-                <span className="mx-2">
-                  {currentPage} / {totalPages}
+                <span className="small">
+                  Page {currentPage} of {totalPages}
                 </span>
 
                 <button
