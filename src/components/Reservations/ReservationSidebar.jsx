@@ -69,7 +69,7 @@ const ReservationSidebar = ({ property, userId }) => {
               navigate("/payment", {
                 state: { totalPrice, guests, reservationId },
               });
-            }, 8000);
+            }, 3000);
           } else {
             // Display success toast
             dispatch(openLoginModal());
