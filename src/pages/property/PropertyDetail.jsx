@@ -217,7 +217,7 @@ const PropertyDetail = () => {
                 className="text-decoration-none"
               >
                 <h3 className="fs-5 fw-bold mb-1">
-                  {property.landlord.username} is a Superhost
+                  {property.landlord.username}, Hosted this property
                 </h3>
               </Link>
               <p className="mb-0 text-muted">

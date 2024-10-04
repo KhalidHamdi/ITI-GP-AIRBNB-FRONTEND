@@ -60,11 +60,12 @@ const LandlordDetailPage = () => {
             />
 
             <h1 className="mt-3 h4">{landlord.username}</h1>
-
+            <p className="mt-3">{landlord.email}</p>
             {userId !== landlordId && (
               <ContactButton userId={userId} landlordId={landlordId} />
             )}
           </div>
+
         </aside>
 
         {/* Main Section for Property Listings */}

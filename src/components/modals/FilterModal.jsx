@@ -90,53 +90,92 @@ const FilterModal = () => {
       </div>
 
       {/* Price Range */}
-      <div className="form-group mb-3">
-        <label className="form-label fw-bold">
-          Price Range: {minPrice} - {maxPrice}
-        </label>
-        <div className="price-range d-flex justify-content-between align-items-center">
-          <input
-            type="range"
-            min="0"
-            max="3000"
-            value={minPrice}
-            onChange={(e) => setMinPrice(Number(e.target.value))}
-            className="form-range"
-            style={{
-              appearance: "none",
-              width: "45%",
-              height: "8px",
-              background: "#ddd",
-              borderRadius: "5px",
-              outline: "none",
-              transition: "background 0.3s ease",
-              marginTop: "20px",
-            }}
-            onMouseEnter={(e) => (e.target.style.background = "#007bff")}
-            onMouseLeave={(e) => (e.target.style.background = "#ddd")}
-          />
-          <input
-            type="range"
-            min="0"
-            max="3000"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(Number(e.target.value))}
-            className="form-range"
-            style={{
-              appearance: "none",
-              width: "45%",
-              height: "8px",
-              background: "#ddd",
-              borderRadius: "5px",
-              outline: "none",
-              transition: "background 0.3s ease",
-              marginTop: "20px",
-            }}
-            onMouseEnter={(e) => (e.target.style.background = "#007bff")}
-            onMouseLeave={(e) => (e.target.style.background = "#ddd")}
-          />
-        </div>
-      </div>
+      <div className="form-group mb-4">
+  <label className="form-label fw-bold">
+    Price Range: ${minPrice} - ${maxPrice}
+  </label>
+  <div className="price-range d-flex justify-content-between align-items-center">
+    {/* Slider for min price */}
+    <input
+      type="range"
+      min="0"
+      max="3000"
+      value={minPrice}
+      onChange={(e) => setMinPrice(Number(e.target.value))}
+      className="form-range"
+      style={{
+        appearance: "none",
+        width: "40%",
+        height: "8px",
+        background: "#ddd",
+        borderRadius: "5px",
+        outline: "none",
+        transition: "background 0.3s ease",
+        marginTop: "20px",
+      }}
+      onMouseEnter={(e) => (e.target.style.background = "#007bff")}
+      onMouseLeave={(e) => (e.target.style.background = "#ddd")}
+    />
+
+    {/* Min price input */}
+    <input
+      type="number"
+      min="0"
+      max="3000"
+      value={minPrice}
+      onChange={(e) => setMinPrice(Number(e.target.value))}
+      className="form-control mx-2"
+      style={{
+        width: "15%",
+        padding: "5px",
+        fontSize: "14px",
+        borderRadius: "5px",
+        border: "1px solid #ddd",
+        textAlign: "center",
+      }}
+    />
+
+    {/* Max price input */}
+    <input
+      type="number"
+      min="0"
+      max="3000"
+      value={maxPrice}
+      onChange={(e) => setMaxPrice(Number(e.target.value))}
+      className="form-control mx-2"
+      style={{
+        width: "15%",
+        padding: "5px",
+        fontSize: "14px",
+        borderRadius: "5px",
+        border: "1px solid #ddd",
+        textAlign: "center",
+      }}
+    />
+
+    {/* Slider for max price */}
+    <input
+      type="range"
+      min="0"
+      max="3000"
+      value={maxPrice}
+      onChange={(e) => setMaxPrice(Number(e.target.value))}
+      className="form-range"
+      style={{
+        appearance: "none",
+        width: "40%",
+        height: "8px",
+        background: "#ddd",
+        borderRadius: "5px",
+        outline: "none",
+        transition: "background 0.3s ease",
+        marginTop: "20px",
+      }}
+      onMouseEnter={(e) => (e.target.style.background = "#007bff")}
+      onMouseLeave={(e) => (e.target.style.background = "#ddd")}
+    />
+  </div>
+</div>
 
       {/* Submit Button */}
       <button

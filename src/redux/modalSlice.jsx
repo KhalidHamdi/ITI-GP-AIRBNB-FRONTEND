@@ -12,6 +12,9 @@ const modalSlice = createSlice({
     signupModalOpen: false,
     filterModalOpen: false,
     passwordResetModalOpen: false,
+    addAdsModalOpen: false,
+    addAdsModalProperty: null, // To store the property
+
   },
   reducers: {
     // Add Property modal actions
@@ -63,6 +66,14 @@ const modalSlice = createSlice({
     closePasswordResetModal: (state) => {
       state.passwordResetModalOpen = false;
     },
+    openAddAdsModal: (state, action) => {
+      state.addAdsModalOpen = true;
+      state.addAdsModalProperty = action.payload; // Store the property here
+    },
+    closeAddAdsModal: (state) => {
+      state.addAdsModalOpen = false;
+      state.addAdsModalProperty = null;
+    },
   },
 });
 
@@ -75,10 +86,12 @@ export const {
   closeLoginModal,
   openSignupModal,
   closeSignupModal,
-  openPasswordResetModal,
-  closePasswordResetModal,
   openFilterModal,
   closeFilterModal,
+  openPasswordResetModal,
+  closePasswordResetModal,
+  openAddAdsModal,
+  closeAddAdsModal,
 } = modalSlice.actions;
 
 export default modalSlice.reducer;
