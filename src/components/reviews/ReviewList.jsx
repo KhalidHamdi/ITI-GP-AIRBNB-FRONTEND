@@ -19,12 +19,12 @@ const ReviewList = ({ reviews }) => {
   };
 
   return (
-    <div className="review-section mb-5">
+    <div className="review-section mb-5 ">
       <h3 className="review-title fs-4 fw-bold mb-4">Reviews</h3>
       <div className="review-list">
         {reviews.length > 0 ? (
           reviews.map((review) => (
-            <div key={review.id} className="review-item d-flex align-items-start mb-4">
+            <div key={review.id} className="review-item d-flex align-items-start mb-4 bg-transparent">
               <img
                 src={review.user.avatar_url || '/static/images/default-avatar.png'}
                 alt={`${review.user.username}'s avatar`}

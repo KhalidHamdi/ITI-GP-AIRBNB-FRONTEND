@@ -101,14 +101,14 @@ const Search = () => {
       className="d-flex w-100 justify-content-center"
     >
       <div
-        className="d-flex rounded-pill border shadow-sm p-3 w-100"
+        className="d-flex rounded-pill border shadow-sm p-2 w-100"
         style={{ maxWidth: "700px", marginBottom: "10px" }}
       >
-        <div className="flex-grow-1 border-end pe-3 position-relative">
+        <div className="flex-grow-1 border-end ps-4 position-relative">
           <div className="small fw-medium">Where</div>
           <input
             type="text"
-            className="border-0 text-muted small"
+            className="border-0 text-muted small bg-transparent"
             placeholder="Search destinations"
             style={{ outline: "none", width: "100%" }}
             value={city}
@@ -139,7 +139,7 @@ const Search = () => {
           <div className="small fw-medium">Guests</div>
           <input
             type="number"
-            className="border-0 text-muted small"
+            className="border-0 text-muted bg-transparent"
             placeholder="Number of guests"
             value={guests}
             onChange={handleGuestsChange}
@@ -149,7 +149,7 @@ const Search = () => {
         </div>
 
         <div className="ms-3">
-          <label className="small fw-medium" style={{ fontSize: "12px" }}>
+          <label className="small fw-medium mt-3" style={{ fontSize: "12px" }}>
             Use Recommendations
             <input
               type="checkbox"

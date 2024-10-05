@@ -14,37 +14,38 @@ const Header = ({ toggleDarkMode, darkMode }) => {
   };
 
   return (
-    <nav className={`navbar navbar-expand-md navbar-${darkMode ? 'dark' : 'light'} border-bottom`} style={{
+    <nav className={`navbar navbar-expand-md navbar-${darkMode ? 'dark' : 'light'} border-bottom p-2 pb-3 mb-2`} style={{
       backgroundColor: 'var(--bg-color)',
       color: 'var(--text-color)'
     }}>
       <div className="container-fluid px-md-5">
         <AppLogo />
-        <div className="d-flex flex-column align-items-center w-100">
-          <ul className="nav mb-1">
+        <div className="d-flex flex-column align-items-center w-100 mt-3">
+          {/* <ul className="nav mb-1">
             <li className="nav-item">
               <a className={`nav-link fw-medium ${darkMode ? 'text-light' : 'text-dark'}`} href="#">
                 Stays
               </a>
             </li>
-          </ul>
+          </ul> */}
           <Search />
         </div>
         <div className="d-flex align-items-center">
+          <div className="me-4 d-flex ">
           <button
-            className={`btn btn-link ${darkMode ? 'text-light' : 'text-dark'} text-decoration-none me-1 fw-bold`}
+            className={`btn btn-link ${darkMode ? 'text-light' : 'text-dark'} text-decoration-none p-0 fw-bold`}
             style={{ whiteSpace: "nowrap" }}
             onClick={airbnbYourHome}
           >
             Airbnb your home
           </button>
-          <button className={`btn btn-link ${darkMode ? 'text-light' : 'text-dark'} me-1`}>
+          <button className={`btn btn-link ${darkMode ? 'text-light' : 'text-dark'} p-0`}>
             <i className="bi bi-globe" onClick={airbnbYourHome}></i>
           </button>
-
-          <div className="d-flex align-items-center">
+          </div>
+          <div className="d-flex align-items-center me-4">
             <Switch onChange={toggleDarkMode} checked={darkMode} />
-            <span className={`ms-2 ${darkMode ? 'text-light' : 'text-dark'}`}>Dark Mode</span>
+            <span className={`${darkMode ? 'text-light' : 'text-dark'} fw-bold p-0`}>{darkMode ? 'Light' : 'Dark'} </span>
           </div>
         </div>
         <UserMenu airbnbYourHome={airbnbYourHome} />
