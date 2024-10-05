@@ -1,11 +1,14 @@
+// src/components/chat/ConversationDetail.js
 import React, { useEffect, useRef, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import { Picker } from 'emoji-mart';
+import 'emoji-mart/css/emoji-mart.css';
 import "./conversationDetails.css";
 import axiosInstance from "../../axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import notificationSound from "../../assets/sound/chatnotification.wav";
+import { Button, Overlay, Popover } from "react-bootstrap";
 
 function ConversationDetail() {
   const { id: conversationId } = useParams();
@@ -18,14 +21,17 @@ function ConversationDetail() {
   const location = useLocation();
   const { landlordId } = location.state || {};
   const [currentPage, setCurrentPage] = useState(1);
-  // Create a ref for the message container
   const messageContainerRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Emoji Picker state
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const emojiPickerRef = useRef(null);
+  const [emojiAnchor, setEmojiAnchor] = useState(null);
 
   useEffect(() => {
     if (conversationId) {
       const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
-      // const wsUrl = `ws://itnb.up.railway.app/ws/${conversationId}/`;
       setSocketUrl(wsUrl);
       console.log(wsUrl);
     }
@@ -56,7 +62,7 @@ function ConversationDetail() {
       console.error("Error fetching conversation:", error);
     }
   };
-  // Call fetchConversation with page 1 initially
+
   useEffect(() => {
     if (conversationId) {
       fetchConversation(1);
@@ -92,7 +98,6 @@ function ConversationDetail() {
       try {
         const newMessageData = JSON.parse(event.data);
 
-        // Handle regular message
         if (newMessageData.type === "message") {
           const newMessage = {
             body: newMessageData.body,
@@ -100,10 +105,8 @@ function ConversationDetail() {
             isSender: newMessageData.name === userName,
           };
 
-          // Update the message list
           setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-          // Play the notification sound if it's a new message from someone else
           if (newMessageData.name !== userName) {
             const audio = new Audio(notificationSound);
             audio
@@ -150,7 +153,7 @@ function ConversationDetail() {
             conversation_id: conversationId,
           },
         };
-        sendMessage(JSON.stringify(messageData)); // Send the message
+        sendMessage(JSON.stringify(messageData));
         setNewMessage("");
       } else {
         console.log("WebSocket is not connected. Current state:", readyState);
@@ -162,22 +165,30 @@ function ConversationDetail() {
     }
   };
 
-  // New function to handle key down event
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-      event.preventDefault();
       event.preventDefault();
       handleSendMessage();
     }
   };
 
-  // Scroll to the last message whenever messages change
   useEffect(() => {
     const container = messageContainerRef.current;
     if (container) {
-      container.scrollTop = container.scrollHeight; // Scroll to the bottom
+      container.scrollTop = container.scrollHeight;
     }
   }, [messages]);
+
+  // Handle emoji selection
+  const addEmoji = (emoji) => {
+    setNewMessage((prevMessage) => prevMessage + emoji.native);
+    setShowEmojiPicker(false);
+  };
+
+  const toggleEmojiPicker = (event) => {
+    setShowEmojiPicker(!showEmojiPicker);
+    setEmojiAnchor(event.currentTarget);
+  };
 
   return (
     <div className="chat-container card">
@@ -187,12 +198,7 @@ function ConversationDetail() {
             <div
               key={user.id}
               onClick={() => setSelectedUserId(user.id)}
-              style={{
-                cursor: "pointer",
-                padding: "5px",
-                backgroundColor:
-                  selectedUserId === user.id ? "#d1e7dd" : "transparent",
-              }}
+              className={`user-item ${selectedUserId === user.id ? 'active' : ''}`}
             >
               {user.username}
             </div>
@@ -200,29 +206,50 @@ function ConversationDetail() {
         </div>
 
         <div className="message-container" ref={messageContainerRef}>
+          {isLoading && (
+            <div className="loading-message">
+              <div className="spinner"></div> Loading more messages...
+            </div>
+          )}
           {messages.map((message, index) => (
-            <div
-              key={index}
-              className={message.isSender ? "sender" : "receiver"}
-            >
-              <h4>{message.name}</h4>
-              <p>{message.body}</p>
+            <div key={index} className={message.isSender ? "sender" : "receiver"}>
+              <div className="message-content">
+                <h5>{message.name}</h5>
+                <p>{message.body}</p>
+              </div>
             </div>
           ))}
         </div>
 
         <div className="chat-input-container">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type your message here..."
-            className="chat-input"
-          />
-          <button className="send-button" onClick={handleSendMessage}>
-            Send
-          </button>
+          <div className="input-group">
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type your message here..."
+              className="form-control chat-input"
+            />
+            <Button variant="outline-secondary" onClick={toggleEmojiPicker}>
+              😊
+            </Button>
+            <Button className="send-button" onClick={handleSendMessage}>
+              Send
+            </Button>
+          </div>
+          <Overlay
+            show={showEmojiPicker}
+            target={emojiAnchor}
+            placement="top"
+            containerPadding={20}
+            rootClose
+            onHide={() => setShowEmojiPicker(false)}
+          >
+            <Popover id="emoji-popover">
+              <Picker onSelect={addEmoji} />
+            </Popover>
+          </Overlay>
         </div>
       </div>
     </div>
