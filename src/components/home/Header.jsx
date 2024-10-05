@@ -14,40 +14,64 @@ const Header = ({ toggleDarkMode, darkMode }) => {
   };
 
   return (
-    <nav className={`navbar navbar-expand-md navbar-${darkMode ? 'dark' : 'light'} border-bottom`} style={{
-      backgroundColor: 'var(--bg-color)',
-      color: 'var(--text-color)'
-    }}>
-      <div className="container-fluid px-md-5">
+    <nav className={`navbar navbar-expand-md navbar-${darkMode ? 'dark' : 'light'} shadow-sm`} 
+      style={{
+        backgroundColor: darkMode ? '#2c2c2c' : '#ffffff',
+        color: darkMode ? '#f0f0f0' : '#2c2c2c',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+        padding: '1rem 2rem',
+      }}
+    >
+      <div className="container-fluid d-flex justify-content-between align-items-center">
+        {/* Logo Section */}
         <AppLogo />
-        <div className="d-flex flex-column align-items-center w-100">
-          <ul className="nav mb-1">
+
+        {/* Center Navigation with Search */}
+        <div className="d-flex flex-column align-items-center w-50">
+          <ul className="nav mb-2 d-flex gap-3">
             <li className="nav-item">
-              <a className={`nav-link fw-medium ${darkMode ? 'text-light' : 'text-dark'}`} href="#">
+              <a className={`nav-link fw-bold ${darkMode ? 'text-light' : 'text-dark'} hover-underline`} href="#">
                 Stays
+              </a>
+            </li>
+            <li className="nav-item">
+              <a className={`nav-link fw-bold ${darkMode ? 'text-light' : 'text-dark'} hover-underline`} href="#">
+                Experiences
+              </a>
+            </li>
+            <li className="nav-item">
+              <a className={`nav-link fw-bold ${darkMode ? 'text-light' : 'text-dark'} hover-underline`} href="#">
+                Online Experiences
               </a>
             </li>
           </ul>
           <Search />
         </div>
-        <div className="d-flex align-items-center">
+
+        {/* Right-side Menu */}
+        <div className="d-flex align-items-center gap-4">
           <button
-            className={`btn btn-link ${darkMode ? 'text-light' : 'text-dark'} text-decoration-none me-1 fw-bold`}
-            style={{ whiteSpace: "nowrap" }}
+            className={`btn btn-link ${darkMode ? 'text-light' : 'text-dark'} text-decoration-none fw-bold`}
+            style={{ whiteSpace: "nowrap", fontSize: "0.9rem", padding: '0.5rem 1rem' }}
             onClick={airbnbYourHome}
           >
             Airbnb your home
           </button>
-          <button className={`btn btn-link ${darkMode ? 'text-light' : 'text-dark'} me-1`}>
-            <i className="bi bi-globe" onClick={airbnbYourHome}></i>
+
+          {/* Language and Globe Icon */}
+          <button className={`btn btn-link p-0 ${darkMode ? 'text-light' : 'text-dark'}`} style={{ fontSize: '1.25rem' }}>
+            <i className="bi bi-globe"></i>
           </button>
 
+          {/* Dark Mode Switch */}
           <div className="d-flex align-items-center">
             <Switch onChange={toggleDarkMode} checked={darkMode} />
             <span className={`ms-2 ${darkMode ? 'text-light' : 'text-dark'}`}>Dark Mode</span>
           </div>
+
+          {/* User Menu */}
+          <UserMenu airbnbYourHome={airbnbYourHome} />
         </div>
-        <UserMenu airbnbYourHome={airbnbYourHome} />
       </div>
     </nav>
   );

@@ -1,9 +1,12 @@
-import Conversation from "../../components/chat/conversation";
+// src/pages/chat/Chat.js
 import React, { useState, useEffect } from "react";
+import Conversation from "../../components/chat/Conversation";
 import axiosInstance from "../../axios";
+import { Container, Row, Col, Card, Alert, Spinner } from "react-bootstrap";
 
 function Chat() {
   const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(true);
   const currentUserId = localStorage.getItem("userId");
 
   useEffect(() => {
@@ -14,6 +17,8 @@ function Chat() {
         setConversations(response.data);
       } catch (error) {
         console.error("Error fetching conversations:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -26,40 +31,42 @@ function Chat() {
   );
 
   return (
-    <>
-      <h2
-        style={{
-          fontSize: "24px",
-          fontWeight: "bold",
-          margin: "25px",
-        }}
-      >
-        Inbox
-      </h2>
+    <Container className="my-4">
+      <Row className="mb-4">
+        <Col>
+          <h2 className="display-6 fw-bold text-center">Inbox</h2>
+        </Col>
+      </Row>
 
-      {userConversations.length === 0 ? (
-        <div
-          className="no-chats"
-          style={{
-            textAlign: "center",
-            color: "#930c0c",
-            fontSize: "18px",
-            fontWeight: "normal",
-            margin: "20px 0",
-          }}
-        >
-          <p>No conversations yet</p>
-        </div>
+      {loading ? (
+        <Row className="justify-content-center">
+          <Spinner animation="border" variant="primary" />
+        </Row>
+      ) : userConversations.length === 0 ? (
+        <Row className="justify-content-center">
+          <Col md={6}>
+            <Alert variant="warning" className="text-center">
+              No conversations yet
+            </Alert>
+          </Col>
+        </Row>
       ) : (
-        userConversations.map((conversation) => (
-          <Conversation
-            key={conversation.id}
-            conversation={conversation}
-            currentUserId={currentUserId}
-          />
-        ))
+        <Row>
+          {userConversations.map((conversation) => (
+            <Col key={conversation.id} md={6} lg={4} className="mb-4">
+              <Card className="h-100 shadow-sm">
+                <Card.Body>
+                  <Conversation
+                    conversation={conversation}
+                    currentUserId={currentUserId}
+                  />
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
       )}
-    </>
+    </Container>
   );
 }
 
