@@ -66,7 +66,15 @@
   margin: 0;
   line-height: 1.5;
 }
-
+.message-time {
+  font-size: 0.8rem;
+  color: #aeacac;
+}
+.message-content {
+  display: flex;
+  justify-content: end;
+  align-items: flex-end;
+}
 /* Chat input container */
 .chat-input-container {
   display: flex;

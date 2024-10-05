@@ -41,8 +41,16 @@ function ConversationDetail({ conversationId, landlordId }) {
           ...message,
           isSender: message.created_by.username === userName,
           name: message.created_by.username || "unknown",
+          time: new Date(message.created_at).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          timestamp: new Date(message.created_at).getTime(),
         }));
-        setMessages(updatedMessages);
+        const sortedMessages = [...updatedMessages, ...messages].sort(
+          (a, b) => a.timestamp - b.timestamp
+        );
+        setMessages(sortedMessages);
       } catch (error) {
         console.error("Error fetching conversation:", error);
       }
@@ -66,10 +74,18 @@ function ConversationDetail({ conversationId, landlordId }) {
             body: newMessageData.body,
             name: newMessageData.name,
             isSender: newMessageData.name === userName,
+            time: new Date(newMessageData.created_at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            timestamp: new Date(newMessageData.created_at).getTime(),
           };
-
+          const formattedTime = new Date(newMessage.time).toLocaleTimeString();
           // Update the message list
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
+          setMessages((prevMessages) => {
+            const updatedMessages = [...prevMessages, newMessage];
+            return updatedMessages.sort((a, b) => a.timestamp - b.timestamp); // Sort messages by timestamp
+          });
 
           // Play the notification sound if it's a new message from someone else
           if (newMessageData.name !== userName) {
@@ -173,6 +189,9 @@ function ConversationDetail({ conversationId, landlordId }) {
           <div key={index} className={message.isSender ? "sender" : "receiver"}>
             <h4>{message.name}</h4>
             <p>{message.body}</p>
+            <div className="message-content">
+              <span className="message-time">{message.time}</span>
+            </div>
           </div>
         ))}
       </div>
