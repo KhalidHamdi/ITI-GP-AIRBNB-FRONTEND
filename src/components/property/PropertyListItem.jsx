@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { openEditPropertyModal } from "../../redux/modalSlice";
-import { openAddAdsModal } from "../../redux/modalSlice";
+import { openEditPropertyModal, openAddAdsModal } from "../../redux/modalSlice";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../axios";
 import Cookies from "js-cookie";
-import ConfirmationModal from "../ConfirmationModal"; 
+import ConfirmationModal from "../ConfirmationModal";
 
 const useFavorites = (propertyId) => {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -71,19 +70,17 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
     }
   }, []);
 
-
   const handleCardClick = () => {
     navigate(`/properties/${property.id}/`);
   };
 
-  
   const handleEditClick = (e) => {
-    e.stopPropagation(); // Prevent triggering the card click
+    e.stopPropagation();
     dispatch(openEditPropertyModal(property));
   };
 
   const handleDeleteClick = (e) => {
-    e.stopPropagation(); // Prevent triggering the card click
+    e.stopPropagation();
     setShowConfirm(true);
   };
 
@@ -119,30 +116,70 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
   const handleNextImage = (e) => {
     e.stopPropagation();
     if (property.images.length > 0) {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % property.images.length);
+      setCurrentImageIndex(
+        (prevIndex) => (prevIndex + 1) % property.images.length
+      );
     }
   };
 
   const handlePrevImage = (e) => {
     e.stopPropagation();
     if (property.images.length > 0) {
-      setCurrentImageIndex((prevIndex) => (prevIndex - 1 + property.images.length) % property.images.length);
+      setCurrentImageIndex(
+        (prevIndex) =>
+          (prevIndex - 1 + property.images.length) % property.images.length
+      );
     }
   };
 
-  const imageUrl = property.images.length > 0 ? property.images[currentImageIndex]?.image : null;
+  const imageUrl =
+    property.images.length > 0
+      ? property.images[currentImageIndex]?.image
+      : null;
 
   return (
     <>
-      <div className="card h-100 border-0 shadow-sm" onClick={handleCardClick} style={{ cursor: "pointer" }}>
-        <div className="position-relative">
+      <div
+        className="card h-100 border-0 shadow-sm"
+        onClick={handleCardClick}
+        style={{ cursor: "pointer", position: "relative" }}
+      >
+        <div
+          className="position-relative"
+          style={{
+            overflow: "hidden",
+          }}
+        >
+          {/* Conditional Ribbon for Advertised Properties */}
+          {property.is_advertised && (
+
+            <div
+              className="advertised-ribbon"
+              style={{
+                position: "absolute",
+                top: "20px",
+                left: "-40px" /* Adjust this based on your card size */,
+                backgroundColor: "green" /* Color for the ribbon */,
+                color: "white",
+                padding:
+                  "5px 40px" /* Adjust the padding to fit the ribbon properly */,
+                fontSize: "12px" /* Adjust based on your preference */,
+                fontWeight: "bold",
+                transform: "rotate(-45deg)",
+                zIndex: "1",
+                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+              }}
+            >
+              Advertised
+            </div>
+          )}
           <img
-            src={imageUrl || "path/to/placeholder-image.jpg"} 
+            src={imageUrl || "path/to/placeholder-image.jpg"}
             alt={`${property.title} - Image ${currentImageIndex + 1}`}
             className="card-img-top"
             style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
           />
-          {property.images.length > 1 && ( 
+          {property.images.length > 1 && (
             <>
               <button
                 className="btn btn-light btn-sm position-absolute top-50 start-0 translate-middle-y"
@@ -168,7 +205,9 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
               toggleFavorite();
             }}
             disabled={loading}
-            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
           >
             {loading ? (
               <span
@@ -177,7 +216,9 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
                 aria-hidden="true"
               ></span>
             ) : (
-              <i className={`bi ${isFavorite ? "bi-heart-fill" : "bi-heart"}`}></i>
+              <i
+                className={`bi ${isFavorite ? "bi-heart-fill" : "bi-heart"}`}
+              ></i>
             )}
           </button>
         </div>

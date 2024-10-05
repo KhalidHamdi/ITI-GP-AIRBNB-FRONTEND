@@ -31,7 +31,7 @@ const UserMenu = ({ airbnbYourHome }) => {
   return (
     <div className="dropdown">
       <button
-        className="btn d-flex align-items-center gap-2 p-2 rounded-circle border"
+        className="btn d-flex align-items-center gap-2 p-2 rounded-circle border-none"
         type="button"
         id="userMenuDropdown"
         data-bs-toggle="dropdown"
