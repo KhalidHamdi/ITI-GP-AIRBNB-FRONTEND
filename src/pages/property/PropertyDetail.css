@@ -1,0 +1,20 @@
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; 
+}
+
+.gallery-image {
+  flex: 1 1 calc(50% - 10px); 
+  max-width: calc(50% - 10px); 
+  border-radius: 12px;
+  object-fit: cover;
+  height: 200px; 
+}
+
+@media (max-width: 600px) {
+  .gallery-image {
+    flex: 1 1 100%; 
+    max-width: 100%; 
+  }
+}
