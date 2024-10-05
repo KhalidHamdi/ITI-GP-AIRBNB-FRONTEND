@@ -52,7 +52,7 @@ const AddProperty = () => {
     const [dataCountry, setDataCountry] = useState(null);
     const [dataCity, setDataCity] = useState(''); 
     const [dataAddress, setDataAddress] = useState(''); 
-    const [dataImage, setDataImage] = useState(null); 
+    const [dataImages, setDataImages] = useState([]); 
     const [successMessage, setSuccessMessage] = useState('');
 
     const isOpen = useSelector((state) => state.modal.addPropertyModalOpen);
@@ -63,59 +63,80 @@ const AddProperty = () => {
         setDataCategory(category);
     };
 
-    const setImage = (event) => {
-        if (event.target.files && event.target.files.length > 0) {
-            const tmpImage = event.target.files[0];
-            setDataImage(tmpImage);
+    const setImages = (event) => {
+        if (event.target.files) {
+            const filesArray = Array.from(event.target.files); 
+            setDataImages(filesArray);
+            console.log('Files selected:', filesArray); 
         }
     };
-    const submitForm = async () => {
-        if (dataCategory && dataTitle && dataDescription && dataPrice && dataCountry && dataCity && dataAddress && dataImage) {
-            const formData = new FormData();
-            formData.append('category', String(dataCategory)); // Ensure it's a string
-            formData.append('title', dataTitle);
-            formData.append('description', dataDescription);
-            formData.append('price_per_night', dataPrice);
-            formData.append('bedrooms', dataBedrooms);
-            formData.append('bathrooms', dataBathrooms);
-            formData.append('guests', dataGuests);
-            formData.append('country', dataCountry?.label); // Ensure this is a string
-            formData.append('country_code', dataCountry?.value); // Ensure this is a string
-            formData.append('city', dataCity); 
-            formData.append('address', dataAddress); 
-            formData.append('image', dataImage); 
-    
-            try {
-                const response = await axiosInstance.post('/api/properties/create/', formData);
-                console.log(response.data); // Log the response data for inspection
-    
-                if (response.status === 200 || response.status === 201) {
-                    setErrors([]);
-                    setSuccessMessage('Property added successfully!');
-                    setTimeout(() => {
-                        setSuccessMessage('');
-                        navigate('/');
-                        dispatch(closeAddPropertyModal());  
-                    }, 2000);
-                } else {
-                    const tmpErrors = Array.isArray(response.data.message)
-                        ? response.data.message
-                        : Object.values(response.data.message).map((error) => error.toString());
-                    setErrors(tmpErrors);
-                }
-            } catch (error) {
-                console.error(error.response.data); // Log the error response data for inspection
-                if (error.response && error.response.data && error.response.data.message) {
-                    const tmpErrors = Array.isArray(error.response.data.message)
-                        ? error.response.data.message
-                        : Object.values(error.response.data.message).map((err) => err.toString());
-                    setErrors(tmpErrors);
-                } else {
-                    setErrors(['An unexpected error occurred. Please try again.']);
-                }
-            }
-        } else {
+
+    const resetForm = () => {
+        setDataCategory('');
+        setDataTitle('');
+        setDataDescription('');
+        setDataPrice('');
+        setDataBedrooms('');
+        setDataBathrooms('');
+        setDataGuests('');
+        setDataCountry(null);
+        setDataCity('');
+        setDataAddress('');
+        setDataImages([]);
+    };
+
+    const submitForm = async (event) => {
+        event.preventDefault();
+
+        if (!dataCategory || !dataTitle || !dataDescription || !dataPrice || !dataBedrooms || !dataBathrooms || !dataGuests || !dataCountry || !dataCity || !dataAddress) {
             setErrors(['Please fill out all required fields before submitting.']);
+            return;
+        }
+
+        const formData = new FormData();
+        
+        formData.append('category', dataCategory);
+        formData.append('title', dataTitle);
+        formData.append('description', dataDescription);
+        formData.append('price_per_night', dataPrice);
+        formData.append('bedrooms', dataBedrooms);
+        formData.append('bathrooms', dataBathrooms);
+        formData.append('guests', dataGuests);
+        formData.append('country', dataCountry?.label || "");
+        formData.append('country_code', dataCountry?.value || "");
+        formData.append('city', dataCity);
+        formData.append('address', dataAddress);
+
+        if (dataImages.length === 0) {
+            setErrors(['At least one image is required.']);
+            return; // Stop form submission
+        }
+
+        dataImages.forEach((image, index) => {
+            formData.append('images', image); 
+        });
+
+        try {
+            const response = await axiosInstance.post('/api/properties/create/', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data', 
+                },
+            });
+            console.log('Success:', response.data);
+            setErrors([]);
+            setSuccessMessage('Property added successfully!');
+            resetForm(); 
+            dispatch(closeAddPropertyModal());
+        } catch (error) {
+            console.error('Error response:', error.response.data);
+            if (error.response && error.response.data && error.response.data.errors) {
+                const validationErrors = error.response.data.errors;
+                console.error('Validation Errors:', validationErrors);
+                const tmpErrors = Object.values(validationErrors).flat().map((err) => err.toString());
+                setErrors(tmpErrors);
+            } else {
+                setErrors(['An unexpected error occurred. Please try again.']);
+            }
         }
     };
 
@@ -145,6 +166,18 @@ const AddProperty = () => {
                             ></button>
                         </div>
                         <div className="modal-body">
+                            {errors.length > 0 && (
+                                <div className="alert alert-danger">
+                                    {errors.map((error, index) => (
+                                        <div key={index}>{error}</div>
+                                    ))}
+                                </div>
+                            )}
+                            {successMessage && (
+                                <div className="alert alert-success">
+                                    {successMessage}
+                                </div>
+                            )}
                             {currentStep === 1 ? (
                                 <>
                                     <h2 className="h4 mb-1 text-center">Which of these best describes your place?</h2>
@@ -224,7 +257,7 @@ const AddProperty = () => {
                                         />
                                     </div>
                                     <div className="form-group mb-3">
-                                        <label className="form-label">Number of guests</label>
+                                        <label className="form-label">Guests</label>
                                         <input
                                             type="number"
                                             value={dataGuests}
@@ -247,7 +280,7 @@ const AddProperty = () => {
                                 </>
                             ) : currentStep === 4 ? (
                                 <>
-                                    <h2 className="mb-4 text-center">Enter Location Details</h2>
+                                    <h2 className="mb-4 text-center">Where's your place located?</h2>
                                     <SelectCountry value={dataCountry} onChange={setDataCountry} />
                                     <div className="form-group mb-3">
                                         <label className="form-label">City</label>
@@ -256,18 +289,16 @@ const AddProperty = () => {
                                             value={dataCity}
                                             onChange={(e) => setDataCity(e.target.value)}
                                             className="form-control rounded-pill"
-                                            placeholder="Enter city"
                                         />
                                     </div>
                                     <div className="form-group mb-3">
-                                        <label className="form-label">Address</label>
-                                        <input
-                                            type="text"
+                                        <label className="form-label">Full Address</label>
+                                        <textarea
                                             value={dataAddress}
                                             onChange={(e) => setDataAddress(e.target.value)}
-                                            className="form-control rounded-pill"
-                                            placeholder="Enter address"
-                                        />
+                                            className="form-control rounded"
+                                            rows="2"
+                                        ></textarea>
                                     </div>
                                     <div className="d-flex justify-content-between">
                                         <CustomButton
@@ -284,14 +315,14 @@ const AddProperty = () => {
                                 </>
                             ) : currentStep === 5 ? (
                                 <>
-                                    <h2 className="mb-4 text-center">Upload Image</h2>
+                                    <h2 className="mb-4 text-center">Add photos of your place</h2>
                                     <div className="form-group mb-3">
-                                        <label className="form-label">Upload Image</label>
                                         <input
                                             type="file"
+                                            multiple
                                             accept="image/*"
-                                            onChange={setImage}
-                                            className="form-control rounded-pill"
+                                            onChange={setImages}
+                                            className="form-control rounded"
                                         />
                                     </div>
                                     <div className="d-flex justify-content-between">
@@ -308,21 +339,6 @@ const AddProperty = () => {
                                     </div>
                                 </>
                             ) : null}
-
-                            {errors.length > 0 && (
-                                <div className="alert alert-danger mt-3">
-                                    {errors.map((error, index) => (
-                                        <p key={index} className="mb-1">
-                                            {error}
-                                        </p>
-                                    ))}
-                                </div>
-                            )}
-                            {successMessage && (
-                                <div className="alert alert-success mt-3">
-                                    {successMessage}
-                                </div>
-                            )}
                         </div>
                     </div>
                 </div>

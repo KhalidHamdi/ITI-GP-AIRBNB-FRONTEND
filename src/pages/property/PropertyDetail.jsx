@@ -9,7 +9,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import ContactButton from "../../components/ContactButton";
-
+import "./PropertyDetail.css"; 
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -26,32 +26,17 @@ const PropertyDetail = () => {
   const [userId, setUserId] = useState(null);
   const [landlordId, setLandlordId] = useState(null);
 
-
-
   useEffect(() => {
     const fetchPropertyData = async () => {
       try {
         const response = await axiosInstance.get(`/api/properties/${id}/`);
         setProperty(response.data);
         setLandlordId(response.data.landlord.id);
+        
         const currentUserId = localStorage.getItem("userId");
         if (currentUserId) {
           setUserId(currentUserId);
         }
-      } catch (error) {
-        console.error("Error fetching property data:", error);
-      }
-    };
-
-    fetchPropertyData();
-  }, [id]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axiosInstance.get(`/api/properties/${id}/`);
-        setProperty(response.data);
-        setLoading(false);
 
         const address = `${response.data.address}, ${response.data.city}, ${response.data.country}`;
         const openCageResponse = await axiosInstance.get(`/api/properties/geocode/`, {
@@ -64,6 +49,8 @@ const PropertyDetail = () => {
         } else {
           console.error("Geocode data not found.");
         }
+
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching property data:", error);
         setLoading(false);
@@ -91,7 +78,7 @@ const PropertyDetail = () => {
       }
     };
 
-    fetchData();
+    fetchPropertyData();
     fetchReviews();
     checkAuthStatus();
   }, [id]);
@@ -99,12 +86,15 @@ const PropertyDetail = () => {
   useEffect(() => {
     if (currentUser && reviews.length > 0) {
       const userReview = reviews.find(
-        (review) =>
-          review.user && review.user.id.toString() === currentUser.id.toString()
+        (review) => review.user && review.user.id.toString() === currentUser.id.toString()
       );
       setHasReviewed(!!userReview);
     }
   }, [currentUser, reviews]);
+
+  useEffect(() => {
+    console.log(property); 
+  }, [property]);
 
   const handleReviewAdded = (newReview) => {
     setReviews([newReview, ...reviews]);
@@ -128,6 +118,12 @@ const PropertyDetail = () => {
       console.error("Error toggling favorite status:", error);
     }
   };
+
+  const closeModal = () => {
+    setShowAllPhotos(false);
+  };
+
+
 
   useEffect(() => {
     const checkFavoriteStatus = async () => {
@@ -165,8 +161,7 @@ const PropertyDetail = () => {
     );
   }
 
-  if (!property)
-    return <div className="text-center mt-5">Property not found</div>;
+  if (!property) return <div className="text-center mt-5">Property not found</div>;
 
   const amenities = [
     { icon: "wifi", name: "Wifi" },
@@ -176,7 +171,6 @@ const PropertyDetail = () => {
     { icon: "utensils", name: "Kitchen" },
     { icon: "car", name: "Free parking" },
   ];
-
   return (
     <div className={`container mt-4 ${darkMode ? 'dark-mode' : ''}`} style={{ maxWidth: "1100px" }}>
       <div className="row">
@@ -190,11 +184,11 @@ const PropertyDetail = () => {
                 <i className="bi bi-star-fill" style={{ color: "#FF385C" }}></i>{" "}
                 {property.average_rating || "No rating"}
               </span>
-              <span className="me-2">·</span>
+              <span className="me-2">路</span>
               <span className="text-decoration-underline me-2 fw-semibold">
                 {property.reviews_count || "No reviews"}
               </span>
-              <span className="me-2">·</span>
+              <span className="me-2">路</span>
               <span className="text-decoration-underline fw-semibold">
                 {property.city}, {property.country}
               </span>
@@ -203,10 +197,7 @@ const PropertyDetail = () => {
               <button className="btn btn-link text-dark me-2">
                 <i className="bi bi-upload me-2"></i>Share
               </button>
-              <button
-                className="btn btn-link text-dark"
-                onClick={toggleFavorite}
-              >
+              <button className="btn btn-link text-dark" onClick={toggleFavorite}>
                 <i className={`bi bi-heart${isFavorite ? "-fill" : ""}`}></i> Save
               </button>
             </div>
@@ -214,56 +205,43 @@ const PropertyDetail = () => {
         </div>
       </div>
 
-      <div className="row mt-4">
-        <div className="col-12">
-          <div className="position-relative">
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "2fr 1fr 1fr",
-                gridTemplateRows: "1fr 1fr",
-                gap: "10px",
-                height: "400px",
-                overflow: "hidden",
-                borderRadius: "12px",
-              }}
-            >
-              <img
-                src={property.image_url}
-                alt={property.title}
-                style={{ objectFit: "cover", width: "100%", height: "100%", gridRow: "span 2" }}
-              />
-              <img
-                src="https://via.placeholder.com/300x200"
-                alt="Property"
-                style={{ objectFit: "cover", width: "100%", height: "100%" }}
-              />
-              <img
-                src="https://via.placeholder.com/300x200"
-                alt="Property"
-                style={{ objectFit: "cover", width: "100%", height: "100%" }}
-              />
-              <img
-                src="https://via.placeholder.com/300x200"
-                alt="Property"
-                style={{ objectFit: "cover", width: "100%", height: "100%" }}
-              />
-              <img
-                src="https://via.placeholder.com/300x200"
-                alt="Property"
-                style={{ objectFit: "cover", width: "100%", height: "100%" }}
-              />
-            </div>
-            <button
-              className="btn btn-light position-absolute"
-              style={{ bottom: "20px", right: "20px" }}
-              onClick={() => setShowAllPhotos(true)}
-            >
-              Show all photos
-            </button>
-          </div>
-        </div>
+<div className="row mt-4">
+  <div className="col-12">
+    <div className="image-gallery">
+      {property?.images && property.images.length > 0 ? (
+        property.images.slice(0, showAllPhotos ? property.images.length : 3).map((imgObj, index) => ( 
+          <img key={index} src={imgObj.image} alt={property.title} className="gallery-image" />
+        ))
+      ) : (
+        <p>No images available</p>
+      )}
+    </div>
+    <button className="btn btn-primary mt-2" onClick={() => setShowAllPhotos(!showAllPhotos)}>
+      {showAllPhotos ? "Show Less" : "Show All Images"}
+    </button>
+  </div>
+</div>
+
+{showAllPhotos && property?.images && property.images.length > 0 && ( 
+  <div className="modal">
+    <div className="modal-content">
+      <span className="close" onClick={closeModal}>&times;</span>
+      <h2>All Images</h2>
+      <div className="full-image-gallery">
+        {property.images.map((imgObj, index) => (
+          <img
+            key={index}
+            src={imgObj.image}
+            alt={property.title}
+            className="full-image"
+          />
+        ))}
       </div>
+    </div>
+  </div>
+)}
+
+
 
       <div className="row mt-4">
         <div className="col-lg-7">
@@ -278,8 +256,8 @@ const PropertyDetail = () => {
                 </h3>
               </Link>
               <p className="mb-0 text-muted">
-                {property.guests} guests · {property.bedrooms} bedroom
-                {property.bedrooms > 1 ? "s" : ""} · {property.bathrooms}{" "}
+                {property.guests} guests 路 {property.bedrooms} bedroom
+                {property.bedrooms > 1 ? "s" : ""} 路 {property.bathrooms}{" "}
                 bathroom{property.bathrooms > 1 ? "s" : ""}
               </p>
             </div>
@@ -334,7 +312,7 @@ const PropertyDetail = () => {
       <div className="mt-5">
         <h3 className="fs-4 fw-bold mb-4">
           <i className="bi bi-star-fill me-2" style={{ color: "#FF385C" }}></i>
-          {property.average_rating || "No rating"} · {reviews.length} reviews
+          {property.average_rating || "No rating"} 路 {reviews.length} reviews
         </h3>
         <div className="row mb-4">
           <div className="col-md-6">
@@ -517,27 +495,7 @@ const PropertyDetail = () => {
         <button className="btn btn-outline-dark">Contact support</button>
       </div>
 
-      {showAllPhotos && (
-        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-xl">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">All Photos</h5>
-                <button type="button" className="btn-close" onClick={() => setShowAllPhotos(false)}></button>
-              </div>
-              <div className="modal-body">
-                <div className="row">
-                  {[property.image_url, ...Array(4).fill('https://via.placeholder.com/800x600')].map((img, index) => (
-                    <div key={index} className="col-md-6 mb-3">
-                      <img src={img} alt={`Property ${index + 1}`} className="img-fluid rounded" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };

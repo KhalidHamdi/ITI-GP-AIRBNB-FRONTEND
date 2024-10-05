@@ -1,5 +1,3 @@
-// src/components/property/PropertyListItem.jsx
-
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { openEditPropertyModal } from "../../redux/modalSlice";
@@ -7,9 +5,8 @@ import { openAddAdsModal } from "../../redux/modalSlice";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../axios";
 import Cookies from "js-cookie";
-import ConfirmationModal from "../ConfirmationModal"; // Ensure this component exists
+import ConfirmationModal from "../ConfirmationModal"; 
 
-// Custom hook for handling favorites
 const useFavorites = (propertyId) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -62,25 +59,24 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isFavorite, loading, toggleFavorite } = useFavorites(property.id);
-  const [showConfirm, setShowConfirm] = useState(false); // For Confirmation Modal
-  const [userId, setUserId] = useState(null); // Initialize userId state
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [userId, setUserId] = useState(null);
   const landlordId = property.landlord;
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Fetch userId from localStorage when component mounts
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
     if (storedUserId) {
-      setUserId(storedUserId); // Assuming userId is stored as a string, convert it to a number
+      setUserId(storedUserId);
     }
   }, []);
 
-//   console.log("landlordId: ", landlordId);
-//   console.log("userId: ", userId);
 
   const handleCardClick = () => {
-    navigate(`/properties/${property.id}/`); // Ensure this route exists
+    navigate(`/properties/${property.id}/`);
   };
 
+  
   const handleEditClick = (e) => {
     e.stopPropagation(); // Prevent triggering the card click
     dispatch(openEditPropertyModal(property));
@@ -120,21 +116,50 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
     setShowConfirm(false);
   };
 
+  const handleNextImage = (e) => {
+    e.stopPropagation();
+    if (property.images.length > 0) {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % property.images.length);
+    }
+  };
+
+  const handlePrevImage = (e) => {
+    e.stopPropagation();
+    if (property.images.length > 0) {
+      setCurrentImageIndex((prevIndex) => (prevIndex - 1 + property.images.length) % property.images.length);
+    }
+  };
+
+  const imageUrl = property.images.length > 0 ? property.images[currentImageIndex]?.image : null;
+
   return (
     <>
-      <div
-        className="card h-100 border-0 shadow-sm"
-        onClick={handleCardClick}
-        style={{ cursor: "pointer" }}
-      >
+      <div className="card h-100 border-0 shadow-sm" onClick={handleCardClick} style={{ cursor: "pointer" }}>
         <div className="position-relative">
           <img
-            src={property.image_url}
-            alt={property.title}
+            src={imageUrl || "path/to/placeholder-image.jpg"} 
+            alt={`${property.title} - Image ${currentImageIndex + 1}`}
             className="card-img-top"
             style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
           />
-          {/* Favorites Button */}
+          {property.images.length > 1 && ( 
+            <>
+              <button
+                className="btn btn-light btn-sm position-absolute top-50 start-0 translate-middle-y"
+                onClick={handlePrevImage}
+                style={{ left: "10px" }}
+              >
+                &lt;
+              </button>
+              <button
+                className="btn btn-light btn-sm position-absolute top-50 end-0 translate-middle-y"
+                onClick={handleNextImage}
+                style={{ right: "10px" }}
+              >
+                &gt;
+              </button>
+            </>
+          )}
           <button
             className="btn btn-light btn-sm position-absolute top-0 end-0 m-2 rounded-circle"
             onClick={(e) => {
@@ -143,9 +168,7 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
               toggleFavorite();
             }}
             disabled={loading}
-            aria-label={
-              isFavorite ? "Remove from favorites" : "Add to favorites"
-            }
+            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
           >
             {loading ? (
               <span
@@ -154,9 +177,7 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
                 aria-hidden="true"
               ></span>
             ) : (
-              <i
-                className={`bi ${isFavorite ? "bi-heart-fill" : "bi-heart"}`}
-              ></i>
+              <i className={`bi ${isFavorite ? "bi-heart-fill" : "bi-heart"}`}></i>
             )}
           </button>
         </div>
@@ -170,68 +191,56 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
           </p>
         </div>
 
-        {/* Footer section for Edit and Delete buttons */}
         {isLandlordPage && landlordId === userId && (
           <div className="card-footer d-flex flex-column align-items-start p-2">
-            <>
-              <button
-                className="btn btn btn-outline-secondary mb-1 rounded-pill"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleEditClick(e);
-                }}
-                aria-label="Edit Property"
-                style={{
-                  padding: "0px 12px",
-                  width: "100%",
-                  height: "25px",
-                  fontSize: "14px",
-                  transition: "all 0.3s ease",
-                  boxShadow: "0 2px 5px rgba(0, 0, 0, 0.15)",
-                }}
-              >
-                Edit
-              </button>
-
-              <button
-                className="btn btn btn-outline-danger btn-block mb-1 rounded-pill"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteClick(e);
-                }}
-                aria-label="Delete Property"
-                style={{
-                  padding: "0px 12px",
-                  width: "100%",
-                  height: "25px",
-                  fontSize: "14px",
-                  transition: "all 0.3s ease",
-                  boxShadow: "0 2px 5px rgba(0, 0, 0, 0.15)",
-                }}
-              >
-                Delete
-              </button>
-
-              <button
-                className="btn btn btn-outline-primary btn-block rounded-pill"
-                onClick={handlePromoteClick}
-                style={{
-                  padding: "0px 12px",
-                  width: "100%",
-                  height: "25px",
-                  fontSize: "14px",
-                  transition: "all 0.3s ease",
-                  boxShadow: "0 2px 5px rgba(0, 0, 0, 0.15)",
-                }}
-              >
-                Promote
-              </button>
-            </>
+            <button
+              className="btn btn-outline-secondary mb-1 rounded-pill"
+              onClick={handleEditClick}
+              aria-label="Edit Property"
+              style={{
+                padding: "0px 12px",
+                width: "100%",
+                height: "25px",
+                fontSize: "14px",
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 5px rgba(0, 0, 0, 0.15)",
+              }}
+            >
+              Edit
+            </button>
+            <button
+              className="btn btn-outline-danger btn-block mb-1 rounded-pill"
+              onClick={handleDeleteClick}
+              aria-label="Delete Property"
+              style={{
+                padding: "0px 12px",
+                width: "100%",
+                height: "25px",
+                fontSize: "14px",
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 5px rgba(0, 0, 0, 0.15)",
+              }}
+            >
+              Delete
+            </button>
+            <button
+              className="btn btn-outline-primary btn-block rounded-pill"
+              onClick={handlePromoteClick}
+              style={{
+                padding: "0px 12px",
+                width: "100%",
+                height: "25px",
+                fontSize: "14px",
+                transition: "all 0.3s ease",
+                boxShadow: "0 2px 5px rgba(0, 0, 0, 0.15)",
+              }}
+            >
+              Promote
+            </button>
           </div>
         )}
       </div>
 
-      {/* Confirmation Modal */}
       {showConfirm && (
         <ConfirmationModal
           title="Confirm Deletion"
