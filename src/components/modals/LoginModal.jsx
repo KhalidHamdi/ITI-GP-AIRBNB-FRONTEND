@@ -14,6 +14,7 @@ import PasswordResetModal from "./PasswordResetModal";
 import PasswordInput from "../forms/PasswordInput";
 import { toast } from "react-toastify"; // Import toast
 import PropTypes from "prop-types";
+import { openSignupModal } from "../../redux/modalSlice";
 
 const LoginModal = () => {
   const navigate = useNavigate();
@@ -99,6 +100,18 @@ const LoginModal = () => {
         <button type="button" className="btn btn-link" onClick={openResetModal}>
           Forgot Password?
         </button>
+        <p className="mt-3 ml-3">
+          don't have an Account ?{" "}
+          <button
+            className="btn btn-link"
+            onClick={() => {
+              dispatch(closeLoginModal());
+              dispatch(openSignupModal());
+            }}
+          >
+            sign up
+          </button>
+        </p>
       </div>
     </form>
   );

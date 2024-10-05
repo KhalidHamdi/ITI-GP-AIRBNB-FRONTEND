@@ -14,9 +14,12 @@ const Search = () => {
 
   const fetchSuggestions = async (query) => {
     try {
-      const response = await axiosInstance.get("/api/properties/search_suggestions/", {
-        params: { query },
-      });
+      const response = await axiosInstance.get(
+        "/api/properties/search_suggestions/",
+        {
+          params: { query },
+        }
+      );
       setSuggestions(response.data);
     } catch (error) {
       console.error("Error fetching suggestions:", error);
@@ -54,18 +57,21 @@ const Search = () => {
       alert("Number of guests must be at least 1.");
       return;
     }
-  
+
     try {
       let response;
       const normalizedCity = city.toLowerCase();
-  
+
       if (useRecommendation) {
-        response = await axiosInstance.get("/api/properties/search_recommendation/", {
-          params: {
-            user_data: normalizedCity,
-            query: normalizedCity,
-          },
-        });
+        response = await axiosInstance.get(
+          "/api/properties/search_recommendation/",
+          {
+            params: {
+              user_data: normalizedCity,
+              query: normalizedCity,
+            },
+          }
+        );
       } else {
         response = await axiosInstance.get("/api/properties/search/", {
           params: {
@@ -75,11 +81,11 @@ const Search = () => {
           },
         });
       }
-  
-      setProperties(response.data.data); 
+
+      setProperties(response.data.data);
       navigate("/", {
         state: {
-          properties: response.data.data, 
+          properties: response.data.data,
           city,
           guests,
         },
@@ -90,13 +96,19 @@ const Search = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="d-flex w-100 justify-content-center">
-      <div className="d-flex rounded-pill border shadow-sm p-3 w-100" style={{ maxWidth: "750px", marginBottom: "10px" }}>
-        <div className="flex-grow-1 border-end pe-3 position-relative">
+    <form
+      onSubmit={handleSubmit}
+      className="d-flex w-100 justify-content-center"
+    >
+      <div
+        className="d-flex rounded-pill border shadow-sm p-2 w-100"
+        style={{ maxWidth: "700px", marginBottom: "10px" }}
+      >
+        <div className="flex-grow-1 border-end ps-4 position-relative">
           <div className="small fw-medium">Where</div>
           <input
             type="text"
-            className="border-0 text-muted small"
+            className="border-0 text-muted small bg-transparent"
             placeholder="Search destinations"
             style={{ outline: "none", width: "100%" }}
             value={city}
@@ -105,7 +117,10 @@ const Search = () => {
             onFocus={() => setShowSuggestions(true)}
           />
           {showSuggestions && suggestions.length > 0 && (
-            <ul className="list-group position-absolute w-100" style={{ top: "100%", zIndex: 1 }}>
+            <ul
+              className="list-group position-absolute w-100"
+              style={{ top: "100%", zIndex: 1 }}
+            >
               {suggestions.map((suggestion, index) => (
                 <li
                   key={index}
@@ -120,11 +135,11 @@ const Search = () => {
           )}
         </div>
 
-        <div className="ms-3">
+        <div className="ms-3 border-end">
           <div className="small fw-medium">Guests</div>
           <input
             type="number"
-            className="border-0 text-muted small"
+            className="border-0 text-muted bg-transparent"
             placeholder="Number of guests"
             value={guests}
             onChange={handleGuestsChange}
@@ -134,7 +149,7 @@ const Search = () => {
         </div>
 
         <div className="ms-3">
-          <label className="small fw-medium">
+          <label className="small fw-medium mt-3" style={{ fontSize: "12px" }}>
             Use Recommendations
             <input
               type="checkbox"
@@ -145,7 +160,11 @@ const Search = () => {
           </label>
         </div>
 
-        <button type="submit" className="btn btn-danger rounded-circle ms-2" style={{ width: "36px", height: "36px", padding: "0" }}>
+        <button
+          type="submit"
+          className="btn btn-danger rounded-circle ms-2"
+          style={{ width: "36px", height: "36px", padding: "0" }}
+        >
           <i className="bi bi-search"></i>
         </button>
       </div>
