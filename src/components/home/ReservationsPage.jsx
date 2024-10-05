@@ -22,7 +22,6 @@ const MyReservationsPage = () => {
     fetchReservations();
   }, []);
 
-
   const deleteReservation = async (reservationId) => {
     try {
       const response = await axiosInstance.delete(`/api/property/reservations/${reservationId}/cancel/`);
@@ -47,7 +46,16 @@ const MyReservationsPage = () => {
       }
     }
   };
-  
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const handleNextImage = (property) => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % property.images.length);
+  };
+
+  const handlePrevImage = (property) => {
+    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + property.images.length) % property.images.length);
+  };
 
   return (
     <main className="container py-4">
@@ -71,12 +79,31 @@ const MyReservationsPage = () => {
               <div className="card shadow-sm border-0 rounded-lg">
                 <div className="row g-0">
                   <div className="col-md-3">
-                    <div className="overflow-hidden rounded-lg">
+                    <div className="overflow-hidden rounded-lg position-relative">
                       <img
-                        src={reservation.property.image_url}
+                        src={reservation.property.images[currentImageIndex]?.image || "path/to/placeholder-image.jpg"}
                         className="img-fluid hover-zoom"
-                        alt={reservation.property.title}
+                        alt={`${reservation.property.title} - Image ${currentImageIndex + 1}`}
+                        style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
                       />
+                      {reservation.property.images.length > 1 && (
+                        <>
+                          <button
+                            className="btn btn-light btn-sm position-absolute top-50 start-0 translate-middle-y"
+                            onClick={() => handlePrevImage(reservation.property)}
+                            style={{ left: "10px" }}
+                          >
+                            &lt;
+                          </button>
+                          <button
+                            className="btn btn-light btn-sm position-absolute top-50 end-0 translate-middle-y"
+                            onClick={() => handleNextImage(reservation.property)}
+                            style={{ right: "10px" }}
+                          >
+                            &gt;
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
 
