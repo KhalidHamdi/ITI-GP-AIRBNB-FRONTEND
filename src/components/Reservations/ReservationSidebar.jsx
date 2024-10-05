@@ -62,7 +62,7 @@ const ReservationSidebar = ({ property, userId }) => {
               navigate("/payment", {
                 state: { totalPrice, guests, reservationId },
               });
-            }, 8000);
+            }, 3000);
           } else {
             dispatch(openLoginModal());
             toast.error("You should Login first");
