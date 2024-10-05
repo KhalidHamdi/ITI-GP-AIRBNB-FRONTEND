@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from './Modal';
 import { useSelector, useDispatch } from 'react-redux';
-import { closeSignupModal } from '../../redux/modalSlice';
+import { closeSignupModal, openLoginModal } from '../../redux/modalSlice';
 import CustomButton from '../forms/CustomButton';
 import axiosInstance from '../../axios';
 import PasswordInput from '../forms/PasswordInput'; // Import the new component
@@ -123,6 +123,19 @@ const SignupModal = () => {
           ))}
         </div>
       )}
+
+<p>
+          Already have an Account ?{" "}
+          <button
+            className="btn btn-link"
+            onClick={() => {
+              dispatch(closeSignupModal());
+              dispatch(openLoginModal());
+            }}
+          >
+            Login
+          </button>
+        </p>
 
       <CustomButton label="Submit" type="submit" />
     </form>

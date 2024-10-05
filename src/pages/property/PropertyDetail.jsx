@@ -9,9 +9,10 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import ContactButton from "../../components/ContactButton";
-import "./PropertyDetail.css"; 
-import { useNavigate } from 'react-router-dom';
-
+import "./PropertyDetail.css";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { openLoginModal } from "../../redux/modalSlice";
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -28,6 +29,7 @@ const PropertyDetail = () => {
   const [userId, setUserId] = useState(null);
   const [landlordId, setLandlordId] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchPropertyData = async () => {
@@ -35,16 +37,19 @@ const PropertyDetail = () => {
         const response = await axiosInstance.get(`/api/properties/${id}/`);
         setProperty(response.data);
         setLandlordId(response.data.landlord.id);
-        
+
         const currentUserId = localStorage.getItem("userId");
         if (currentUserId) {
           setUserId(currentUserId);
         }
 
         const address = `${response.data.address}, ${response.data.city}, ${response.data.country}`;
-        const openCageResponse = await axiosInstance.get(`/api/properties/geocode/`, {
-          params: { q: address },
-        });
+        const openCageResponse = await axiosInstance.get(
+          `/api/properties/geocode/`,
+          {
+            params: { q: address },
+          }
+        );
 
         if (openCageResponse.data && openCageResponse.data.results.length > 0) {
           const coordinates = openCageResponse.data.results[0].geometry;
@@ -62,7 +67,9 @@ const PropertyDetail = () => {
 
     const fetchReviews = async () => {
       try {
-        const reviewsResponse = await axiosInstance.get(`/api/properties/${id}/reviews/`);
+        const reviewsResponse = await axiosInstance.get(
+          `/api/properties/${id}/reviews/`
+        );
         setReviews(reviewsResponse.data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
@@ -89,16 +96,16 @@ const PropertyDetail = () => {
   useEffect(() => {
     if (currentUser && reviews.length > 0) {
       const userReview = reviews.find(
-        (review) => review.user && review.user.id.toString() === currentUser.id.toString()
+        (review) =>
+          review.user && review.user.id.toString() === currentUser.id.toString()
       );
       setHasReviewed(!!userReview);
     }
   }, [currentUser, reviews]);
 
   useEffect(() => {
-    console.log(property); 
+    console.log(property);
   }, [property]);
-
 
   const handleReviewAdded = (newReview) => {
     setReviews([newReview, ...reviews]);
@@ -126,8 +133,6 @@ const PropertyDetail = () => {
   const closeModal = () => {
     setShowAllPhotos(false);
   };
-
-
 
   useEffect(() => {
     const checkFavoriteStatus = async () => {
@@ -165,7 +170,8 @@ const PropertyDetail = () => {
     );
   }
 
-  if (!property) return <div className="text-center mt-5">Property not found</div>;
+  if (!property)
+    return <div className="text-center mt-5">Property not found</div>;
 
   const amenities = [
     { icon: "wifi", name: "Wifi" },
@@ -176,7 +182,10 @@ const PropertyDetail = () => {
     { icon: "car", name: "Free parking" },
   ];
   return (
-    <div className={`container mt-4 ${darkMode ? 'dark-mode' : ''}`} style={{ maxWidth: "1100px" }}>
+    <div
+      className={`container mt-4 ${darkMode ? "dark-mode" : ""}`}
+      style={{ maxWidth: "1100px" }}
+    >
       <div className="row">
         <div className="col-12">
           <h1 className="mb-3 fw-bold" style={{ fontSize: "26px" }}>
@@ -201,51 +210,65 @@ const PropertyDetail = () => {
               <button className="btn btn-link text-dark me-2">
                 <i className="bi bi-upload me-2"></i>Share
               </button>
-              <button className="btn btn-link text-dark" onClick={toggleFavorite}>
-                <i className={`bi bi-heart${isFavorite ? "-fill" : ""}`}></i> Save
+              <button
+                className="btn btn-link text-dark"
+                onClick={toggleFavorite}
+              >
+                <i className={`bi bi-heart${isFavorite ? "-fill" : ""}`}></i>{" "}
+                Save
               </button>
             </div>
           </div>
         </div>
       </div>
 
-<div className="row mt-4">
-  <div className="col-12">
-    <div className="image-gallery">
-      {property?.images && property.images.length > 0 ? (
-        property.images.slice(0, showAllPhotos ? property.images.length : 3).map((imgObj, index) => ( 
-          <img key={index} src={imgObj.image} alt={property.title} className="gallery-image" />
-        ))
-      ) : (
-        <p>No images available</p>
-      )}
-    </div>
-    <button className="btn btn-primary mt-2" onClick={() => setShowAllPhotos(!showAllPhotos)}>
-      {showAllPhotos ? "Show Less" : "Show All Images"}
-    </button>
-  </div>
-</div>
-
-{showAllPhotos && property?.images && property.images.length > 0 && ( 
-  <div className="modal">
-    <div className="modal-content">
-      <span className="close" onClick={closeModal}>&times;</span>
-      <h2>All Images</h2>
-      <div className="full-image-gallery">
-        {property.images.map((imgObj, index) => (
-          <img
-            key={index}
-            src={imgObj.image}
-            alt={property.title}
-            className="full-image"
-          />
-        ))}
+      <div className="row mt-4">
+        <div className="col-12">
+          <div className="image-gallery">
+            {property?.images && property.images.length > 0 ? (
+              property.images
+                .slice(0, showAllPhotos ? property.images.length : 3)
+                .map((imgObj, index) => (
+                  <img
+                    key={index}
+                    src={imgObj.image}
+                    alt={property.title}
+                    className="gallery-image"
+                  />
+                ))
+            ) : (
+              <p>No images available</p>
+            )}
+          </div>
+          <button
+            className="btn btn-primary mt-2"
+            onClick={() => setShowAllPhotos(!showAllPhotos)}
+          >
+            {showAllPhotos ? "Show Less" : "Show All Images"}
+          </button>
+        </div>
       </div>
-    </div>
-  </div>
-)}
 
-
+      {showAllPhotos && property?.images && property.images.length > 0 && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={closeModal}>
+              &times;
+            </span>
+            <h2>All Images</h2>
+            <div className="full-image-gallery">
+              {property.images.map((imgObj, index) => (
+                <img
+                  key={index}
+                  src={imgObj.image}
+                  alt={property.title}
+                  className="full-image"
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="row mt-4">
         <div className="col-lg-7">
@@ -264,31 +287,42 @@ const PropertyDetail = () => {
                 {property.bedrooms > 1 ? "s" : ""} 路 {property.bathrooms}{" "}
                 bathroom{property.bathrooms > 1 ? "s" : ""}
               </p>
+              {property.is_advertised && (
+                <button type="button" class="btn btn-success disabled mt-3">
+                  Advertised
+                </button>
+              )}
             </div>
             <img
-              src={property.landlord.avatar || "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg"}
+              src={
+                property.landlord.avatar ||
+                "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg"
+              }
               alt="Host"
               className="rounded-circle"
               style={{ width: "64px", height: "64px" }}
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg";
+                e.target.src =
+                  "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg";
               }}
             />
           </div>
 
-
           <div className="py-4 border-bottom">
             <h3 className="fs-4 fw-bold mb-4">About this space</h3>
             <p style={{ whiteSpace: "pre-line" }}>{property.description}</p>
-
           </div>
 
           <div className="py-4 border-bottom">
             <h3 className="fs-4 fw-bold mb-4">Where you'll sleep</h3>
             <div className="d-flex overflow-auto">
               {[...Array(property.bedrooms)].map((_, index) => (
-                <div key={index} className="me-3 p-3 border rounded" style={{ minWidth: "200px" }}>
+                <div
+                  key={index}
+                  className="me-3 p-3 border rounded"
+                  style={{ minWidth: "200px" }}
+                >
                   <i className="bi bi-door-closed fs-4 mb-2"></i>
                   <h4 className="fs-5 mb-1">Bedroom {index + 1}</h4>
                   <p className="mb-0">1 queen bed</p>
@@ -307,10 +341,13 @@ const PropertyDetail = () => {
                 </div>
               ))}
             </div>
-
           </div>
         </div>
-        <ReservationSidebar property={property} userId={id} darkMode={darkMode} />
+        <ReservationSidebar
+          property={property}
+          userId={id}
+          darkMode={darkMode}
+        />
       </div>
 
       <div className="mt-5">
@@ -351,7 +388,7 @@ const PropertyDetail = () => {
               <span>4.0</span>
             </div>
             <div className="d-flex justify-content-between align-items-center mb-2">
-            <span>Check-in</span>
+              <span>Check-in</span>
               <div className="progress" style={{ width: "60%" }}>
                 <div className="progress-bar" style={{ width: "100%" }}></div>
               </div>
@@ -368,7 +405,6 @@ const PropertyDetail = () => {
         </div>
 
         <ReviewList reviews={reviews.slice(0, 6)} />
-
       </div>
 
       <div className="mt-5">
@@ -381,7 +417,15 @@ const PropertyDetail = () => {
           )
         ) : (
           <p>
-            Please <Link to="/login">log in</Link> to submit a review.
+            Please
+            <button
+              type="button"
+              className="btn btn btn-link"
+              onClick={() => dispatch(openLoginModal())}
+            >
+              Login
+            </button>
+            to submit a review.
           </p>
         )}
       </div>
@@ -416,23 +460,33 @@ const PropertyDetail = () => {
       <div className="mt-5 border-top pt-5">
         <div className="d-flex align-items-center mb-4">
           <img
-            src={property.landlord.avatar || "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg"}
+            src={
+              property.landlord.avatar ||
+              "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg"
+            }
             alt="Host"
             className="rounded-circle me-3"
             style={{ width: "64px", height: "64px" }}
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg";
+              e.target.src =
+                "https://user-images.githubusercontent.com/11250/39013954-f5091c3a-43e6-11e8-9cac-37cf8e8c8e4e.jpg";
             }}
           />
           <div>
-            <h3 className="fs-4 fw-bold mb-1">Hosted by {property.landlord.username}</h3>
+            <h3 className="fs-4 fw-bold mb-1">
+              Hosted by {property.landlord.username}
+            </h3>
           </div>
         </div>
         <div className="row">
           <div className="col-md-6">
-            <p><i className="bi bi-shield-check me-2"></i> Identity verified</p>
-            <p><i className="bi bi-award me-2"></i> Superhost</p>
+            <p>
+              <i className="bi bi-shield-check me-2"></i> Identity verified
+            </p>
+            <p>
+              <i className="bi bi-award me-2"></i> Superhost
+            </p>
           </div>
           <div className="col-md-6">
             <p>Response rate: 100%</p>
@@ -440,11 +494,18 @@ const PropertyDetail = () => {
           </div>
         </div>
         <p className="mt-3">
-          Hi, I'm {property.landlord.username}! I love hosting and meeting people from all over the world.
-          I'm passionate about travel, food, and creating memorable experiences for my guests.
+          Hi, I'm {property.landlord.username}! I love hosting and meeting
+          people from all over the world. I'm passionate about travel, food, and
+          creating memorable experiences for my guests.
         </p>
-        {userId !== landlordId && (
-          <ContactButton userId={userId} landlordId={landlordId} />
+        {isAuthenticated ? (
+          userId !== landlordId ? (
+            <ContactButton userId={userId} landlordId={landlordId} />
+          ) : null
+        ) : (
+          <button className="btn btn-primary" type="button" onClick={() => dispatch(openLoginModal())}>
+            Please login so you can contact the Host
+          </button>
         )}
       </div>
 
@@ -456,12 +517,23 @@ const PropertyDetail = () => {
             <ul className="list-unstyled">
               {property.house_rules &&
                 property.house_rules.map((rule, index) => (
-                  <li key={index}><i className="bi bi-check2 me-2"></i>{rule}</li>
+                  <li key={index}>
+                    <i className="bi bi-check2 me-2"></i>
+                    {rule}
+                  </li>
                 ))}
-              <li><i className="bi bi-check2 me-2"></i>Check-in: After 3:00 PM</li>
-              <li><i className="bi bi-check2 me-2"></i>Checkout: 11:00 AM</li>
-              <li><i className="bi bi-check2 me-2"></i>No smoking</li>
-              <li><i className="bi bi-check2 me-2"></i>No pets</li>
+              <li>
+                <i className="bi bi-check2 me-2"></i>Check-in: After 3:00 PM
+              </li>
+              <li>
+                <i className="bi bi-check2 me-2"></i>Checkout: 11:00 AM
+              </li>
+              <li>
+                <i className="bi bi-check2 me-2"></i>No smoking
+              </li>
+              <li>
+                <i className="bi bi-check2 me-2"></i>No pets
+              </li>
             </ul>
           </div>
           <div className="col-md-4 mb-4 mb-md-0">
@@ -469,11 +541,21 @@ const PropertyDetail = () => {
             <ul className="list-unstyled">
               {property.safety &&
                 property.safety.map((safetyItem, index) => (
-                  <li key={index}><i className="bi bi-shield-check me-2"></i>{safetyItem}</li>
+                  <li key={index}>
+                    <i className="bi bi-shield-check me-2"></i>
+                    {safetyItem}
+                  </li>
                 ))}
-              <li><i className="bi bi-shield-check me-2"></i>Carbon monoxide alarm</li>
-              <li><i className="bi bi-shield-check me-2"></i>Smoke alarm</li>
-              <li><i className="bi bi-shield-check me-2"></i>Security camera/recording device</li>
+              <li>
+                <i className="bi bi-shield-check me-2"></i>Carbon monoxide alarm
+              </li>
+              <li>
+                <i className="bi bi-shield-check me-2"></i>Smoke alarm
+              </li>
+              <li>
+                <i className="bi bi-shield-check me-2"></i>Security
+                camera/recording device
+              </li>
             </ul>
           </div>
           <div className="col-md-4">
@@ -481,32 +563,41 @@ const PropertyDetail = () => {
             <ul className="list-unstyled">
               {property.cancellation &&
                 property.cancellation.map((policyItem, index) => (
-                  <li key={index}><i className="bi bi-info-circle me-2"></i>{policyItem}</li>
+                  <li key={index}>
+                    <i className="bi bi-info-circle me-2"></i>
+                    {policyItem}
+                  </li>
                 ))}
-              <li><i className="bi bi-info-circle me-2"></i>Free cancellation for 48 hours</li>
-              <li><i className="bi bi-info-circle me-2"></i>Review the host's full cancellation policy which applies even if you cancel for illness or disruptions caused by COVID-19.</li>
+              <li>
+                <i className="bi bi-info-circle me-2"></i>Free cancellation for
+                48 hours
+              </li>
+              <li>
+                <i className="bi bi-info-circle me-2"></i>Review the host's full
+                cancellation policy which applies even if you cancel for illness
+                or disruptions caused by COVID-19.
+              </li>
             </ul>
           </div>
         </div>
       </div>
 
       <div className="mt-5 border-top pt-5">
-      <h3 className="fs-4 fw-bold mb-4">Support</h3>
-      <p>
-        If you need any assistance during your stay, please don't hesitate to contact us.
-        We're here to help ensure you have a great experience!
-      </p>
-      <div className="border p-4 rounded">
-        <button
-          className="btn btn-primary w-100" 
-          onClick={() => navigate('/contact-support')}
-        >
-          Contact Support
-        </button>
+        <h3 className="fs-4 fw-bold mb-4">Support</h3>
+        <p>
+          If you need any assistance during your stay, please don't hesitate to
+          contact us. We're here to help ensure you have a great experience!
+        </p>
+        <div className="border p-4 rounded">
+          <button
+            className="btn btn-primary w-100"
+            onClick={() => navigate("/contact-support")}
+          >
+            Contact Support
+          </button>
+        </div>
       </div>
     </div>
-    </div>
-
   );
 };
 

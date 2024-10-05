@@ -157,8 +157,8 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
               className="advertised-ribbon"
               style={{
                 position: "absolute",
-                top: "20px",
-                left: "-40px" /* Adjust this based on your card size */,
+                top: "25px",
+                left: "-30px" /* Adjust this based on your card size */,
                 backgroundColor: "green" /* Color for the ribbon */,
                 color: "white",
                 padding:
@@ -166,8 +166,8 @@ const PropertyListItem = ({ property, isLandlordPage, onDelete }) => {
                 fontSize: "12px" /* Adjust based on your preference */,
                 fontWeight: "bold",
                 transform: "rotate(-45deg)",
-                zIndex: "1",
-                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+                zIndex: "0",
+                boxShadow: "15px 0px 20px rgba(0, 0, 0, 0.9)",
               }}
             >
               Advertised
