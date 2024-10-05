@@ -56,7 +56,6 @@ const BookingPage = () => {
           `api/payments/reservation/${reservationId}/initiate-payment/`
         );
         const iframeUrl = response.data.iframe_url;
-        toast.success("Booking successful :)");
         // Step 3: Redirect to Paymob iframe
         window.location.href = iframeUrl;
       } catch (error) {
@@ -69,25 +68,6 @@ const BookingPage = () => {
       setErrors(validationErrors);
     }
   };
-
-  useEffect(() => {
-    const checkPaymentStatus = async () => {
-      try {
-        const response = await axiosInstance.get(`/api/payments/redirect/`);
-        console.log("Payment response", response);
-        if (response.data.success && response.data.redirect_url) {
-          window.location.href = response.data.redirect_url;
-        }
-      } catch (error) {
-        console.error("Error checking payment status:", error);
-      }
-    };
-
-    // Poll the payment status every few seconds
-    const intervalId = setInterval(checkPaymentStatus, 5000);
-
-    return () => clearInterval(intervalId); // Clean up the interval when the component is unmounted
-  }, []);
 
   return (
     <div className="container mt-4 mb-4">
@@ -126,9 +106,8 @@ const BookingPage = () => {
                   </label>
                   <input
                     type="text"
-                    className={`form-control ${
-                      errors.firstName ? "is-invalid" : ""
-                    }`}
+                    className={`form-control ${errors.firstName ? "is-invalid" : ""
+                      }`}
                     id="firstName"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
@@ -145,9 +124,8 @@ const BookingPage = () => {
                   </label>
                   <input
                     type="text"
-                    className={`form-control ${
-                      errors.lastName ? "is-invalid" : ""
-                    }`}
+                    className={`form-control ${errors.lastName ? "is-invalid" : ""
+                      }`}
                     id="lastName"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
@@ -164,9 +142,8 @@ const BookingPage = () => {
                   </label>
                   <input
                     type="email"
-                    className={`form-control ${
-                      errors.email ? "is-invalid" : ""
-                    }`}
+                    className={`form-control ${errors.email ? "is-invalid" : ""
+                      }`}
                     id="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -183,9 +160,8 @@ const BookingPage = () => {
                   </label>
                   <input
                     type="tel"
-                    className={`form-control ${
-                      errors.phone ? "is-invalid" : ""
-                    }`}
+                    className={`form-control ${errors.phone ? "is-invalid" : ""
+                      }`}
                     id="phone"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
