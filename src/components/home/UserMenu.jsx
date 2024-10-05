@@ -1,5 +1,3 @@
-// src/components/UserMenu.js
-
 import React from 'react';
 import { Menu } from 'lucide-react';
 import AvatarComponent from './Avatar';
@@ -19,7 +17,6 @@ const UserMenu = ({ airbnbYourHome }) => {
 
   const handleLogout = async () => {
     try {
-      // Dispatch the logout thunk to clear auth state
       await dispatch(performLogout()).unwrap();
 
       toast.success("See you soon :)!", {
@@ -89,7 +86,9 @@ const UserMenu = ({ airbnbYourHome }) => {
               <button className="dropdown-item">Host an experience</button>
             </li>
             <li>
-              <button className="dropdown-item">Help Center</button>
+              <button className="dropdown-item" onClick={() => navigate('/contact-support')}>
+                Contact Support
+              </button>
             </li>
             <li>
               <hr className="dropdown-divider" />
@@ -114,6 +113,11 @@ const UserMenu = ({ airbnbYourHome }) => {
             </li>
             <li>
               <button className="dropdown-item">Help Center</button>
+            </li>
+            <li>
+              <button className="dropdown-item" onClick={() => navigate('/contact-support')}>
+                Contact Support
+              </button>
             </li>
           </>
         )}

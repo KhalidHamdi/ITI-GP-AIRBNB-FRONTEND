@@ -25,6 +25,7 @@ import PropertyContainer from "./pages/category/CategoryPage";
 import UserProfile from "./components/userprofile/UserProfile";
 import MyFavoritesPage from "./components/home/MyFavoritesPage";
 import AddAdsModal from "./components/modals/AddAdsModal";
+import ContactSupport from "./components/ContactSupport"; 
 
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { lightTheme, darkTheme } from "./theme"; 
@@ -83,6 +84,7 @@ function App() {
           <Route path="/landlord/:id" element={<LandlordDetailPage />} />
           <Route path="/payment" element={<BookingPage />} />
           <Route path="/my-favorites" element={<MyFavoritesPage />} />
+          <Route path="/contact-support" element={<ContactSupport />} /> 
         </Routes>
         <Footer darkMode={darkMode} />
       </div>

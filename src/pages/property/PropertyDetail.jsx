@@ -10,6 +10,8 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import ContactButton from "../../components/ContactButton";
 import "./PropertyDetail.css"; 
+import { useNavigate } from 'react-router-dom';
+
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -25,6 +27,7 @@ const PropertyDetail = () => {
   const [showAllPhotos, setShowAllPhotos] = useState(false);
   const [userId, setUserId] = useState(null);
   const [landlordId, setLandlordId] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPropertyData = async () => {
@@ -95,6 +98,7 @@ const PropertyDetail = () => {
   useEffect(() => {
     console.log(property); 
   }, [property]);
+
 
   const handleReviewAdded = (newReview) => {
     setReviews([newReview, ...reviews]);
@@ -487,16 +491,22 @@ const PropertyDetail = () => {
       </div>
 
       <div className="mt-5 border-top pt-5">
-        <h3 className="fs-4 fw-bold mb-4">Support</h3>
-        <p>
-          If you need any assistance during your stay, please don't hesitate to contact us.
-          We're here to help ensure you have a great experience!
-        </p>
-        <button className="btn btn-outline-dark">Contact support</button>
+      <h3 className="fs-4 fw-bold mb-4">Support</h3>
+      <p>
+        If you need any assistance during your stay, please don't hesitate to contact us.
+        We're here to help ensure you have a great experience!
+      </p>
+      <div className="border p-4 rounded">
+        <button
+          className="btn btn-primary w-100" 
+          onClick={() => navigate('/contact-support')}
+        >
+          Contact Support
+        </button>
       </div>
-
-
     </div>
+    </div>
+
   );
 };
 
