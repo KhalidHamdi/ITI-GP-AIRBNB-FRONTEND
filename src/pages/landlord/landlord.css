@@ -78,3 +78,8 @@ button {
   outline: none;
   box-shadow: 0 0 6px #ff4d4d;
 }
+
+.timestamp {
+  font-size: 0.8rem;
+  color: #888;
+}

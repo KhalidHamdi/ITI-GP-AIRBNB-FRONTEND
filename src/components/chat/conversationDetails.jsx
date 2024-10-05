@@ -47,10 +47,16 @@ function ConversationDetail() {
         ...message,
         isSender: message.created_by.username === userName,
         name: message.created_by.username || "unknown",
+        time: new Date(message.created_at).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        timestamp: new Date(message.created_at).getTime(),
       }));
-      setMessages((prevMessages) =>
-        page === 1 ? updatedMessages : [...updatedMessages, ...prevMessages]
+      const sortedMessages = [...updatedMessages, ...messages].sort(
+        (a, b) => a.timestamp - b.timestamp
       );
+      setMessages(sortedMessages);
       setCurrentPage(page);
     } catch (error) {
       console.error("Error fetching conversation:", error);
@@ -91,17 +97,23 @@ function ConversationDetail() {
     onMessage: (event) => {
       try {
         const newMessageData = JSON.parse(event.data);
-
         // Handle regular message
         if (newMessageData.type === "message") {
           const newMessage = {
             body: newMessageData.body,
             name: newMessageData.name,
             isSender: newMessageData.name === userName,
+            time: new Date(newMessageData.created_at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            timestamp: new Date(newMessageData.created_at).getTime(),
           };
-
-          // Update the message list
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
+          setMessages((prevMessages) => {
+            const updatedMessages = [...prevMessages, newMessage];
+            return updatedMessages.sort((a, b) => a.timestamp - b.timestamp); // Sort messages by timestamp
+          });
+          const formattedTime = new Date(newMessage.time).toLocaleTimeString();
 
           // Play the notification sound if it's a new message from someone else
           if (newMessageData.name !== userName) {
@@ -141,6 +153,7 @@ function ConversationDetail() {
 
     if (sentToId) {
       if (readyState === ReadyState.OPEN) {
+        const now = new Date();
         const messageData = {
           event: "chat_message",
           data: {
@@ -205,8 +218,11 @@ function ConversationDetail() {
               key={index}
               className={message.isSender ? "sender" : "receiver"}
             >
-              <h4>{message.name}</h4>
+              <h5>{message.name}</h5>
               <p>{message.body}</p>
+              <div className="message-content">
+                <span className="message-time">{message.time}</span>
+              </div>
             </div>
           ))}
         </div>
