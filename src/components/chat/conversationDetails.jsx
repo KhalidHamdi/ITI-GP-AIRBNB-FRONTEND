@@ -51,10 +51,12 @@ function ConversationDetail() {
           hour: "2-digit",
           minute: "2-digit",
         }),
+        timestamp: new Date(message.created_at).getTime(),
       }));
-      setMessages((prevMessages) =>
-        page === 1 ? updatedMessages : [...updatedMessages, ...prevMessages]
+      const sortedMessages = [...updatedMessages, ...messages].sort(
+        (a, b) => a.timestamp - b.timestamp
       );
+      setMessages(sortedMessages);
       setCurrentPage(page);
     } catch (error) {
       console.error("Error fetching conversation:", error);
@@ -105,10 +107,13 @@ function ConversationDetail() {
               hour: "2-digit",
               minute: "2-digit",
             }),
+            timestamp: new Date(newMessageData.created_at).getTime(),
           };
+          setMessages((prevMessages) => {
+            const updatedMessages = [...prevMessages, newMessage];
+            return updatedMessages.sort((a, b) => a.timestamp - b.timestamp); // Sort messages by timestamp
+          });
           const formattedTime = new Date(newMessage.time).toLocaleTimeString();
-          // Update the message list
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
 
           // Play the notification sound if it's a new message from someone else
           if (newMessageData.name !== userName) {
