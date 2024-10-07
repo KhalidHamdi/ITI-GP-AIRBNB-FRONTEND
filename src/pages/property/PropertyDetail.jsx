@@ -103,10 +103,6 @@ const PropertyDetail = () => {
     }
   }, [currentUser, reviews]);
 
-  useEffect(() => {
-    console.log(property);
-  }, [property]);
-
   const handleReviewAdded = (newReview) => {
     setReviews([newReview, ...reviews]);
     setHasReviewed(true);
@@ -181,6 +177,25 @@ const PropertyDetail = () => {
     { icon: "utensils", name: "Kitchen" },
     { icon: "car", name: "Free parking" },
   ];
+
+  const calculateAverageRating = (reviews) => {
+    if (reviews.length === 0) return "No ratings yet";
+    const sum = reviews.reduce((acc, review) => {
+      const rating = parseFloat(review.rating);
+      return isNaN(rating) ? acc : acc + rating;
+    }, 0);
+    return (sum / reviews.length).toFixed(1);
+  };
+
+  const calculateCategoryAverage = (reviews, category) => {
+    if (reviews.length === 0) return "N/A";
+    const validReviews = reviews.filter(review => !isNaN(parseFloat(review[category])));
+    if (validReviews.length === 0) return "N/A";
+    const sum = validReviews.reduce((acc, review) => acc + parseFloat(review[category]), 0);
+    return (sum / validReviews.length).toFixed(1);
+  };
+
+  const averageRating = calculateAverageRating(reviews);
   return (
     <div
       className={`container mt-4 ${darkMode ? "dark-mode" : ""}`}
@@ -195,7 +210,7 @@ const PropertyDetail = () => {
             <div>
               <span className="me-2">
                 <i className="bi bi-star-fill" style={{ color: "#FF385C" }}></i>{" "}
-                {property.average_rating || "No rating"}
+                {averageRating || "No rating"}
               </span>
               <span className="me-2">路</span>
               <span className="text-decoration-underline me-2 fw-semibold">
@@ -350,57 +365,44 @@ const PropertyDetail = () => {
         />
       </div>
 
+
       <div className="mt-5">
         <h3 className="fs-4 fw-bold mb-4">
           <i className="bi bi-star-fill me-2" style={{ color: "#FF385C" }}></i>
-          {property.average_rating || "No rating"} 路 {reviews.length} reviews
+          {averageRating} · {reviews.length} review{reviews.length !== 1 ? 's' : ''}
         </h3>
         <div className="row mb-4">
           <div className="col-md-6">
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <span>Cleanliness</span>
-              <div className="progress" style={{ width: "60%" }}>
-                <div className="progress-bar" style={{ width: "90%" }}></div>
+            {['cleanliness', 'accuracy', 'communication'].map((category) => (
+              <div key={category} className="d-flex justify-content-between align-items-center mb-2">
+                <span className="text-capitalize">{category}</span>
+                <div className="progress" style={{ width: "60%" }}>
+                  <div
+                    className="progress-bar"
+                    style={{
+                      width: `${(parseFloat(calculateCategoryAverage(reviews, category)) / 5) * 100}%`,
+                    }}
+                  ></div>
+                </div>
+                <span>{calculateCategoryAverage(reviews, category)}</span>
               </div>
-              <span>4.5</span>
-            </div>
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <span>Accuracy</span>
-              <div className="progress" style={{ width: "60%" }}>
-                <div className="progress-bar" style={{ width: "85%" }}></div>
-              </div>
-              <span>4.3</span>
-            </div>
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <span>Communication</span>
-              <div className="progress" style={{ width: "60%" }}>
-                <div className="progress-bar" style={{ width: "95%" }}></div>
-              </div>
-              <span>4.8</span>
-            </div>
+            ))}
           </div>
           <div className="col-md-6">
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <span>Location</span>
-              <div className="progress" style={{ width: "60%" }}>
-                <div className="progress-bar" style={{ width: "80%" }}></div>
+            {['location', 'check_in', 'value'].map((category) => (
+              <div key={category} className="d-flex justify-content-between align-items-center mb-2">
+                <span className="text-capitalize">{category.replace('_', '-')}</span>
+                <div className="progress" style={{ width: "60%" }}>
+                  <div
+                    className="progress-bar"
+                    style={{
+                      width: `${(parseFloat(calculateCategoryAverage(reviews, category)) / 5) * 100}%`,
+                    }}
+                  ></div>
+                </div>
+                <span>{calculateCategoryAverage(reviews, category)}</span>
               </div>
-              <span>4.0</span>
-            </div>
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <span>Check-in</span>
-              <div className="progress" style={{ width: "60%" }}>
-                <div className="progress-bar" style={{ width: "100%" }}></div>
-              </div>
-              <span>5.0</span>
-            </div>
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <span>Value</span>
-              <div className="progress" style={{ width: "60%" }}>
-                <div className="progress-bar" style={{ width: "90%" }}></div>
-              </div>
-              <span>4.5</span>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -417,14 +419,14 @@ const PropertyDetail = () => {
           )
         ) : (
           <p>
-            Please
+            Please{" "}
             <button
               type="button"
-              className="btn btn btn-link"
+              className="btn btn-link"
               onClick={() => dispatch(openLoginModal())}
             >
               Login
-            </button>
+            </button>{" "}
             to submit a review.
           </p>
         )}

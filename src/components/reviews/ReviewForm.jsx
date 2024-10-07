@@ -1,12 +1,27 @@
-// src/components/reviews/ReviewForm.js
-
 import React, { useState } from "react";
 import axiosInstance from "../../axios";
 import Cookies from 'js-cookie';
 
 const ReviewForm = ({ propertyId, onReviewAdded }) => {
-  const [newReview, setNewReview] = useState({ rating: "", comment: "" });
+  const [newReview, setNewReview] = useState({
+    cleanliness: "",
+    accuracy: "",
+    communication: "",
+    location: "",
+    check_in: "",
+    value: "",
+    comment: ""
+  });
   const [error, setError] = useState("");
+
+  const ratingCategories = [
+    'cleanliness',
+    'accuracy',
+    'communication',
+    'location',
+    'check_in',
+    'value'
+  ];
 
   const submitReview = async (event) => {
     event.preventDefault();
@@ -19,22 +34,40 @@ const ReviewForm = ({ propertyId, onReviewAdded }) => {
         return;
       }
 
-      const { rating, comment } = newReview;
-      const parsedRating = parseInt(rating);
+      const reviewData = { ...newReview };
+      let isValid = true;
 
-      if (parsedRating < 1 || parsedRating > 5) {
-        throw new Error("Rating must be between 1 and 5");
-      }
+      ratingCategories.forEach(category => {
+        const rating = parseInt(reviewData[category], 10); 
+        if (isNaN(rating) || rating < 1 || rating > 5) {
+          isValid = false;
+          setError(`${category.charAt(0).toUpperCase() + category.slice(1)} rating must be between 1 and 5`);
+        }
+        reviewData[category] = rating;
+      });
+
+      if (!isValid) return;
+
+      const overallRating = ratingCategories.reduce((sum, category) => sum + reviewData[category], 0) / ratingCategories.length;
+      reviewData.rating = parseFloat(overallRating.toFixed(1));
 
       const response = await axiosInstance.post(
         `/api/properties/${propertyId}/reviews/create/`,
-        { comment, rating: parsedRating },
+        reviewData,
         { headers: { 'Authorization': `Bearer ${authToken}` } }
       );
 
       if (response.status === 201 || response.status === 200) {
         onReviewAdded(response.data);
-        setNewReview({ rating: "", comment: "" });
+        setNewReview({
+          cleanliness: "",
+          accuracy: "",
+          communication: "",
+          location: "",
+          check_in: "",
+          value: "",
+          comment: ""
+        });
       }
 
     } catch (error) {
@@ -52,23 +85,26 @@ const ReviewForm = ({ propertyId, onReviewAdded }) => {
     <form onSubmit={submitReview} className="mb-4">
       <h4>Add a Review</h4>
       {error && <div className="alert alert-danger">{error}</div>}
-      <div className="mb-3">
-        <label htmlFor="rating" className="form-label">
-          Rating
-        </label>
-        <input
-          type="number"
-          id="rating"
-          min="1"
-          max="5"
-          value={newReview.rating}
-          onChange={(e) =>
-            setNewReview({ ...newReview, rating: e.target.value })
-          }
-          className="form-control"
-          required
-        />
-      </div>
+      {ratingCategories.map(category => (
+        <div key={category} className="mb-3">
+          <label htmlFor={category} className="form-label">
+            {category.charAt(0).toUpperCase() + category.slice(1).replace('_', ' ')}
+          </label>
+          <input
+            type="number"
+            id={category}
+            min="1"
+            max="5"
+            step="1" 
+            value={newReview[category]}
+            onChange={(e) =>
+              setNewReview({ ...newReview, [category]: e.target.value })
+            }
+            className="form-control"
+            required
+          />
+        </div>
+      ))}
       <div className="mb-3">
         <label htmlFor="comment" className="form-label">
           Comment
