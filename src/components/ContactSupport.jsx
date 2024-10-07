@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Form, Container, Row, Col, Alert } from 'react-bootstrap';
+import axiosInstance from '../axios'; 
 
 const ContactSupport = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ const ContactSupport = () => {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,10 +20,21 @@ const ContactSupport = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
+    try {
+      const response = await axiosInstance.post('/api/contact-support/', formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      console.log('Form submitted:', response.data);
+      setSubmitted(true);
+      setError('');  
+    } catch (err) {
+      console.error('Error submitting the form:', err);
+      setError('Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -36,6 +49,7 @@ const ContactSupport = () => {
               </Alert>
             ) : (
               <Form onSubmit={handleSubmit}>
+                {error && <Alert variant="danger">{error}</Alert>}
                 <Form.Group className="mb-3">
                   <Form.Label>Name</Form.Label>
                   <Form.Control
