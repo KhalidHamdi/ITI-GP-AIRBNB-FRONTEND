@@ -362,14 +362,14 @@ const PropertyDetail = () => {
           darkMode={darkMode}
         />
       </div>
+
+      
       <div className="mt-5">
-  {/* Overall rating */}
   <h3 className="fs-4 fw-bold mb-4">
     <i className="bi bi-star-fill me-2" style={{ color: "#FF385C" }}></i>
     {averageRating} · {reviews.length} review{reviews.length !== 1 ? 's' : ''}
   </h3>
 
-  {/* Category ratings with icons */}
   <div className="row mb-4">
     <div className="col-md-6">
       {[
@@ -424,11 +424,12 @@ const PropertyDetail = () => {
     </div>
   </div>
 
+  <div className="mt-4 border-top pt-3">
   {/* Review List */}
   <ReviewList reviews={reviews.slice(0, 6)} />
 </div>
-
-<div className="mt-5">
+</div>
+<div className="mt-5 border-top pt-5">
   <h3 className="fs-4 fw-bold mb-4">Add a review</h3>
   {isAuthenticated ? (
     hasReviewed ? (
@@ -451,8 +452,8 @@ const PropertyDetail = () => {
   )}
 </div>
 
-
-      <div className="mt-5">
+<div className="mt-4 border-top pt-3">
+      <div className="mt-3">
         <h3 className="fs-4 fw-bold mb-4">Where you'll be</h3>
         <p>
           {property.address}, {property.city}, {property.country}
@@ -477,6 +478,7 @@ const PropertyDetail = () => {
         ) : (
           <p>Loading map...</p>
         )}
+      </div>
       </div>
 
       <div className="mt-5 border-top pt-5">
