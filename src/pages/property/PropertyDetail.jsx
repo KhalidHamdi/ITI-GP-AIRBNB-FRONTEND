@@ -212,11 +212,9 @@ const PropertyDetail = () => {
                 <i className="bi bi-star-fill" style={{ color: "#FF385C" }}></i>{" "}
                 {averageRating || "No rating"}
               </span>
-              <span className="me-2">路</span>
               <span className="text-decoration-underline me-2 fw-semibold">
                 {property.reviews_count || "No reviews"}
               </span>
-              <span className="me-2">路</span>
               <span className="text-decoration-underline fw-semibold">
                 {property.city}, {property.country}
               </span>
@@ -298,8 +296,8 @@ const PropertyDetail = () => {
                 </h3>
               </Link>
               <p className="mb-0 text-muted">
-                {property.guests} guests 路 {property.bedrooms} bedroom
-                {property.bedrooms > 1 ? "s" : ""} 路 {property.bathrooms}{" "}
+                {property.guests} guests  {property.bedrooms} bedroom
+                {property.bedrooms > 1 ? "s" : ""}  {property.bathrooms}{" "}
                 bathroom{property.bathrooms > 1 ? "s" : ""}
               </p>
               {property.is_advertised && (
@@ -364,73 +362,95 @@ const PropertyDetail = () => {
           darkMode={darkMode}
         />
       </div>
-
-
       <div className="mt-5">
-        <h3 className="fs-4 fw-bold mb-4">
-          <i className="bi bi-star-fill me-2" style={{ color: "#FF385C" }}></i>
-          {averageRating} · {reviews.length} review{reviews.length !== 1 ? 's' : ''}
-        </h3>
-        <div className="row mb-4">
-          <div className="col-md-6">
-            {['cleanliness', 'accuracy', 'communication'].map((category) => (
-              <div key={category} className="d-flex justify-content-between align-items-center mb-2">
-                <span className="text-capitalize">{category}</span>
-                <div className="progress" style={{ width: "60%" }}>
-                  <div
-                    className="progress-bar"
-                    style={{
-                      width: `${(parseFloat(calculateCategoryAverage(reviews, category)) / 5) * 100}%`,
-                    }}
-                  ></div>
-                </div>
-                <span>{calculateCategoryAverage(reviews, category)}</span>
-              </div>
-            ))}
+  {/* Overall rating */}
+  <h3 className="fs-4 fw-bold mb-4">
+    <i className="bi bi-star-fill me-2" style={{ color: "#FF385C" }}></i>
+    {averageRating} · {reviews.length} review{reviews.length !== 1 ? 's' : ''}
+  </h3>
+
+  {/* Category ratings with icons */}
+  <div className="row mb-4">
+    <div className="col-md-6">
+      {[
+        { category: 'cleanliness', icon: 'bi bi-brush' },
+        { category: 'accuracy', icon: 'bi bi-check-circle' },
+        { category: 'communication', icon: 'bi bi-chat' }
+      ].map(({ category, icon }) => (
+        <div key={category} className="d-flex justify-content-between align-items-center mb-2">
+          <div className="d-flex align-items-center">
+            <i className={`${icon} me-2`} style={{ fontSize: '1.5rem' }}></i>
+            <span className="text-capitalize">{category}</span>
           </div>
-          <div className="col-md-6">
-            {['location', 'check_in', 'value'].map((category) => (
-              <div key={category} className="d-flex justify-content-between align-items-center mb-2">
-                <span className="text-capitalize">{category.replace('_', '-')}</span>
-                <div className="progress" style={{ width: "60%" }}>
-                  <div
-                    className="progress-bar"
-                    style={{
-                      width: `${(parseFloat(calculateCategoryAverage(reviews, category)) / 5) * 100}%`,
-                    }}
-                  ></div>
-                </div>
-                <span>{calculateCategoryAverage(reviews, category)}</span>
-              </div>
-            ))}
+          <div className="d-flex align-items-center" style={{ width: "60%" }}>
+            <div className="progress w-100 me-2">
+              <div
+                className="progress-bar bg-dark"
+                style={{
+                  width: `${(parseFloat(calculateCategoryAverage(reviews, category)) / 5) * 100}%`,
+                }}
+              ></div>
+            </div>
+            <span>{calculateCategoryAverage(reviews, category)}</span>
           </div>
         </div>
+      ))}
+    </div>
 
-        <ReviewList reviews={reviews.slice(0, 6)} />
-      </div>
+    <div className="col-md-6">
+      {[
+        { category: 'location', icon: 'bi bi-geo-alt' },
+        { category: 'check_in', icon: 'bi bi-key' },
+        { category: 'value', icon: 'bi bi-tag' }
+      ].map(({ category, icon }) => (
+        <div key={category} className="d-flex justify-content-between align-items-center mb-2">
+          <div className="d-flex align-items-center">
+            <i className={`${icon} me-2`} style={{ fontSize: '1.5rem' }}></i>
+            <span className="text-capitalize">{category.replace('_', '-')}</span>
+          </div>
+          <div className="d-flex align-items-center" style={{ width: "60%" }}>
+            <div className="progress w-100 me-2">
+              <div
+                className="progress-bar bg-dark"
+                style={{
+                  width: `${(parseFloat(calculateCategoryAverage(reviews, category)) / 5) * 100}%`,
+                }}
+              ></div>
+            </div>
+            <span>{calculateCategoryAverage(reviews, category)}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
 
-      <div className="mt-5">
-        <h3 className="fs-4 fw-bold mb-4">Add a review</h3>
-        {isAuthenticated ? (
-          hasReviewed ? (
-            <p>Thank you for your review!</p>
-          ) : (
-            <ReviewForm propertyId={id} onReviewAdded={handleReviewAdded} />
-          )
-        ) : (
-          <p>
-            Please{" "}
-            <button
-              type="button"
-              className="btn btn-link"
-              onClick={() => dispatch(openLoginModal())}
-            >
-              Login
-            </button>{" "}
-            to submit a review.
-          </p>
-        )}
-      </div>
+  {/* Review List */}
+  <ReviewList reviews={reviews.slice(0, 6)} />
+</div>
+
+<div className="mt-5">
+  <h3 className="fs-4 fw-bold mb-4">Add a review</h3>
+  {isAuthenticated ? (
+    hasReviewed ? (
+      <p>Thank you for your review!</p>
+    ) : (
+      <ReviewForm propertyId={id} onReviewAdded={handleReviewAdded} />
+    )
+  ) : (
+    <p>
+      Please{" "}
+      <button
+        type="button"
+        className="btn btn-link"
+        onClick={() => dispatch(openLoginModal())}
+      >
+        Login
+      </button>{" "}
+      to submit a review.
+    </p>
+  )}
+</div>
+
 
       <div className="mt-5">
         <h3 className="fs-4 fw-bold mb-4">Where you'll be</h3>
