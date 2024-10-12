@@ -40,8 +40,8 @@ function ConversationDetail({ conversationId, landlordId }) {
         const response = await axiosInstance.get(`api/chat/${conversationId}`);
         const updatedMessages = response.data.messages.map((message) => ({
           ...message,
-          isSender: message.created_by.username === userName,
-          name: message.created_by.username || "unknown",
+          isSender: message.created_by?.username === userName,
+          name: message.created_by?.username || "unknown",
           time: new Date(message.created_at).toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
