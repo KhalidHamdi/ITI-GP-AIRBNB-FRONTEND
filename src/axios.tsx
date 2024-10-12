@@ -2,7 +2,8 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8000/",
+  // baseURL: "http://localhost:8000/",
+  baseURL: "worker-production-09be.up.railway.app",
   headers: {
     "Content-Type": "multipart/form-data",
   },
