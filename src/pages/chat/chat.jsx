@@ -10,7 +10,7 @@ function Chat() {
     const fetchConversations = async () => {
       try {
         const response = await axiosInstance.get("api/chat");
-        // console.log("API Response Data:", response.data);
+        console.log("API Response Data:", response.data);
         setConversations(response.data);
       } catch (error) {
         console.error("Error fetching conversations:", error);
