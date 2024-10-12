@@ -2,7 +2,7 @@ import "./chat.css";
 import { Link } from "react-router-dom";
 
 const Conversation = ({ conversation, currentUserId }) => {
-  console.log("conversation", conversation);
+  // console.log("conversation", conversation);
 
   // Check if the current user is part of the conversation
   const isCurrentUserPartOfConversation = conversation.users.some(

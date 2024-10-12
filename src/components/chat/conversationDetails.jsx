@@ -27,7 +27,7 @@ function ConversationDetail() {
     if (conversationId) {
       const wsUrl = `wss://worker-production-09be.up.railway.app/ws/${conversationId}/`;
       setSocketUrl(wsUrl);
-      console.log(wsUrl);
+      // console.log(wsUrl);
 
       // Initialize the WebSocket connection
       const newSocket = new WebSocket(wsUrl);
@@ -40,7 +40,7 @@ function ConversationDetail() {
 
       newSocket.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log("Message from WebSocket:", data);
+        // console.log("Message from WebSocket:", data);
       };
 
       newSocket.onerror = (error) => {

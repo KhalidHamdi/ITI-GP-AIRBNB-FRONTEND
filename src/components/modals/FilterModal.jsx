@@ -33,7 +33,7 @@ const FilterModal = () => {
         },
       });
 
-      console.log("Filtered properties:", response.data.results);
+      // console.log("Filtered properties:", response.data.results);
 
       // Close the filter modal
       dispatch(closeFilterModal());

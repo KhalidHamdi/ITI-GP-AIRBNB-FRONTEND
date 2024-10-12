@@ -20,9 +20,37 @@ function ConversationDetail({ conversationId, landlordId }) {
 
   useEffect(() => {
     if (conversationId) {
-      // const wsUrl = `wss://itnb.up.railway.app/ws/${conversationId}/`;
-      const wsUrl = `ws://localhost:8000/ws/${conversationId}/`;
+      const wsUrl = `wss://worker-production-09be.up.railway.app/ws/${conversationId}/`;
       setSocketUrl(wsUrl);
+      // console.log(wsUrl);
+
+      // Initialize the WebSocket connection
+      const newSocket = new WebSocket(wsUrl);
+      setSocket(newSocket);
+
+      // Handle WebSocket events
+      newSocket.onopen = () => {
+        console.log("WebSocket connected");
+      };
+
+      newSocket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        // console.log("Message from WebSocket:", data);
+      };
+
+      newSocket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+
+      newSocket.onclose = (event) => {
+        console.log("WebSocket closed:", event);
+      };
+
+      // Cleanup when the component unmounts or conversationId changes
+      return () => {
+        newSocket.close();
+        console.log("WebSocket connection closed");
+      };
     }
   }, [conversationId]);
 

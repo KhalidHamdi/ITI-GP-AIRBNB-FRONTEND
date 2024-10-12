@@ -1,30 +1,30 @@
-import React from 'react';
-import { Menu } from 'lucide-react';
-import AvatarComponent from './Avatar';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { openLoginModal, openSignupModal } from '../../redux/modalSlice';
-import { performLogout } from '../../redux/authSlice';
-import { toast } from 'react-toastify';
-import PropTypes from 'prop-types';
+import React from "react";
+import { Menu } from "lucide-react";
+import AvatarComponent from "./Avatar";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { openLoginModal, openSignupModal } from "../../redux/modalSlice";
+import { performLogout } from "../../redux/authSlice";
+import { toast } from "react-toastify";
+import PropTypes from "prop-types";
 
 const UserMenu = ({ airbnbYourHome }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const user = useSelector((state) => state.auth.user);
-  console.log("USER from MENU ..................", user);
+  // console.log("USER from MENU ..................", user);
 
   const handleLogout = async () => {
     try {
       await dispatch(performLogout()).unwrap();
 
       toast.success("See you soon :)!", {
-        onClose: () => navigate('/'),
+        onClose: () => navigate("/"),
       });
     } catch (error) {
-      console.error('Logout Error:', error.response?.data || error.message);
-      toast.error('An error occurred while logging out. Please try again.');
+      console.error("Logout Error:", error.response?.data || error.message);
+      toast.error("An error occurred while logging out. Please try again.");
     }
   };
 
@@ -38,11 +38,12 @@ const UserMenu = ({ airbnbYourHome }) => {
         aria-expanded="false"
       >
         <Menu />
-        {isLoggedIn && (
-          <AvatarComponent avatarUrl={user?.avatar} />
-        )}
+        {isLoggedIn && <AvatarComponent avatarUrl={user?.avatar} />}
       </button>
-      <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuDropdown">
+      <ul
+        className="dropdown-menu dropdown-menu-end"
+        aria-labelledby="userMenuDropdown"
+      >
         {isLoggedIn ? (
           <>
             <li>
@@ -86,7 +87,10 @@ const UserMenu = ({ airbnbYourHome }) => {
               <button className="dropdown-item">Host an experience</button>
             </li>
             <li>
-              <button className="dropdown-item" onClick={() => navigate('/contact-support')}>
+              <button
+                className="dropdown-item"
+                onClick={() => navigate("/contact-support")}
+              >
                 Contact Support
               </button>
             </li>
@@ -102,12 +106,18 @@ const UserMenu = ({ airbnbYourHome }) => {
         ) : (
           <>
             <li>
-              <button className="dropdown-item" onClick={() => dispatch(openLoginModal())}>
+              <button
+                className="dropdown-item"
+                onClick={() => dispatch(openLoginModal())}
+              >
                 Login
               </button>
             </li>
             <li>
-              <button className="dropdown-item" onClick={() => dispatch(openSignupModal())}>
+              <button
+                className="dropdown-item"
+                onClick={() => dispatch(openSignupModal())}
+              >
                 Sign up
               </button>
             </li>
@@ -115,7 +125,10 @@ const UserMenu = ({ airbnbYourHome }) => {
               <button className="dropdown-item">Help Center</button>
             </li>
             <li>
-              <button className="dropdown-item" onClick={() => navigate('/contact-support')}>
+              <button
+                className="dropdown-item"
+                onClick={() => navigate("/contact-support")}
+              >
                 Contact Support
               </button>
             </li>
