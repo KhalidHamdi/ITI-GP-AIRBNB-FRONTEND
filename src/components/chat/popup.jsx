@@ -11,6 +11,7 @@ function ConversationDetail({ conversationId, landlordId }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [socketUrl, setSocketUrl] = useState(null);
+  const [socket, setSocket] = useState(null);
   const [userName, setUserName] = useState("Anonymous");
   const [users, setUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
