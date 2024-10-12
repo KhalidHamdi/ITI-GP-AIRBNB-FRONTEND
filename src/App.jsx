@@ -6,6 +6,9 @@ import Home from "./pages/home/Home";
 import { ToastContainer } from "react-toastify"; 
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
+
+// ---------------------------------- ----------- -------------------------------------//
+// ---------------------------------- components -------------------------------------//
 import CategoryPage from "./pages/category/CategoryPage";
 import PropertyDetail from "./pages/property/PropertyDetail";
 import Header from "./components/home/Header";

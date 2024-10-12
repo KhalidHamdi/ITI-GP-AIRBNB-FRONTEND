@@ -8,7 +8,7 @@ const PropertyList = ({
   selectedCategory,
   filteredProperties,
   updateSelectedCategory,
-  isLandlordPage = false, 
+  isLandlordPage = false,
 }) => {
   const [properties, setProperties] = useState([]);
   const [error, setError] = useState(null);
@@ -26,17 +26,19 @@ const PropertyList = ({
     }
 
     try {
-      if (filteredProperties || location.state?.properties) {
-        setProperties(filteredProperties || location.state.properties);
-        setTotalPages(1); 
+      const newProperties = filteredProperties || location.state?.properties;
+
+      if (Array.isArray(newProperties)) {
+        setProperties(newProperties);
+        setTotalPages(1);
       } else {
         const response = await axiosInstance.get(
           selectedCategory
             ? `/api/properties/?category=${selectedCategory}&page=${page}`
             : url
         );
-        setProperties(response.data.results);
-        setTotalPages(Math.ceil(response.data.count / 12)); 
+        setProperties(response.data.results || []);
+        setTotalPages(Math.ceil(response.data.count / 12));
       }
     } catch (error) {
       console.error("Fetch Properties Error:", error);
@@ -89,7 +91,7 @@ const PropertyList = ({
       ) : (
         <>
           <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-            {properties.length > 0 &&
+            {Array.isArray(properties) && properties.length > 0 &&
               properties.map((property) => (
                 <div key={property.id} className="col">
                   <PropertyListItem
