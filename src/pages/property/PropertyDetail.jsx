@@ -13,6 +13,7 @@ import "./PropertyDetail.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { openLoginModal } from "../../redux/modalSlice";
+import PropertyImageModal from '../../components/modals/PropertyImageModal';
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -28,8 +29,10 @@ const PropertyDetail = () => {
   const [showAllPhotos, setShowAllPhotos] = useState(false);
   const [userId, setUserId] = useState(null);
   const [landlordId, setLandlordId] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
 
   useEffect(() => {
     const fetchPropertyData = async () => {
@@ -213,7 +216,7 @@ const PropertyDetail = () => {
                 {averageRating || "No rating"}
               </span>
               <span className="text-decoration-underline me-2 fw-semibold">
-                {property.reviews_count || "No reviews"}
+                {property.reviews_count || "No"} Reviews
               </span>
               <span className="text-decoration-underline fw-semibold">
                 {property.city}, {property.country}
@@ -235,53 +238,35 @@ const PropertyDetail = () => {
         </div>
       </div>
 
+
       <div className="row mt-4">
         <div className="col-12">
-          <div className="image-gallery">
-            {property?.images && property.images.length > 0 ? (
-              property.images
-                .slice(0, showAllPhotos ? property.images.length : 3)
-                .map((imgObj, index) => (
-                  <img
-                    key={index}
-                    src={imgObj.image}
-                    alt={property.title}
-                    className="gallery-image"
-                  />
-                ))
-            ) : (
-              <p>No images available</p>
-            )}
-          </div>
-          <button
-            className="btn btn-primary mt-2"
-            onClick={() => setShowAllPhotos(!showAllPhotos)}
-          >
-            {showAllPhotos ? "Show Less" : "Show All Images"}
-          </button>
+          {property?.images && property.images.length > 0 ? (
+            <div className="position-relative">
+              <img
+                src={property.images[0].image}
+                alt={property.title}
+                className="img-fluid w-100"
+                style={{ borderRadius: '12px', objectFit: 'cover', height: '400px' }}
+              />
+              <button
+                className="btn btn-light position-absolute bottom-0 end-0 m-3"
+                onClick={() => setShowImageModal(true)}
+              >
+                Show All Images
+              </button>
+            </div>
+          ) : (
+            <p>No images available</p>
+          )}
         </div>
       </div>
 
-      {showAllPhotos && property?.images && property.images.length > 0 && (
-        <div className="modal">
-          <div className="modal-content">
-            <span className="close" onClick={closeModal}>
-              &times;
-            </span>
-            <h2>All Images</h2>
-            <div className="full-image-gallery">
-              {property.images.map((imgObj, index) => (
-                <img
-                  key={index}
-                  src={imgObj.image}
-                  alt={property.title}
-                  className="full-image"
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      <PropertyImageModal
+        images={property?.images || []}
+        show={showImageModal}
+        onHide={() => setShowImageModal(false)}
+      />
 
       <div className="row mt-4">
         <div className="col-lg-7">
