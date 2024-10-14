@@ -415,27 +415,31 @@ const PropertyDetail = () => {
 </div>
 </div>
 <div className="mt-5 border-top pt-5">
-  <h3 className="fs-4 fw-bold mb-4">Add a review</h3>
-  {isAuthenticated ? (
-    hasReviewed ? (
-      <p>Thank you for your review!</p>
+    <h3 className="fs-4 fw-bold mb-4">Add a review</h3>
+    {isAuthenticated ? (
+      userId !== landlordId ? (
+        hasReviewed ? (
+          <p>Thank you for your review!</p>
+        ) : (
+          <ReviewForm propertyId={id} onReviewAdded={handleReviewAdded} />
+        )
+      ) : (
+        <p>You cannot add a review to your own property.</p>
+      )
     ) : (
-      <ReviewForm propertyId={id} onReviewAdded={handleReviewAdded} />
-    )
-  ) : (
-    <p>
-      Please{" "}
-      <button
-        type="button"
-        className="btn btn-link"
-        onClick={() => dispatch(openLoginModal())}
-      >
-        Login
-      </button>{" "}
-      to submit a review.
-    </p>
-  )}
-</div>
+      <p>
+        Please{" "}
+        <button
+          type="button"
+          className="btn btn-link"
+          onClick={() => dispatch(openLoginModal())}
+        >
+          Login
+        </button>{" "}
+        to submit a review.
+      </p>
+    )}
+  </div>
 
 <div className="mt-4 border-top pt-3">
       <div className="mt-3">
