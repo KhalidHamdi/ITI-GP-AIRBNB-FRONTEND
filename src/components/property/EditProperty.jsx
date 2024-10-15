@@ -1,8 +1,6 @@
-// src/components/property/EditProperty.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Categories from './categories'; // Updated to PascalCase
+import Categories from './categories'; 
 import axiosInstance from "../../axios";
 import { closeEditPropertyModal } from '../../redux/modalSlice';
 import { useNavigate } from 'react-router-dom';
@@ -47,7 +45,6 @@ const EditProperty = () => {
     const property = useSelector((state) => state.modal.propertyToEdit);
     const isOpen = useSelector((state) => state.modal.editPropertyModalOpen);
 
-    // Initialize state with existing property data
     const [currentStep, setCurrentStep] = useState(1);
     const [errors, setErrors] = useState([]);
     const [dataCategory, setDataCategory] = useState('');
@@ -60,10 +57,10 @@ const EditProperty = () => {
     const [dataCountry, setDataCountry] = useState(null);
     const [dataCity, setDataCity] = useState('');
     const [dataAddress, setDataAddress] = useState('');
-    const [dataImage, setDataImage] = useState(null);
+    const [dataImages, setDataImages] = useState([]);
     const [successMessage, setSuccessMessage] = useState('');
+    
 
-    // Update all state variables when 'property' changes
     useEffect(() => {
         if (property) {
             console.log("Editing Property:", property);
@@ -82,12 +79,11 @@ const EditProperty = () => {
             );
             setDataCity(property.city || '');
             setDataAddress(property.address || '');
-            setDataImage(null); // Reset image unless user uploads a new one
-            setCurrentStep(1); // Reset to first step when editing a new property
+            setDataImages([]); 
+            setCurrentStep(1); 
             setErrors([]);
             setSuccessMessage('');
 
-            // Log the updated state
             console.log("Form state updated:", {
                 dataCategory: property.category || '',
                 dataTitle: property.title || '',
@@ -109,10 +105,11 @@ const EditProperty = () => {
         setDataCategory(category);
     };
 
-    const setImageHandler = (event) => {
-        if (event.target.files && event.target.files.length > 0) {
-            const tmpImage = event.target.files[0];
-            setDataImage(tmpImage);
+    const setImagesHandler = (event) => {
+        if (event.target.files) {
+            const filesArray = Array.from(event.target.files);
+            setDataImages(filesArray);
+            console.log('Files selected:', filesArray);
         }
     };
 
@@ -130,9 +127,13 @@ const EditProperty = () => {
             formData.append('country_code', dataCountry?.value);
             formData.append('city', dataCity);
             formData.append('address', dataAddress);
-            if (dataImage) {
-                formData.append('image', dataImage);
-            }
+        
+            console.log(`Sending ${dataImages.length} images`);
+    
+            dataImages.forEach((image, index) => {
+                formData.append(`images`, image);
+            });
+    
 
             try {
                 const response = await axiosInstance.put(`/api/properties/${property.id}/update/`, formData, {
@@ -141,10 +142,25 @@ const EditProperty = () => {
                     },
                 });
                 console.log("Update Response:", response.data);
-
                 if (response.status === 200 || response.status === 201) {
                     setErrors([]);
                     setSuccessMessage('Property updated successfully!');
+                    setDataCategory(response.data.category || '');
+                    setDataTitle(response.data.title || '');
+                    setDataDescription(response.data.description || '');
+                    setDataPrice(response.data.price_per_night || '');
+                    setDataBedrooms(response.data.bedrooms || '');
+                    setDataBathrooms(response.data.bathrooms || '');
+                    setDataGuests(response.data.guests || '');
+                    setDataCity(response.data.city || '');
+                    setDataAddress(response.data.address || '');
+                    const updatedCountry = countries.find(c => c.cca2 === response.data.country_code);
+                    if (updatedCountry) {
+                        setDataCountry({ value: updatedCountry.cca2, label: updatedCountry.name.common });
+                    }
+                    if (response.data.images) {
+                        setDataImages(response.data.images);
+                    }
                     setTimeout(() => {
                         setSuccessMessage('');
                         navigate('/');
@@ -157,11 +173,11 @@ const EditProperty = () => {
                     setErrors(tmpErrors);
                 }
             } catch (error) {
-                console.error("Update Error:", error.response?.data || error.message);
-                if (error.response && error.response.data && error.response.data.message) {
-                    const tmpErrors = Array.isArray(error.response.data.message)
-                        ? error.response.data.message
-                        : Object.values(error.response.data.message).flat();
+                console.error('Error response:', error.response?.data);
+                if (error.response && error.response.data && error.response.data.errors) {
+                    const validationErrors = error.response.data.errors;
+                    console.error('Validation Errors:', validationErrors);
+                    const tmpErrors = Object.values(validationErrors).flat().map((err) => err.toString());
                     setErrors(tmpErrors);
                 } else {
                     setErrors(['An unexpected error occurred. Please try again.']);
@@ -172,10 +188,11 @@ const EditProperty = () => {
         }
     };
 
+
     const CustomButton = ({ label, className, onClick }) => {
         return (
             <button
-                type="button" // Ensures button does not submit the form
+                type="button"
                 onClick={onClick}
                 className={`btn ${className}`}
             >
@@ -208,7 +225,7 @@ const EditProperty = () => {
                                 <Categories dataCategory={dataCategory} setCategory={setCategoryHandler} />
                                 <div className="d-flex justify-content-end mt-1">
                                     <button
-                                        type="button" // Prevents form submission
+                                        type="button" 
                                         className="btn btn-danger text-white rounded-pill px-4 py-2"
                                         onClick={() => setCurrentStep(2)}
                                     >
@@ -355,17 +372,23 @@ const EditProperty = () => {
                         )}
                         {currentStep === 5 && (
                             <>
-                                <h2 className="mb-4 text-center">Upload Image</h2>
+                                <h2 className="mb-4 text-center">Update Images</h2>
                                 <div className="form-group mb-3">
-                                    <label className="form-label">Upload Image</label>
+                                    <label className="form-label">Upload Images</label>
                                     <input
                                         type="file"
                                         accept="image/*"
-                                        onChange={setImageHandler}
+                                        multiple
+                                        onChange={setImagesHandler}
                                         className="form-control rounded-pill"
                                     />
-                                    {property.image_url && !dataImage && (
-                                        <img src={property.image_url} alt="Current" className="mt-2" width="100" />
+                                    {property.images && property.images.length > 0 && !dataImages.length && (
+                                        <div className="mt-2">
+                                            <p>Current Images:</p>
+                                            {property.images.map((img, index) => (
+                                                <img key={index} src={img.image} alt={`Current ${index + 1}`} className="mt-2 me-2" width="100" />
+                                            ))}
+                                        </div>
                                     )}
                                 </div>
                                 <div className="d-flex justify-content-between">
