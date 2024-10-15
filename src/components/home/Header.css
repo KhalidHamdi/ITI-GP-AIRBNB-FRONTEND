@@ -1,0 +1,28 @@
+/* src/components/Header/Header.css */
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-nav .nav-item .btn {
+  color: inherit;
+}
+
+.navbar-nav .nav-item .btn:hover {
+  color: #ff385c; /* Airbnb's primary color */
+}
+
+.navbar-toggler {
+  border: none;
+}
+
+.navbar-toggler:focus {
+  outline: none;
+}
+
+@media (max-width: 992px) {
+  .navbar-nav {
+    margin-top: 1rem;
+  }
+}
