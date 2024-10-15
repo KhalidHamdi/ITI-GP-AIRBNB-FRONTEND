@@ -131,9 +131,8 @@ const EditProperty = () => {
             formData.append('city', dataCity);
             formData.append('address', dataAddress);
             if (dataImage) {
-                formData.append('image', dataImage);
+                formData.append('new_images', dataImage);
             }
-
             try {
                 const response = await axiosInstance.put(`/api/properties/${property.id}/update/`, formData, {
                     headers: {
