@@ -139,6 +139,8 @@ const ReservationSidebar = ({ property, userId }) => {
           borderRadius: "12px",
           backgroundColor: theme.palette.background.default, 
           color: theme.palette.text.primary, 
+          zIndex: 1000, 
+
         }}
       >
         <div className="card-body">
