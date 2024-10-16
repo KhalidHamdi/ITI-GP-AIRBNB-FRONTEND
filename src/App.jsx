@@ -30,6 +30,7 @@ import MyFavoritesPage from "./components/home/MyFavoritesPage";
 import AddAdsModal from "./components/modals/AddAdsModal";
 import ContactSupport from "./components/ContactSupport"; 
 import TermsPage from "./components/terms/TermsPage";
+import Team from "./components/home/Team";
 
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { lightTheme, darkTheme } from "./theme"; 
@@ -90,6 +91,8 @@ function App() {
           <Route path="/my-favorites" element={<MyFavoritesPage />} />
           <Route path="/contact-support" element={<ContactSupport />} /> 
           <Route path="terms" element={<TermsPage/>} />
+          <Route path="team" element={<Team/>} />
+
         </Routes>
         <Footer darkMode={darkMode} />
       </div>

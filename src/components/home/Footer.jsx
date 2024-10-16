@@ -187,18 +187,8 @@ const Footer = () => {
             <h5 className="fw-bold">About</h5>
             <ul className="list-unstyled">
               <li className="mb-2">
-                <a href="#" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Team</a>
-              </li>
-              <li className="mb-2">
-                <a href="#" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Locations</a>
-              </li>
-              <li className="mb-2">
-                <a href="#" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Privacy</a>
-              </li>
-              <li className="mb-2">
-              <Link to="/terms" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>
-                Terms
-              </Link>
+              <a href="/team" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Meet Our Team</a>
+
             </li>
             </ul>
           </div>
@@ -207,13 +197,11 @@ const Footer = () => {
             <h5 className="fw-bold">Help</h5>
             <ul className="list-unstyled">
               <li className="mb-2">
-                <a href="/" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Support</a>
+              <a href="/contact-support" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Support</a>
               </li>
               <li className="mb-2">
-                <a href="/" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Help Center</a>
-              </li>
-              <li className="mb-2">
-                <a href="/" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Contact Us</a>
+              <a href="/terms" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Terms and Conditions
+              </a>
               </li>
             </ul>
           </div>
