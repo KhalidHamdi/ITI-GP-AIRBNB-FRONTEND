@@ -9,6 +9,7 @@ const MyReservationsPage = () => {
   const [paidReservations, setPaidReservations] = useState([]);
   const [unpaidReservations, setUnpaidReservations] = useState([]);
   const [imageIndices, setImageIndices] = useState({});
+  const [loading, setLoading] = useState(true); // Loading state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,23 +27,25 @@ const MyReservationsPage = () => {
           initialIndices[reservation.id] = 0; 
         });
         setImageIndices(initialIndices);
-
       } catch (error) {
         console.error("Error fetching reservations:", error);
+      } finally {
+        setLoading(false); // Stop loading after data is fetched
       }
     };
 
     fetchReservations();
   }, []);
+
   const deleteReservation = async (reservationId) => {
     try {
       await axiosInstance.delete(`/api/property/reservations/${reservationId}/cancel/`);
-  
+
       toast.success('Reservation cancelled successfully!', {
         position: "top-right",
         autoClose: 5000,
       });
-  
+
       setPaidReservations(paidReservations.filter(reservation => reservation.id !== reservationId));
       setUnpaidReservations(unpaidReservations.filter(reservation => reservation.id !== reservationId));
       setImageIndices((prevIndices) => {
@@ -52,14 +55,14 @@ const MyReservationsPage = () => {
       });
     } catch (error) {
       const errorMessage = error.response?.data?.error || 'An error occurred while cancelling the reservation.';
-      
+
       toast.error(errorMessage, {
         position: "top-right",
         autoClose: 5000,
       });
     }
   };
-  
+
   const handlePaymentClick = (reservation) => {
     const { total_price: totalPrice, guests, id: reservationId } = reservation;
 
@@ -81,6 +84,17 @@ const MyReservationsPage = () => {
       return { ...prevIndices, [reservationId]: currentIndex };
     });
   };
+
+  if (loading) {
+    return (
+      <div className="loading-container text-center py-5">
+        <h2>Loading your reservations...</h2>
+        <div className="spinner-border" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className="container py-4">

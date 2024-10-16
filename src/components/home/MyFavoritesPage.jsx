@@ -1,21 +1,20 @@
-
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../axios';
 import PropertyListItem from '../property/PropertyListItem';
 
 const MyFavoritesPage = () => {
     const [favorites, setFavorites] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); // Loading state is already defined
 
     useEffect(() => {
         const fetchFavorites = async () => {
             try {
                 const response = await axiosInstance.get('/api/favorite/');
                 setFavorites(response.data);
-                setLoading(false);
             } catch (error) {
                 console.error('Failed to fetch favorites:', error);
-                setLoading(false);
+            } finally {
+                setLoading(false); // Stop loading after the data is fetched or if there is an error
             }
         };
 
@@ -23,9 +22,16 @@ const MyFavoritesPage = () => {
     }, []);
 
     if (loading) {
-        return <div>Loading...</div>;
-    }
-
+        return (
+          <div className="loading-container text-center py-5">
+            <h2>Loading your Favorites...</h2>
+            <div className="spinner-border" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+        );
+      }
+    
     return (
         <div className="container my-4">
             <h1 className="mb-4">My Favorites</h1>

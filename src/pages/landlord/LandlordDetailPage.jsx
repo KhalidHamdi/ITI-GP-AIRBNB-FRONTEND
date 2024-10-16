@@ -10,6 +10,7 @@ const LandlordDetailPage = () => {
   const [landlord, setLandlord] = useState(null);
   const [userId, setUserId] = useState(null);
   const [landlordId, setLandlordId] = useState(null);
+  const [loading, setLoading] = useState(true); // Added loading state
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,16 +24,24 @@ const LandlordDetailPage = () => {
         } else {
           console.error("No userId found in localStorage");
         }
+        setLoading(false); // Set loading to false once data is fetched
       } catch (error) {
         console.error("Error fetching data:", error);
+        setLoading(false); // Set loading to false in case of error
       }
     };
 
     fetchData();
   }, [id]);
 
-  if (!landlord) {
-    return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
   }
 
   return (

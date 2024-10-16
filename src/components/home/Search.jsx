@@ -149,7 +149,7 @@ const Search = () => {
         </div>
 
         <div className="ms-3">
-          <label className="small fw-medium mt-3" style={{ fontSize: "12px" }}>
+          <label className="small fw-medium mt-2" style={{ fontSize: "12px" }}>
             Use Recommendations
             <input
               type="checkbox"
