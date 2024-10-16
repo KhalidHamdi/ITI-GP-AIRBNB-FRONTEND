@@ -125,6 +125,8 @@
 // src/components/Footer.jsx
 
 import React from 'react';
+import { Link } from "react-router-dom"; 
+
 
 const Footer = () => {
   return (
@@ -194,8 +196,10 @@ const Footer = () => {
                 <a href="#" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Privacy</a>
               </li>
               <li className="mb-2">
-                <a href="#" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>Terms</a>
-              </li>
+              <Link to="/terms" className="text-decoration-none" style={{ color: 'var(--text-color)' }}>
+                Terms
+              </Link>
+            </li>
             </ul>
           </div>
 
@@ -253,7 +257,9 @@ const Footer = () => {
             </p>
           </div>
           <div className="col-md-3 mb-3 text-md-end">
-            <button className="btn btn-primary">Get Started</button>
+            <Link to="/" className="btn btn-primary">
+              Get Started
+            </Link>
           </div>
         </div>
 

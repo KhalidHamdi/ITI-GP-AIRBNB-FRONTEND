@@ -84,7 +84,9 @@ const UserMenu = ({ airbnbYourHome }) => {
               </button>
             </li>
             <li>
-              <button className="dropdown-item">Host an experience</button>
+              <Link to="/terms" className="dropdown-item">
+              Terms and Conditions
+              </Link>
             </li>
             <li>
               <button
