@@ -34,16 +34,15 @@ const MyReservationsPage = () => {
 
     fetchReservations();
   }, []);
-
   const deleteReservation = async (reservationId) => {
     try {
       await axiosInstance.delete(`/api/property/reservations/${reservationId}/cancel/`);
-
+  
       toast.success('Reservation cancelled successfully!', {
         position: "top-right",
         autoClose: 5000,
       });
-
+  
       setPaidReservations(paidReservations.filter(reservation => reservation.id !== reservationId));
       setUnpaidReservations(unpaidReservations.filter(reservation => reservation.id !== reservationId));
       setImageIndices((prevIndices) => {
@@ -52,13 +51,15 @@ const MyReservationsPage = () => {
         return updatedIndices;
       });
     } catch (error) {
-      toast.error('An error occurred while cancelling the reservation.', {
+      const errorMessage = error.response?.data?.error || 'An error occurred while cancelling the reservation.';
+      
+      toast.error(errorMessage, {
         position: "top-right",
         autoClose: 5000,
       });
     }
   };
-
+  
   const handlePaymentClick = (reservation) => {
     const { total_price: totalPrice, guests, id: reservationId } = reservation;
 
