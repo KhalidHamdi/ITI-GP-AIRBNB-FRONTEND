@@ -1,5 +1,3 @@
-// src/components/reviews/ReviewList.js
-
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from 'prop-types';
@@ -8,11 +6,11 @@ import './ReviewList.css';
 const ReviewList = ({ reviews }) => {
   const renderStars = (rating) => {
     const stars = [];
-    for(let i=1; i<=5; i++) {
-      if(i <= rating) {
-        stars.push(<FontAwesomeIcon key={i} icon={['fas', 'star']} className="text-warning" />);
+    for (let i = 1; i <= 5; i++) {
+      if (i <= rating) {
+        stars.push(<FontAwesomeIcon key={i} icon={['fas', 'star']} className="fa-star" />); 
       } else {
-        stars.push(<FontAwesomeIcon key={i} icon={['far', 'star']} className="text-warning" />);
+        stars.push(<FontAwesomeIcon key={i} icon={['far', 'star']} className="fa-star" />); 
       }
     }
     return stars;
