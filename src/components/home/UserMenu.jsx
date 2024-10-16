@@ -80,7 +80,7 @@ const UserMenu = ({ airbnbYourHome }) => {
             </li>
             <li>
               <button className="dropdown-item" onClick={airbnbYourHome}>
-                Airbnb your home
+                Host Your Property
               </button>
             </li>
             <li>

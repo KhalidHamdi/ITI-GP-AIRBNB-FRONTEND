@@ -164,6 +164,29 @@ const PropertyDetail = () => {
   });
   L.Marker.prototype.options.icon = DefaultIcon;
 
+
+  const handleShare = () => {
+    const shareData = {
+      title: property.title,
+      text: `Check out this property: ${property.title}`,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      navigator
+        .share(shareData)
+        .then(() => console.log("Property shared successfully"))
+        .catch((error) => console.error("Error sharing property:", error));
+    } else {
+      navigator.clipboard
+        .writeText(window.location.href)
+        .then(() => toast.success("Link copied to clipboard!"))
+        .catch((error) =>
+          console.error("Error copying link to clipboard:", error)
+        );
+    }
+  };
+
   if (loading) {
     return (
       <div className="text-center mt-5">
@@ -226,15 +249,8 @@ const PropertyDetail = () => {
               </span>
             </div>
             <div>
-              <button className="btn btn-link text-dark me-2">
+              <button className="btn btn-link text-dark me-2" onClick={handleShare}>
                 <i className="bi bi-upload me-2"></i>Share
-              </button>
-              <button
-                className="btn btn-link text-dark"
-                onClick={toggleFavorite}
-              >
-                <i className={`bi bi-heart${isFavorite ? "-fill" : ""}`}></i>{" "}
-                Save
               </button>
             </div>
           </div>
@@ -315,7 +331,7 @@ const PropertyDetail = () => {
             <p style={{ whiteSpace: "pre-line" }}>{property.description}</p>
           </div>
 
-          <div className="py-4 border-bottom">
+          {/* <div className="py-4 border-bottom">
             <h3 className="fs-4 fw-bold mb-4">Where you'll sleep</h3>
             <div className="d-flex overflow-auto">
               {[...Array(property.bedrooms)].map((_, index) => (
@@ -330,7 +346,7 @@ const PropertyDetail = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
 
           <div className="py-4 border-bottom">
             <h3 className="fs-4 fw-bold mb-4">What this place offers</h3>
@@ -587,7 +603,7 @@ const PropertyDetail = () => {
                 ))}
               <li>
                 <i className="bi bi-info-circle me-2"></i>Free cancellation for
-                48 hours
+                24 hours
               </li>
               <li>
                 <i className="bi bi-info-circle me-2"></i>Review the host's full

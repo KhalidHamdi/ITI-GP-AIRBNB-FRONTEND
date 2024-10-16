@@ -46,17 +46,13 @@ const Header = ({ toggleDarkMode, darkMode }) => {
                 className="btn btn-link text-decoration-none fw-bold"
                 onClick={airbnbYourHome}
               >
-                Airbnb your home
+              Host Your Property
+              <i className="bi bi-globe fs-5 m-2"></i>
+
+              </button>
+                <button className="btn btn-link p-0 ">
               </button>
             </Nav.Item>
-
-            {/* Globe Icon */}
-            <Nav.Item className="me-3">
-              <button className="btn btn-link p-0">
-                <i className="bi bi-globe fs-5"></i>
-              </button>
-            </Nav.Item>
-
             {/* Dark Mode Switch */}
             <Nav.Item className="d-flex align-items-center me-3">
               <Switch onChange={toggleDarkMode} checked={darkMode} />
