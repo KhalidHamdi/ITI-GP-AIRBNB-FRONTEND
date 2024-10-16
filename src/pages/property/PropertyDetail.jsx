@@ -417,7 +417,11 @@ const PropertyDetail = () => {
   <ReviewList reviews={reviews.slice(0, 6)} />
 </div>
 </div>
-<div className={`mt-5 ${!hasReviewed ? 'border-top pt-5' : ''}`}>
+<div
+  className={`mt-5 ${
+    !hasReviewed && isAuthenticated && userId !== landlordId ? 'border-top pt-5' : ''
+  }`}
+>
   {isAuthenticated && userId !== landlordId ? (
     !hasReviewed && ( 
       <>
@@ -425,9 +429,7 @@ const PropertyDetail = () => {
         <ReviewForm propertyId={id} onReviewAdded={handleReviewAdded} />
       </>
     )
-  ) : isAuthenticated && userId === landlordId ? (
-    <p>You cannot add a review to your own property.</p>
-  ) : (
+  ) : !isAuthenticated ? (
     <p>
       Please{" "}
       <button
@@ -439,10 +441,9 @@ const PropertyDetail = () => {
       </button>{" "}
       to submit a review.
     </p>
-  )}
+  ) : null}
   <ToastContainer />
 </div>
-
 
 <div className="mt-4 border-top pt-3">
       <div className="mt-3">
