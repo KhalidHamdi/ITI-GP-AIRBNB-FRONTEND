@@ -1,25 +1,21 @@
-/* General Styles */
 body {
-    transition: background-color 0.3s, color 0.3s; /* Smooth transition for background and text color */
+    transition: background-color 0.3s, color 0.3s;
   }
   
-  /* Team Container */
   .team-container {
     padding: 60px 20px;
     border-radius: 12px;
     text-align: center;
-    max-width: 1200px; /* Set a maximum width for centering */
-    margin: 0 auto; /* Center the container */
+    max-width: 1200px; 
+    margin: 0 auto; 
   }
   
-  /* Team Title */
   .team-title {
     font-size: 2.8rem;
-    color: #FF5A5F; /* Title color */
+    color: #FF5A5F; 
     margin-bottom: 15px;
   }
   
-  /* Team Description */
   .team-description {
     font-size: 1.2rem;
     margin-bottom: 40px;
@@ -28,7 +24,6 @@ body {
     margin-right: auto;
   }
   
-  /* Team Member List */
   .team-member-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -36,70 +31,66 @@ body {
     padding: 0 20px;
   }
   
-  /* Team Member Card */
   .team-member-card {
-    border: 2px solid #ddd; /* Light border for light mode */
+    border: 2px solid #ddd;
     border-radius: 10px;
     padding: 20px;
     transition: transform 0.3s, box-shadow 0.3s;
-    box-shadow: none; /* No shadow to maintain the clean look */
+    box-shadow: none; 
     position: relative;
     overflow: hidden;
-    background-color: transparent; /* Transparent background */
+    background-color: transparent; 
   }
   
-  /* Dark Mode Styles */
   @media (prefers-color-scheme: dark) {
     body {
-      background-color: #121212; /* Dark background */
-      color: #e0e0e0; /* Light text color */
+      background-color: #121212; 
+      color: #e0e0e0;
     }
   
     .team-member-card {
-      border: 2px solid #444; /* Darker border for dark mode */
+      border: 2px solid #444; 
     }
   
     .team-title {
-      color: #FF5A5F; /* Keep title color consistent */
+      color: #FF5A5F; 
     }
   
     .team-description {
-      color: #bbb; /* Softer color for text */
+      color: #bbb;
     }
   
     .linkedin-button {
-      background-color: #0077b5; /* LinkedIn button color */
+      background-color: #0077b5; 
     }
   
     .linkedin-button:hover {
-      background-color: #005582; /* Darker shade for hover */
+      background-color: #005582; 
     }
   }
   
-  /* Light Mode Styles */
   @media (prefers-color-scheme: light) {
     .team-member-card {
-      border: 2px solid #ddd; /* Light border for light mode */
+      border: 2px solid #ddd; 
     }
   
     .team-title {
-      color: #FF5A5F; /* Title color */
+      color: #FF5A5F; 
     }
   
     .team-description {
-      color: #555; /* Description color */
+      color: #555; 
     }
   
     .linkedin-button {
-      background-color: #0077b5; /* LinkedIn button color */
+      background-color: #0077b5; 
     }
   
     .linkedin-button:hover {
-      background-color: #005582; /* Darker shade for hover */
+      background-color: #005582; 
     }
   }
   
-  /* Member Image */
   .member-image {
     width: 100%;
     height: 180px;
@@ -108,14 +99,12 @@ body {
     margin-bottom: 15px;
   }
   
-  /* Member Name */
   .member-name {
     font-size: 1.5rem;
     font-weight: 600;
     margin: 10px 0;
   }
   
-  /* LinkedIn Button */
   .linkedin-button {
     display: inline-block;
     padding: 10px 15px;
@@ -125,14 +114,13 @@ body {
     transition: background-color 0.3s;
   }
   
-  /* Dark Mode LinkedIn Button */
   @media (prefers-color-scheme: dark) {
     .linkedin-button {
-      background-color: #FF5A5F; /* LinkedIn button color */
+      background-color: #FF5A5F; 
     }
   
     .linkedin-button:hover {
-      background-color: #fa4d53; /* Darker shade for hover */
+      background-color: #fa4d53; 
     }
   }
   
