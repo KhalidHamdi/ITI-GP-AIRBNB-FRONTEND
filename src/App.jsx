@@ -29,6 +29,7 @@ import UserProfile from "./components/userprofile/UserProfile";
 import MyFavoritesPage from "./components/home/MyFavoritesPage";
 import AddAdsModal from "./components/modals/AddAdsModal";
 import ContactSupport from "./components/ContactSupport"; 
+import TermsPage from "./components/terms/TermsPage";
 
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { lightTheme, darkTheme } from "./theme"; 
@@ -88,6 +89,7 @@ function App() {
           <Route path="/payment" element={<BookingPage />} />
           <Route path="/my-favorites" element={<MyFavoritesPage />} />
           <Route path="/contact-support" element={<ContactSupport />} /> 
+          <Route path="terms" element={<TermsPage/>} />
         </Routes>
         <Footer darkMode={darkMode} />
       </div>
