@@ -14,6 +14,9 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { openLoginModal } from "../../redux/modalSlice";
 import PropertyImageModal from '../../components/modals/PropertyImageModal';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -414,32 +417,32 @@ const PropertyDetail = () => {
   <ReviewList reviews={reviews.slice(0, 6)} />
 </div>
 </div>
-<div className="mt-5 border-top pt-5">
-    <h3 className="fs-4 fw-bold mb-4">Add a review</h3>
-    {isAuthenticated ? (
-      userId !== landlordId ? (
-        hasReviewed ? (
-          <p>Thank you for your review!</p>
-        ) : (
-          <ReviewForm propertyId={id} onReviewAdded={handleReviewAdded} />
-        )
-      ) : (
-        <p>You cannot add a review to your own property.</p>
-      )
-    ) : (
-      <p>
-        Please{" "}
-        <button
-          type="button"
-          className="btn btn-link"
-          onClick={() => dispatch(openLoginModal())}
-        >
-          Login
-        </button>{" "}
-        to submit a review.
-      </p>
-    )}
-  </div>
+<div className={`mt-5 ${!hasReviewed ? 'border-top pt-5' : ''}`}>
+  {isAuthenticated && userId !== landlordId ? (
+    !hasReviewed && ( 
+      <>
+        <h3 className="fs-4 fw-bold mb-4">Add a review</h3>
+        <ReviewForm propertyId={id} onReviewAdded={handleReviewAdded} />
+      </>
+    )
+  ) : isAuthenticated && userId === landlordId ? (
+    <p>You cannot add a review to your own property.</p>
+  ) : (
+    <p>
+      Please{" "}
+      <button
+        type="button"
+        className="btn btn-link"
+        onClick={() => dispatch(openLoginModal())}
+      >
+        Login
+      </button>{" "}
+      to submit a review.
+    </p>
+  )}
+  <ToastContainer />
+</div>
+
 
 <div className="mt-4 border-top pt-3">
       <div className="mt-3">

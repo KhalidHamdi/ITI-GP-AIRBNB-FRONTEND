@@ -1,0 +1,71 @@
+.review-form-container {
+    background-color: #ffffff; 
+    border-radius: 12px; 
+    padding: 20px; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+    margin: 20px auto; 
+    border: 1px solid #e0e0e0; 
+}
+
+.star-rating {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.star {
+    font-size: 28px; 
+    color: lightgray;
+    cursor: pointer;
+    transition: color 0.2s; 
+}
+
+.star:hover,
+.star.filled:hover ~ .star {
+    color: #FF5A5F; 
+}
+
+.star.filled {
+    color: #FF5A5F; 
+}
+
+input[type="radio"] {
+    display: none; 
+}
+
+.alert {
+    margin-bottom: 15px; 
+}
+
+.form-label {
+    font-weight: bold; 
+    color: #333; 
+}
+
+textarea {
+    resize: none; 
+    border: 1px solid #ccc; 
+    transition: border-color 0.3s; 
+}
+
+textarea:focus {
+    border-color: #FF5A5F; 
+    outline: none; 
+}
+
+.btn-primary {
+    background-color: #e94f54; 
+    border: none; 
+    transition: background-color 0.3s; 
+    color: white; 
+}
+
+.btn-primary:hover {
+    background-color: #FF5A5F; 
+}
+
+.btn-primary:disabled {
+    background-color: #e94f54; 
+    color: white; 
+    opacity: 0.7; 
+}
